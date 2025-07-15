@@ -18,40 +18,11 @@ public class MessageConstant {
     public static final String LOGOUT_SUCCESS = "退出成功";
     public static final String REGISTER_SUCCESS = "注册成功";
     public static final String ALREAD_EXISTS = "已存在";
+    public static final String SEARCH_SUCCESS = "查询成功";
     public static final String USER_NOT_FOUND = "找不到该用户";
     public static final String INSUFFICIENT_PERMISSIONS = "权限不足";
     public static final String DATA_NOT_EXISTS = "资料不存在";
     public static final String DATA_ALREADY_RELEASED = "资料已经发布";
-    public static final String DATA_PART_DELETED = "部分资料删除成功";
-    public static final String DATA_FAIL_DELETED = "资料删除失败";
-    public static final String DATA_HAVE_ALREADY_RELEASED = "资料已是发布状态";
-    public static final String DATA_HAVE_NOT_READ = "资料已不可读状态";
-    public static final String DATA_ALREADY_STUDIED = "资料已学习过";
-    public static final String DATA_NOT_READABLE = "资料不可读";
-    public static final String SITUATION_NOT_EXISTS = "没有学习记录";
-    public static final String USER_PART_ADD_FAILED = "用户部分添加失败";
-    public static final String QUESTION_PART_ADD_FAILED = "题目部分添加失败";
-    public static final String EXAMINATION_INFORMATION_FAIL_DELETED = "考试信息删除失败";
-    public static final String EXAMINATION_INFORMATION_PART_DELETED = "考试信息部分删除成功";
-    public static final String EXAMINATION_INFORMATION_NOT_EXIST = "考试信息不存在";
-    public static final String USER_ADD_FAILED = "用户添加失败";
-    public static final String QUESTION_BANK_EXIST = "题目已存在";
-    public static final String QUESTION_PART_DELETED = "题目部分删除成功";
-    public static final String QUESTION_DELETED_FAIL = "题目删除失败";
-    public static final String QUESTION_BANK_NOT_EXIST = "题目不存在";
-    public static final String ADD_PART_PAPER = "考卷部分添加成功";
-    public static final String ADD_PAPER_FAIL = "考卷添加失败";
-    public static final String PAPER_HAVE_ALREADY_SUBMIT = "考卷已提交";
-    public static final String PAPER_NOT_EXIST = "考卷不存在";
-    public static final String PAPER_HAVE_RETURN = "考卷已被打回";
-    public static final String DELETE_PART_PAPER = "考卷部分删除成功";
-    public static final String DELETE_PAPER_FAIL = "考卷删除失败";
-    public static final String ID_CANNOT_BE_NULL = "ID不能为空";
-    public static final String PAPER_NOT_SUBMIT = "考卷未提交";
-
-
-
-
 
 
 }
