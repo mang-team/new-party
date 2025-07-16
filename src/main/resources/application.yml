@@ -4,16 +4,16 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/student_system
+    url: jdbc:mysql://192.168.10.101:3306/student_system
     username: root
-    password: 123456
+    password: 815256031Hc!
   web:
     resources:
       static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
 
 
 mybatis-plus:
-  mapper-locations: classpath*:com/itmang/mapper/**/*.xml # 匹配实际包结构
+  mapper-locations: classpath:mapper/*.xml # 匹配实际包结构
   type-aliases-package: com.itmang.pojo.entity
   configuration:
     map-underscore-to-camel-case: true

@@ -1,4 +1,4 @@
-package com.itmang.mapper.studyMapper;
+package com.itmang.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.itmang.pojo.entity.Datas;

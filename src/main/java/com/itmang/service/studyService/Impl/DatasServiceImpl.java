@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itmang.constant.MessageConstant;
 import com.itmang.constant.StatusConstant;
 import com.itmang.exception.BaseException;
-import com.itmang.mapper.studyMapper.DatasMapper;
+import com.itmang.mapper.DatasMapper;
 import com.itmang.pojo.entity.Datas;
 import com.itmang.service.studyService.DatasService;
 import org.springframework.beans.factory.annotation.Autowired;
