@@ -1,13 +1,12 @@
-package com.itmang.service.studyService.Impl;
-
+package com.itmang.service.study.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itmang.constant.MessageConstant;
 import com.itmang.constant.StatusConstant;
 import com.itmang.exception.BaseException;
-import com.itmang.mapper.DatasMapper;
+import com.itmang.mapper.study.DatasMapper;
 import com.itmang.pojo.entity.Datas;
-import com.itmang.service.studyService.DatasService;
+import com.itmang.service.study.DatasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,7 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
                 .id(dataId)
                 .status(StatusConstant.ENABLE)
                 .build();
-        datasMapper.updateDatas(updateData);
+        datasMapper.updateDatasById(updateData);
     }
 
 

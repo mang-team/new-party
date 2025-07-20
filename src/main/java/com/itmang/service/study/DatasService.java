@@ -1,9 +1,11 @@
-package com.itmang.service.studyService;
+package com.itmang.service.study;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.itmang.pojo.entity.Datas;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface DatasService extends IService<Datas> {
 
     /**

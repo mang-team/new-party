@@ -1,8 +1,8 @@
-package com.itmang.controller.studyController;
+package com.itmang.controller.study;
 
 
 import com.itmang.pojo.entity.Result;
-import com.itmang.service.studyService.DatasService;
+import com.itmang.service.study.DatasService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
