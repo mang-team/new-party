@@ -23,6 +23,11 @@ public class MessageConstant {
     public static final String INSUFFICIENT_PERMISSIONS = "权限不足";
     public static final String DATA_NOT_EXISTS = "资料不存在";
     public static final String DATA_ALREADY_RELEASED = "资料已经发布";
+    public static final String DATA_PART_DELETED = "部分资料删除成功";
+    public static final String DATA_FAIL_DELETED = "资料删除失败";
+    public static final String DATA_HAVE_ALREADY_RELEASED = "资料已是发布状态";
+    public static final String DATA_HAVE_NOT_READ = "资料已不可读状态";
+
 
 
 }

@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.itmang.mapper.study.DatasMapper">
+    <insert id="insertDatas">
+        insert into datas (id, number, title, icon, content, points, release_by, release_time, status,
+                           create_by, create_time, update_by, update_time, is_delete)
+        values (#{id}, #{number}, #{title}, #{icon}, #{content}, #{points}, #{releaseBy}, #{releaseTime}, #{status},
+                #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{isDelete})
+    </insert>
 
     <update id="updateDatasById">
         update datas
@@ -11,15 +17,57 @@
             <if test="content != null and content != '' ">content = #{content},</if>
             <if test="points != null and points != '' ">points = #{points},</if>
             <if test="releaseBy != null and releaseBy != '' ">release_by = #{releaseBy},</if>
-            <if test="releaseTime != null and releaseTime != '' ">release_time = #{releaseTime},</if>
+            <if test="releaseTime != null ">release_time = #{releaseTime},</if>
             <if test="status != null ">status = #{status},</if>
             <if test="createBy != null and createBy != '' ">create_by = #{createBy},</if>
-            <if test="createTime != null and createTime != '' ">create_time = #{createTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null and updateBy != '' ">update_by = #{updateBy},</if>
-            <if test="updateTime != null and updateTime != '' ">update_time = #{updateTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="isDelete != null ">is_delete = #{isDelete},</if>
         </set>
         where id = #{id}
     </update>
+
+
+        <update id="removeBatchByIds">
+            update datas
+            set is_delete = 1
+            where id in
+            <foreach collection="deleteIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        </update>
+
+
+    <select id="selectInformationById" resultType="com.itmang.pojo.vo.DatasVO">
+        select d.number, d.title, d.icon, d.content, d.points, u1.user_name as releaseName,
+               d.release_time as releaseTime,
+               d.status, d.update_time as updateTime, u2.user_name as updateName
+        from datas d
+            left join user u1 on d.release_by = u1.id  <!-- 关联发布者 -->
+            left join user u2 on d.update_by = u2.id  <!-- 关联更新者 -->
+        where d.id = #{id} and d.is_delete = 2
+    </select>
+
+
+    <select id="pageSearch" resultType="com.itmang.pojo.vo.DatasPageVO">
+        select d.id, d.number, d.title, d.icon, d.content, d.points,
+        d.release_time as releaseTime,
+        d.status, d.update_time as updateTime
+        from datas d
+        <where>
+            <if test="number != null and number != ''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="title != null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="points != null">and points = #{points}</if>
+            <if test="status != null">and status = #{status}</if>
+            <if test="(releaseTimeStart != null) and (releaseTimeEnd != null)">
+                and d.release_time between  #{releaseTimeStart} and #{releaseTimeEnd}
+            </if>
+            and d.is_delete = 2
+        </where>
+        order by create_time desc
+    </select>
 
 </mapper>
