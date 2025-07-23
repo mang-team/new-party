@@ -21,7 +21,7 @@ public class DatasVO implements Serializable {
     private String icon;
     @Schema(name = "content", description = "文档url")
     private String content;
-    @Schema(name = "points", description = "学习积分（默认：0）")
+    @Schema(name = "points", description = "学习积分")
     private Integer points;
     @Schema(name = "releaseName", description = "发布者名称")
     private String releaseName;

@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 public class AutoFillAop {
 
     //定义切点
-    @Pointcut("execution(* com.itmang.mapper.*.*(..)) " +
+    @Pointcut("execution(* com.itmang.mapper..*.*(..)) " +
             "&& @annotation(com.itmang.annotation.AutoFill)")
     public void autoFillPointCut(){ }
 

@@ -87,6 +87,7 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
             newData.setStatus(StatusConstant.DISABLE);
             newData.setId(dataId);
             newData.setNumber(dataNumber);
+            newData.setIsDelete(DeleteConstant.NO);
             datasMapper.insertDatas(newData);
         }
 
@@ -116,18 +117,17 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
             //将满足条件的存入canDeleteIds集合中
             canDeleteIds.add(id);
         }
-        //已经将满足条件的id存入deleteIds数组中，开始删除
-        //判断是删除了部分还是全部删除
-        if(canDeleteIds.size() > 0 && canNotDeleteIds.size() > 0){
-            //部分删除
+        // 执行删除逻辑
+        if(!canDeleteIds.isEmpty()) {
             datasMapper.removeBatchByIds(canDeleteIds.toArray(new String[0]));
-            throw new BaseException(MessageConstant.DATA_PART_DELETED);
-        }if(canDeleteIds.size() == 0 && canNotDeleteIds.size() > 0){
-            //一个都不能删
-            throw new BaseException(MessageConstant.DATA_FAIL_DELETED);
-        }else{
-            //可以全部删除
-            datasMapper.removeBatchByIds(canDeleteIds.toArray(new String[0]));
+        }
+        // 处理删除结果
+        if(!canNotDeleteIds.isEmpty()) {
+            if(canDeleteIds.isEmpty()) {
+                throw new BaseException(MessageConstant.DATA_FAIL_DELETED);
+            } else {
+                throw new BaseException(MessageConstant.DATA_PART_DELETED);
+            }
         }
 
     }

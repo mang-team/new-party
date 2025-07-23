@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.study.StudyRecordMapper">
+
+
+    <insert id="addStudyRecord">
+        insert into study_record (id, user_id,datas_id, learning_time,
+                                  learning_progress,start_time,is_points,
+                                  create_by,create_time,update_by,update_time, is_delete)
+        values (#{id}, #{userId},#{datasId}, #{learningTime}, #{learningProgress},
+                #{startTime},#{isPoints},#{createBy},#{createTime},#{updateBy},#{updateTime},#{isDelete})
+    </insert>
+
+    <update id="updateStudyRecord">
+        update study_record
+        <set>
+            <if test="learningTime != null">
+                learning_time = #{learningTime},
+            </if>
+            <if test="learningProgress != null">
+                learning_progress = #{learningProgress},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="isPoints != null">
+                is_points = #{isPoints},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="removeBatchByIds">
+        update study_record
+        set is_delete = 1
+        where id in
+        <foreach collection="deleteIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </update>
+
+    <select id="querySituation" resultType="com.itmang.pojo.vo.SituationVO">
+        select u1.user_name as userName,d.title as datasName,d.number as datasCode,
+               s.learning_time as learningTime,s.learning_progress as learningProgress,
+               s.start_time as startTime,s.is_points as isPoints,s.content,
+                u2.user_name as updateName,s.update_time as updateTime
+        from study_record s
+            left join user u1 on s.user_id = u1.id
+            left join user u2 on s.update_by = u2.id
+            left join datas d on s.datas_id = d.id
+        where s.id = #{id} and s.is_delete = 2
+    </select>
+
+    <select id="pageSearch" resultType="com.itmang.pojo.vo.SituationPageVO">
+        select s.id,u.user_name as userName,d.title as datasName,d.number as datasCode,
+               s.learning_time as learningTime,s.learning_progress as learningProgress,
+               s.start_time as startTime,s.is_points as isPoints,s.update_time as updateTime
+        from study_record s
+            left join user u on s.user_id = u.id
+            left join datas d on s.datas_id = d.id
+        <where>
+            <if test="userName != null and userName != ''">
+                and u.user_name like concat('%',#{userName},'%')
+            </if>
+            <if test="datasCode != null and datasCode != ''">
+                and d.number like concat('%',#{datasCode},'%')
+            </if>
+            <if test="datasName != null and datasName != ''">
+                and d.title like concat('%',#{datasName},'%')
+            </if>
+            <if test="(startTimeStart != null) and (startTimeEnd != null)">
+                and s.start_time between  #{startTimeStart} and #{startTimeEnd}
+            </if>
+        and s.is_delete = 2
+    </where>
+        order by s.create_time desc
+    </select>
+
+
+</mapper>
