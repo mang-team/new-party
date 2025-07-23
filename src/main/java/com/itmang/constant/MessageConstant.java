@@ -27,6 +27,9 @@ public class MessageConstant {
     public static final String DATA_FAIL_DELETED = "资料删除失败";
     public static final String DATA_HAVE_ALREADY_RELEASED = "资料已是发布状态";
     public static final String DATA_HAVE_NOT_READ = "资料已不可读状态";
+    public static final String DATA_ALREADY_STUDIED = "资料已学习过";
+    public static final String DATA_NOT_READABLE = "资料不可读";
+    public static final String SITUATION_NOT_EXISTS = "没有学习记录";
 
 
 
