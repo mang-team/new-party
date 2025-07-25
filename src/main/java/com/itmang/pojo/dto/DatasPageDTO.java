@@ -5,6 +5,7 @@ package com.itmang.pojo.dto;
 import io.swagger.models.auth.In;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -22,8 +23,10 @@ public class DatasPageDTO implements Serializable {
     private Integer points;
     @Schema(name = "status", description = "资料状态")
     private Integer status;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(name = "releaseTimeStart", description = "发布开始时间")
     private LocalDateTime releaseTimeStart;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(name = "releaseTimeEnd", description = "发布结束时间")
     private LocalDateTime releaseTimeEnd;
     @Schema(name = "page", description = "当前页")

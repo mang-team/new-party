@@ -129,7 +129,6 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
                 throw new BaseException(MessageConstant.DATA_PART_DELETED);
             }
         }
-
     }
 
     /**

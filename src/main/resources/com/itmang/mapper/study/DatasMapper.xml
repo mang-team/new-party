@@ -62,8 +62,11 @@
             </if>
             <if test="points != null">and points = #{points}</if>
             <if test="status != null">and status = #{status}</if>
-            <if test="(releaseTimeStart != null) and (releaseTimeEnd != null)">
-                and d.release_time between  #{releaseTimeStart} and #{releaseTimeEnd}
+            <if test="releaseTimeStart != null">
+                and d.release_time &gt;= #{releaseTimeStart}
+            </if>
+            <if test="releaseTimeEnd != null">
+                and d.release_time &lt;= #{releaseTimeEnd}
             </if>
             and d.is_delete = 2
         </where>

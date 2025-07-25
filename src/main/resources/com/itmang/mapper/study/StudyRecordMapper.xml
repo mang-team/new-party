@@ -73,8 +73,11 @@
             <if test="datasName != null and datasName != ''">
                 and d.title like concat('%',#{datasName},'%')
             </if>
-            <if test="(startTimeStart != null) and (startTimeEnd != null)">
-                and s.start_time between  #{startTimeStart} and #{startTimeEnd}
+            <if test="startTimeStart != null">
+                and s.start_time &gt;= #{startTimeStart}
+            </if>
+            <if test="startTimeEnd != null">
+                and s.start_time &lt;= #{startTimeEnd}
             </if>
         and s.is_delete = 2
     </where>

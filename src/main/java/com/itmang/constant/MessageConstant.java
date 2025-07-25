@@ -30,6 +30,13 @@ public class MessageConstant {
     public static final String DATA_ALREADY_STUDIED = "资料已学习过";
     public static final String DATA_NOT_READABLE = "资料不可读";
     public static final String SITUATION_NOT_EXISTS = "没有学习记录";
+    public static final String USER_PART_ADD_FAILED = "用户部分添加失败";
+    public static final String QUESTION_PART_ADD_FAILED = "题目部分添加失败";
+    public static final String EXAMINATION_INFORMATION_FAIL_DELETED = "考试信息删除失败";
+    public static final String EXAMINATION_INFORMATION_PART_DELETED = "考试信息部分删除成功";
+    public static final String EXAMINATION_INFORMATION_NOT_EXIST = "考试信息不存在";
+    public static final String USER_ADD_FAILED = "用户添加失败";
+
 
 
 

@@ -9,7 +9,7 @@ import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.vo.DatasVO;
 import org.springframework.stereotype.Service;
 
-@Service
+
 public interface DatasService extends IService<Datas> {
 
     /**
