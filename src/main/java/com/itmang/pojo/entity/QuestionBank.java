@@ -24,6 +24,9 @@ public class QuestionBank {
     @Schema(name = "question", description = "问题")
     private String question;
 
+    @Schema(name = "questionOption", description = "选择题选项")
+    private String questionOption;
+
     @Schema(name = "answerType", description = "答案类型（选A 1，选B 2，选C 3，选D 4，选E 5，选F 6，√ 7，× 8，填空答案直接字符串）")
     private String answerType;
 
