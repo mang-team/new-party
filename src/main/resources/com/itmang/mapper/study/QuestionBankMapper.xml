@@ -4,11 +4,65 @@
 <mapper namespace="com.itmang.mapper.study.QuestionBankMapper">
 
 
+    <insert id="insertQuestionBank">
+        insert into question_bank
+            (id, type, question,question_option, answer_type, is_choose,
+             create_by, create_time, update_by, update_time, is_delete)
+        values
+            (#{id}, #{type}, #{question}, #{questionOption}, #{answerType}, #{isChoose},
+             #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{isDelete})
+    </insert>
+
     <update id="updateQuestionBankSelected">
         update question_bank
-        set is_choose = 1
-        where id in
-        <foreach collection="participateArr" item="id" open="(" separator="," close=")">#{id}</foreach>
+            set is_choose = 1
+        where id =
+            <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
     </update>
+
+    <update id="removeBatchByIds">
+        update question_bank
+            set is_delete = 1
+        where id in
+            <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+
+    <update id="updateQuestionBank">
+        update question_bank
+        <set>
+            <if test="type != null">type = #{type},</if>
+            <if test="question != null">question = #{question},</if>
+            <if test="questionOption != null">question_option = #{questionOption},</if>
+            <if test="answerType != null">answer_type = #{answerType},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="queryQuestionBankById" resultType="com.itmang.pojo.vo.BankVO">
+        select q.type, q.question, q.question_option, q.answer_type, q.is_choose,
+            u.user_name as updateName, q.update_time
+        from question_bank q
+            left join user u on q.update_by = u.id
+        where q.id = #{id} and q.is_delete = 2
+    </select>
+
+    <select id="queryQuestionBankList" resultType="com.itmang.pojo.vo.BankPageVO">
+        select id, type, question,is_choose,update_time
+        from question_bank
+            <where>
+                <if test="type != null and type != ''">and type = #{type}</if>
+                <if test="question != null and type != ''">and question like concat('%',#{question},'%')</if>
+                <if test="isChoose != null">and is_choose = #{isChoose}</if>
+                and is_delete = 2
+            </where>
+
+    </select>
+
 
 </mapper>

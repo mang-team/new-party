@@ -13,4 +13,5 @@ public class QuestionOptionConstant {
     public static final String JUDGEMENT = "3";
     //填空题
     public static final String FILL_BLANKS = "4";
+
 }

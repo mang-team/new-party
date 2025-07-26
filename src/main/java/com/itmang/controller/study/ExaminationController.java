@@ -26,6 +26,7 @@ public class ExaminationController {
     @Autowired
     private ExaminationService examinationService;
 
+    //TODO 新增考试信息接口还需要完善分发考卷的逻辑
     @Operation(summary = "新增考试信息")
     @PostMapping("/add")
     public Result addExaminationInformation(@RequestBody AddExaminationDTO addExaminationDTO){
