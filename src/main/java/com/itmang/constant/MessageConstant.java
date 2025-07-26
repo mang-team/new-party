@@ -36,6 +36,11 @@ public class MessageConstant {
     public static final String EXAMINATION_INFORMATION_PART_DELETED = "考试信息部分删除成功";
     public static final String EXAMINATION_INFORMATION_NOT_EXIST = "考试信息不存在";
     public static final String USER_ADD_FAILED = "用户添加失败";
+    public static final String QUESTION_BANK_EXIST = "题目已存在";
+    public static final String QUESTION_PART_DELETED = "题目部分删除成功";
+    public static final String QUESTION_DELETED_FAIL = "题目删除失败";
+    public static final String QUESTION_BANK_NOT_EXIST = "题目不存在";
+
 
 
 
