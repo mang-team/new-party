@@ -5,11 +5,17 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/party_building_system
+#    url: jdbc:mysql://192.168.10.101:3306/party_building_system
     username: root
     password: 123456
   web:
     resources:
       static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+  data:
+    redis:
+      host: 192.168.10.101
+      port: 6379
+      database: 0
 
 
 mybatis-plus:
@@ -18,14 +24,6 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 启用SQL日志，便于调试
-
-#redis配置
-redis:
-  host: localhost
-  port: 6379
-  password: 123456 #配置密码，没有设置密码就注释掉
-  database: 10
-
 
 jwt:
   admin-secret-key: itmang

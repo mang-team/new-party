@@ -44,7 +44,7 @@ public class GlobalAspect {
         if(StringUtils.isEmpty(token)){
             throw new BaseException(MessageConstant.USER_NOT_LOGIN);
         }
-        if(!redisTemplate.hasKey("blacklist:" + token)){
+        if(redisTemplate.hasKey("blacklist:" + token)){
             throw new BaseException(MessageConstant.USER_NOT_LOGIN);
         }
     }

@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -73,7 +74,7 @@ public class UserController extends BaseController {
     /**
      * 注册用户接口
      *
-     * @param registerUserDTO
+     * @param 0registerUserDTO
      * @return
      */
 //    @Operation(summary = "注册接口")
@@ -96,7 +97,7 @@ public class UserController extends BaseController {
         String userId = getUserIdFromToken();
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getId, userId);
-        queryWrapper.eq(User::getStatus, 0);
+        queryWrapper.eq(User::getStatus, 1);
         User user = userService.getOne(queryWrapper);
         if (user == null) {
             throw new BaseException(MessageConstant.USER_NOT_LOGIN);
@@ -144,11 +145,11 @@ public class UserController extends BaseController {
         String userId = getUserIdFromToken();
         User user = new User();
         user.setId(userId);
-        user.setPassword(password);
+        user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
         boolean isSuccess = userService.updateById(user);
         if (!isSuccess) {
             throw new BaseException(MessageConstant.UNKNOWN_ERROR);
         }
-        return Result.success();
+        return Result.success(null);
     }
 }
