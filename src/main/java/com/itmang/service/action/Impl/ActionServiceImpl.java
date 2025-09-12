@@ -33,13 +33,17 @@ public class ActionServiceImpl implements ActionService {
      */
     @Override
     public PageResult pageGetDetailActionMessage(PageDetailActionMessageDTO actionMessageDTO) {
+        // 使用PageHelper插件进行分页查询
         PageHelper.startPage(actionMessageDTO.getPage(), actionMessageDTO.getPageSize());
 
+        // 将查询到的结果存储起来
         Page<PageDetailActionMessageVO> page = actionMapper.pageGetDetailActionMessage(actionMessageDTO);
 
+        // 得到总个数和具体内容
         Long total = page.getTotal();
         List<PageDetailActionMessageVO> records = page.getResult();
 
+        // 返回结果
         return new PageResult(total,records);
     }
 
@@ -50,10 +54,13 @@ public class ActionServiceImpl implements ActionService {
      */
     @Override
     public PageResult pageGetShortActionMessage(PageDetailActionMessageDTO actionMessageDTO) {
+        // 使用PageHelper插件进行分页查询
         PageHelper.startPage(actionMessageDTO.getPage(), actionMessageDTO.getPageSize());
 
+        // 将查询到的结果存储起来
         Page<pageShortActionMessageVO> page = actionMapper.pageGetShortActionMessage(actionMessageDTO);
 
+        // 返回结果
         return new PageResult(page.getTotal(),page.getResult());
     }
 
@@ -63,6 +70,7 @@ public class ActionServiceImpl implements ActionService {
      */
     @Override
     public boolean modifyActionMessage(ModifyActionMessageDTO modifyActionMessageDTO) {
+        // 根据活动id修改活动信息，查看返回值modify是否为0，从而判断是否成功修改
         int modify = actionMapper.modifyActionMessage(modifyActionMessageDTO);
         return modify > 0 ? true : false;
     }
@@ -74,7 +82,9 @@ public class ActionServiceImpl implements ActionService {
      */
     @Override
     public void addActionMessage(AddActionMessageDTO addActionMessageDTO) {
+        // 获取并添加userId
         addActionMessageDTO.setUserId(BaseContext.getCurrentId());
+        // 调用mapper函数添加活动信息
         actionMapper.addActionMessage(addActionMessageDTO);
     }
 }
