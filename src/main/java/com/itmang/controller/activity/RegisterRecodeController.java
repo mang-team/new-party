@@ -2,6 +2,10 @@ package com.itmang.controller.activity;
 
 
 import com.itmang.controller.BaseController;
+import com.itmang.pojo.dto.AddRegisterRecordDTO;
+import com.itmang.pojo.dto.DeleteRegisterRecodeDTO;
+import com.itmang.pojo.dto.FindRegisterSignDTO;
+import com.itmang.pojo.dto.UpdateRegisterRecordDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.service.activity.RegisterRecodeService;

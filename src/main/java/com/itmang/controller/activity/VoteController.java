@@ -2,6 +2,10 @@ package com.itmang.controller.activity;
 
 
 import com.itmang.controller.BaseController;
+import com.itmang.pojo.dto.AddVoteDTO;
+import com.itmang.pojo.dto.DeleteVoteDTO;
+import com.itmang.pojo.dto.FindVoteDTO;
+import com.itmang.pojo.dto.UpdateVoteDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.service.activity.VoteService;
