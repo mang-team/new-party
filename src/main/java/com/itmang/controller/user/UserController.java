@@ -97,7 +97,7 @@ public class UserController extends BaseController {
         String userId = getUserIdFromToken();
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getId, userId);
-        queryWrapper.eq(User::getStatus, 1);
+        queryWrapper.eq(User::getStatus, 1);//TODO 可以改成常量表示
         User user = userService.getOne(queryWrapper);
         if (user == null) {
             throw new BaseException(MessageConstant.USER_NOT_LOGIN);
@@ -127,6 +127,7 @@ public class UserController extends BaseController {
     @GlobalInterceptor(checkLogin = true)
     public Result<Object> editUser(@RequestBody UserDto userDto) {
         String userId = getUserIdFromToken();
+        //TODO 需要记录修改的时间，也为后面记录用户操作信息做准备，可放在Server层做
         User user = new User();
         user.setId(userId);
         user.setUserName(userDto.getUserName());
@@ -143,6 +144,7 @@ public class UserController extends BaseController {
     @GlobalInterceptor(checkLogin = true)
     public Result<Object> changePassword(@RequestParam String password) {
         String userId = getUserIdFromToken();
+        //TODO 需要记录修改的时间，也为后面记录用户操作信息做准备，可放在Server层做
         User user = new User();
         user.setId(userId);
         user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));

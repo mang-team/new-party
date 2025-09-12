@@ -22,6 +22,7 @@ import com.itmang.service.study.PaperService;
 import com.itmang.utils.AnswerParserUtil;
 import com.itmang.utils.CodeUtil;
 import com.itmang.utils.IdGenerate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@Slf4j
 public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, ExaminationPaper> implements PaperService {
 
     @Autowired
@@ -411,6 +413,14 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                                    List<String> judgeAnswersList,
                                    List<String> fillBlankAnswersList,
                                    ExaminationInformation examInfo) {
+        //通过examInfo获取各题型的分值，分值是由集合存储的，建立一个集合存储，存储顺序为单选题、多选题、判断题、填空题
+        String[] scoreValue = examInfo.getScoreValue().split(",");
+        Integer singleChoiceScore = Integer.parseInt(scoreValue[0]);
+        Integer multipleChoiceScore = Integer.parseInt(scoreValue[1]);
+        Integer judgeScore = Integer.parseInt(scoreValue[2]);
+        Integer fillBlankScore = Integer.parseInt(scoreValue[3]);
+        log.info("各题题分值：{},{},{},{}",
+                singleChoiceScore, multipleChoiceScore, judgeScore, fillBlankScore);
         // 从correctAnswersList中提取各题型正确答案
         Map<String, String> singleChoiceAnswers = correctAnswersList.get(0); // 单选题答案
         Map<String, String> multipleChoiceAnswers = correctAnswersList.get(1); // 多选题答案
@@ -428,9 +438,10 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                 String correctAnswer = singleChoiceAnswers.get(questionId);
                 String studentAnswer = singleChoiceAnswersList.get(i);
 
+                //TODO 这里控制题目的分值不正确
                 if (correctAnswer != null && correctAnswer.equals(studentAnswer)) {
                     // 单选题答对，加分（需根据题目分值计算，此处假设每题1分）
-                    score += 1;
+                    score += singleChoiceScore;
                 }
             }
         }
@@ -448,7 +459,7 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                     // 多选题需完全匹配才得分（需根据题目分值计算，此处假设每题2分）
                     if (correctAnswerList.size() == studentAnswerList.size() &&
                             correctAnswerList.containsAll(studentAnswerList)) {
-                        score += 2;
+                        score += multipleChoiceScore;
                     }
                 }
             }
@@ -464,7 +475,7 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
 
                 if (correctAnswer != null && correctAnswer.equals(studentAnswer)) {
                     // 判断题答对，加分（需根据题目分值计算，此处假设每题1分）
-                    score += 1;
+                    score += judgeScore;
                 }
             }
         }
@@ -480,7 +491,8 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                 if (correctAnswerStr != null && studentAnswerStr != null) {
                     String[] correctAnswers = correctAnswerStr.split(";"); // 假设填空题多个空用分号分隔
                     String[] studentAnswers = studentAnswerStr.split(";");
-
+                    //去除两边的[]符号,并将答案修改
+                    studentAnswers = Arrays.stream(studentAnswers).map(s -> s.substring(1, s.length() - 1)).toArray(String[]::new);
                     boolean allCorrect = true;
                     if (correctAnswers.length == studentAnswers.length) {
                         for (int j = 0; j < correctAnswers.length; j++) {
@@ -495,7 +507,7 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
 
                     if (allCorrect) {
                         // 填空题答对，加分（需根据题目分值计算，此处假设每题3分）
-                        score += 3;
+                        score += fillBlankScore;
                     }
                 }
             }
