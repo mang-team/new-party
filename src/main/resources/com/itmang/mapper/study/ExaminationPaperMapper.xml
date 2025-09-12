@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.study.ExaminationPaperMapper">
+
+    <insert id="insertExaminationPaper">
+        insert into examination_paper (
+        id,number,examination_information_id,user_id,is_submit,question_quantity,
+        answered_already_quantity,score,create_time,create_by,update_time,update_by,is_delete)
+        values
+        <foreach collection="examinationPapers" item="paper" separator=",">
+            (#{paper.id},#{paper.number},#{paper.examinationInformationId},
+            #{paper.userId},#{paper.isSubmit},#{paper.questionQuantity},#{paper.answeredAlreadyQuantity},
+            #{paper.score},#{paper.createTime},#{paper.createBy},#{paper.updateTime},
+            #{paper.updateBy},#{paper.isDelete}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updatePaperById">
+        update examination_paper
+        <set>
+            <if test="isSubmit != null">is_submit = #{isSubmit},</if>
+            <if test="answeredAlreadyQuantity != null ">answered_already_quantity = #{answeredAlreadyQuantity},</if>
+            <if test="singleChoiceAnswers != null and singleChoiceAnswers != ''">
+                single_choice_answers = #{singleChoiceAnswers},
+            </if>
+            <if test="multipleChoiceAnswers != null and multipleChoiceAnswers != ''">
+                multiple_choice_answers = #{multipleChoiceAnswers},
+            </if>
+            <if test="judgeAnswers != null and judgeAnswers != ''">
+                judge_answers = #{judgeAnswers},
+            </if>
+            <if test="fillBlankAnswers != null and fillBlankAnswers != ''">
+                fill_blank_answers = #{fillBlankAnswers},
+            </if>
+            <if test="notes != null and notes != ''">notes = #{notes},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="deletePaperById">
+       update examination_paper set is_delete = 1
+       where id in
+            <foreach collection="canDeletePaperIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+
+    </update>
+
+    <select id="getPaperVOById" resultType="com.itmang.pojo.vo.PaperVO">
+        select ep.number,ep.is_submit,ep.question_quantity,ep.answered_already_quantity,
+            ep.single_choice_answers,ep.multiple_choice_answers,ep.judge_answers,
+            ep.fill_blank_answers,ep.score,ep.notes,ep.update_time,u1.user_name as userName,
+            ei.examination_name as examinationInformationName,u2.user_name as updateName
+       from examination_paper ep
+            left join user u1 on ep.user_id = u1.id
+            left join user u2 on ep.update_by = u2.id
+            left join examination_information ei on ep.examination_information_id = ei.id
+        where ep.id = #{id} and ep.is_delete = 2
+    </select>
+
+    <select id="getPaperList" resultType="com.itmang.pojo.vo.PaperPageVO">
+        select ep.id,ep.number,ei.examination_name as examinationName,u.user_name as userName,
+        ep.is_submit as isSubmit,ep.score,ep.question_quantity,ep.answered_already_quantity,
+        ep.create_time as createTime, ep.update_time as updateTime
+        from examination_paper ep
+        left join user u on ep.user_id = u.id
+        left join examination_information ei on ep.examination_information_id = ei.id
+        <where>
+            <if test="number != null and number != ''">
+                and ep.number like concat('%', #{number}, '%')
+            </if>
+            <if test="examinationName != null and examinationName != ''">
+                and ei.examination_name like concat('%', #{examinationName}, '%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and u.user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="isSubmit != null">
+                and ep.is_submit = #{isSubmit}
+            </if>
+            <!-- 处理 >= 特殊字符：用CDATA包裹 -->
+            <if test="scoreMin != null">
+                <![CDATA[ and ep.score >= #{scoreMin} ]]>
+            </if>
+            <!-- 处理 <= 特殊字符：用CDATA包裹 -->
+            <if test="scoreMax != null">
+                <![CDATA[ and ep.score <= #{scoreMax} ]]>
+            </if>
+            and ep.is_delete = 2
+        </where>
+    </select>
+
+
+</mapper>
