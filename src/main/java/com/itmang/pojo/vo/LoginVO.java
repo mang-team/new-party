@@ -21,4 +21,7 @@ public class LoginVO {
 
     @Schema(name = "token",description = "用户token")
     private String token;
+
+    @Schema(name = "isFirst",description = "是否第一次登录")
+    private String isFirst;
 }

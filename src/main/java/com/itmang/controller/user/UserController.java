@@ -62,6 +62,7 @@ public class UserController extends BaseController {
         LoginVO loginVO = LoginVO.builder()
                 .id(user.getId())
                 .name(user.getUserName())
+                .isFirst(user.getIsFirst())
                 .token(token)
                 .build();
         //修改： 将token持久化保存在cookie
@@ -109,6 +110,7 @@ public class UserController extends BaseController {
         loginVO.setId(userId);
         loginVO.setName(user.getUserName());
         loginVO.setToken(token);
+        loginVO.setIsFirst(user.getIsFirst());
         return Result.success(loginVO);
     }
 
