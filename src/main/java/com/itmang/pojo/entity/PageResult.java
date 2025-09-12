@@ -2,6 +2,7 @@ package com.itmang.pojo.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * 封装分页查询结果
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(name = "PageResult",description = "分页查询结果")
