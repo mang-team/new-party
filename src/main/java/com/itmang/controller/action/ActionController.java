@@ -7,6 +7,7 @@ import com.itmang.pojo.dto.action.PageDetailActionMessageDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.service.action.ActionService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("action/action")
-@Tag(name = "活动模块相关请求接口")
+@Tag(name = "活动相关接口")
 public class ActionController {
 
     @Autowired
@@ -29,6 +30,7 @@ public class ActionController {
      * 分页查询详细活动信息
      * @return
      */
+    @Operation(summary = "分页查询详细活动信息")
     @PostMapping("/pageGetDetailActionMessage")
     public Result<PageResult> pageGetDetailActionMessage(@RequestBody PageDetailActionMessageDTO actionMessageDTO) {
         log.debug("分页查询详细的活动信息:{}", actionMessageDTO);
@@ -40,6 +42,7 @@ public class ActionController {
      * 分页查询简略活动信息
      * @return
      */
+    @Operation(summary = "分页查询简略活动信息")
     @PostMapping("/pageGetShortActionMessage")
     public Result<PageResult> pageGetShortActionMessage(@RequestBody PageDetailActionMessageDTO actionMessageDTO){
         log.debug("分页查询简略活动信息:{}", actionMessageDTO);
@@ -51,6 +54,7 @@ public class ActionController {
      * 根据活动id修改活动信息
      * @return
      */
+    @Operation(summary = "根据活动id修改活动信息")
     @PostMapping("/modifyActionMessage")
     public Result<String> modifyActionMessage(@RequestBody ModifyActionMessageDTO modifyActionMessageDTO) {
         log.debug("修改活动信息:{}", modifyActionMessageDTO);
@@ -64,6 +68,7 @@ public class ActionController {
      * 新增活动信息
      * @return
      */
+    @Operation(summary = "新增活动信息")
     @PostMapping("/addActionMessage")
     public Result<String> addActionMessage(@RequestBody AddActionMessageDTO addActionMessageDTO) {
         log.debug("新增活动信息:{}", addActionMessageDTO);
