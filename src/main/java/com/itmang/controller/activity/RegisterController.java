@@ -10,6 +10,7 @@ import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.service.activity.RegisterService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,13 +22,14 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@Tag(name= "签到相关接口")
 @RequestMapping("/user/action/register")
 public class RegisterController extends BaseController {
 
     @Autowired
     private RegisterService registerService;
 
-    //TODO 新增考试信息接口还需要完善分发考卷的逻辑
+    @Operation(summary = "新增签到信息")
     @PostMapping("/addRegister")
     public Result addRegisterInformation(@RequestBody List<AddRegisterDTO> addRegisterDTOList){
         log.info("新增签到信息:{}",addRegisterDTOList);
@@ -38,6 +40,7 @@ public class RegisterController extends BaseController {
     }
 
 
+    @Operation(summary = "删除签到信息")
     @PostMapping("/deleteRegister")
     public Result deleteRegisterInformation(@RequestBody DeleteRegisterDTO deleteRegisterDTO){
         log.info("删除签到信息:{}",deleteRegisterDTO);
@@ -46,6 +49,7 @@ public class RegisterController extends BaseController {
         return Result.success();
     }
 
+    @Operation(summary = "编辑签到信息")
     @PostMapping("/modifyRegister")
     public Result updateRegisterInformation(
             @RequestBody UpdateRegisterDTO updateRegisterDTO){
