@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin/party/member")
-@Tag(name = "成员管理")
+@Tag(name = "成员相关接口")
 public class MemberController {
 
     // 注入MemberService实例
