@@ -48,6 +48,20 @@ public class MessageConstant {
     public static final String DELETE_PAPER_FAIL = "考卷删除失败";
     public static final String ID_CANNOT_BE_NULL = "ID不能为空";
     public static final String PAPER_NOT_SUBMIT = "考卷未提交";
+    //部门成员
+    public static final String USER_ID_CANNOT_BE_NULL = "用户ID不能为空";
+    public static final String DEPARTMENT_ID_CANNOT_BE_NULL = "部门ID不能为空";
+    public static final String NAME_CANNOT_BE_NULL = "姓名不能为空";
+    public static final String SEX_CANNOT_BE_NULL = "性别不能为空";
+    public static final String ID_CARD_CANNOT_BE_NULL = "身份证号不能为空";
+    public static final String TELEPHONE_CANNOT_BE_NULL = "手机号不能为空";
+    public static final String TELEPHONE_FORMAT_INCORRECT = "手机号格式不正确";
+    public static final String ID_CARD_FORMAT_INCORRECT = "身份证号格式不正确";
+    public static final String SEX_VALUE_MUST_BE_1_OR_2 = "性别值必须是1或2";
+    public static final String POLITICAL_STATUS_VALUE_MUST_BE_1_TO_6 = "政治面貌值必须在1-6之间";
+    public static final String IS_AT_SCHOOL_VALUE_MUST_BE_1_OR_2 = "是否在校值必须是1或2";
+    public static final String MEMBER_INFORMATION_FAIL_DELETED = "删除成员信息失败";
+    public static final String MEMBER_INFORMATION_PART_DELETED = "删除成员信息成功";
 
 
 
