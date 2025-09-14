@@ -39,6 +39,7 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private JwtProperties jwtProperties;//导入jwt配置类
 
