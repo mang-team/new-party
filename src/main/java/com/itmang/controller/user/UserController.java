@@ -134,6 +134,7 @@ public class UserController extends BaseController {
         user.setId(userId);
         user.setUserName(userDto.getUserName());
         user.setImage(userDto.getImage());
+        //TODO 要判断用户是否传得全空的数据
         boolean isSuccess = userService.updateById(user);
         if (!isSuccess) {
             throw new BaseException(MessageConstant.UNKNOWN_ERROR);
