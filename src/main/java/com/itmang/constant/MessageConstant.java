@@ -28,6 +28,9 @@ public class MessageConstant {
     public static final String DATA_HAVE_NOT_READ = "资料已不可读状态";
     public static final String DATA_ALREADY_STUDIED = "资料已学习过";
     public static final String DATA_NOT_READABLE = "资料不可读";
+    public static final String DATA_INVALID = "资料数据为空";
+    public static final String POINTS_NOT_NUMBER = "请填入正数";
+    public static final String STATUS_NOT_NUMBER = "状态的值不符合规则";
     public static final String SITUATION_NOT_EXISTS = "没有学习记录";
     public static final String USER_PART_ADD_FAILED = "用户部分添加失败";
     public static final String QUESTION_PART_ADD_FAILED = "题目部分添加失败";
