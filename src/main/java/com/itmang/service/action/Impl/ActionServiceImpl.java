@@ -73,7 +73,7 @@ public class ActionServiceImpl implements ActionService {
     public boolean modifyActionMessage(ModifyActionMessageDTO modifyActionMessageDTO) {
         // 根据活动id修改活动信息，查看返回值modify是否为0，从而判断是否成功修改
         int modify = actionMapper.modifyActionMessage(modifyActionMessageDTO);
-        return modify > 0 ? true : false;
+        return modify > 0;
     }
 
     /**
@@ -90,7 +90,7 @@ public class ActionServiceImpl implements ActionService {
     }
 
     /**
-     * 批量删除活动信息
+     * 根据活动id批量删除活动信息
      * @param idList
      */
     @Override
@@ -101,7 +101,7 @@ public class ActionServiceImpl implements ActionService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         // 格式转换
         LocalDateTime dateTime = LocalDateTime.parse(now.format(formatter), formatter);
-        // 调用删除
+        // 调用mapper删除
         actionMapper.deleteActionMessage(idList, dateTime,BaseContext.getCurrentId());
     }
 }

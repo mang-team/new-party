@@ -37,7 +37,7 @@ public interface ActionService {
     void addActionMessage(AddActionMessageDTO addActionMessageDTO);
 
     /**
-     * 批量删除活动信息
+     * 根据活动id批量删除活动信息
      * @param idList
      */
     void deleteActionMessage(List<String> idList);

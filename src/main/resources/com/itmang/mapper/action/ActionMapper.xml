@@ -4,22 +4,19 @@
 <mapper namespace="com.itmang.mapper.action.ActionMapper">
     <!--  分页查询详细活动信息  -->
     <select id="pageGetDetailActionMessage" resultType="com.itmang.pojo.vo.action.PageDetailActionMessageVO">
-        select * from action_information where is_delete = 2
-        <where>
-            <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
-            <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
-        </where>
-
+        select * from action_information
+        where is_delete = 2
+        <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
+        <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
         order by create_time
     </select>
 
     <!--  分页查询简略活动信息  -->
     <select id="pageGetShortActionMessage" resultType="com.itmang.pojo.vo.action.pageShortActionMessageVO">
-        select action_name,organizer_phone,create_by from action_information where is_delete = 2
-        <where>
-            <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
-            <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
-        </where>
+        select action_name,organizer_phone,create_by from action_information
+        where is_delete = 2
+        <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
+        <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
         order by create_time
     </select>
 
