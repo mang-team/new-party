@@ -163,7 +163,7 @@ public class UserController extends BaseController {
     //todo 修改： 为了与管理端的修改用户信息接口合并
     @Operation(summary = "编辑用户接口")
     @PostMapping("/editUser")
-    @GlobalInterceptor(checkLogin = true)
+//    @GlobalInterceptor(checkLogin = true)
     public Result<Object> editUser(@RequestBody UserDto userDto) {
         String userId = getUserIdFromToken();
         User user = new User();
