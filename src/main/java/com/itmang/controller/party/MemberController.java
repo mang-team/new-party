@@ -29,6 +29,7 @@ public class MemberController {
 
 
 
+    //todo 一般都不会查询已经删除的部门成员
     @Operation(summary = "分页查询部门成员")
     @PostMapping("/page")
     @Transactional(readOnly = true)
@@ -37,7 +38,6 @@ public class MemberController {
         PageResult pageResult = memberService.queryMemberList(memberQueryDTO);
         return Result.success(pageResult);
     }
-
 
     @Operation(summary = "查询成员详细信息")
     @GetMapping("/detail/{id}")
@@ -55,6 +55,8 @@ public class MemberController {
         return Result.success();
     }
 */
+
+    //todo 校验手机号一般由前端负责
     @Operation(summary = "编辑成员信息")
     @PostMapping("/update")
     public Result updateMember(@Valid @RequestBody MemberUpdateDTO memberUpdateDTO) {
@@ -63,14 +65,11 @@ public class MemberController {
         return Result.success();
     }
 
-
-
     @PostMapping("/batch")
     @ApiOperation("批量新增成员")
     public Result<String> batchAddMembers(@Valid @RequestBody List<MemberAddDTO> memberDTOList) {
         memberService.batchAddMembers(memberDTOList);
         return Result.success();
-
     }
 
     @Operation(summary = "删除成员信息（可批量）")

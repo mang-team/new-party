@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,7 +99,7 @@ public class UserController extends BaseController {
         String userId = getUserIdFromToken();
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getId, userId);
-        queryWrapper.eq(User::getStatus, 0);
+        queryWrapper.eq(User::getStatus, 1);
         User user = userService.getOne(queryWrapper);
         if (user == null) {
             throw new BaseException(MessageConstant.USER_NOT_LOGIN);
@@ -122,30 +124,58 @@ public class UserController extends BaseController {
         return Result.success();
     }
 
+//    @Operation(summary = "编辑用户接口")
+//    @PostMapping("/editUser")
+//    @GlobalInterceptor(checkLogin = true)
+//    public Result<Object> editUser(@RequestBody UserDto userDto) {
+//        String userId = getUserIdFromToken();
+//        User user = new User();
+//        //修改： 为了与管理端的修改用户信息接口合并
+//        user.setId(userDto.getUserId());
+//        user.setUserName(userDto.getUserName());
+//        user.setImage(userDto.getImage());
+//        user.setUpdateTime(LocalDateTime.now());
+//        user.setUpdateBy(userId);
+//        boolean isSuccess = userService.updateById(user);
+//        if (!isSuccess) {
+//            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
+//        }
+//        return Result.success();
+//    }
+//
+//    @Operation(summary = "修改密码接口")
+//    @PostMapping("/changePassword")
+//    @GlobalInterceptor(checkLogin = true)
+//    public Result<Object> changePassword(@RequestParam String password,@RequestParam String userId) {
+//        String updateUserId = getUserIdFromToken();
+//        User user = new User();
+//        user.setId(userId);
+//        user.setPassword(password);
+//        user.setUpdateBy(updateUserId);
+//        user.setUpdateTime(LocalDateTime.now());
+//        boolean isSuccess = userService.updateById(user);
+//        if (!isSuccess) {
+//            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
+//        }
+//        return Result.success();
+//    }
+
+    //todo 修改： 为了与管理端的修改用户信息接口合并
     @Operation(summary = "编辑用户接口")
     @PostMapping("/editUser")
     @GlobalInterceptor(checkLogin = true)
     public Result<Object> editUser(@RequestBody UserDto userDto) {
         String userId = getUserIdFromToken();
         User user = new User();
-        user.setId(userId);
+        //修改： 为了与管理端的修改用户信息接口合并
+        user.setId(userDto.getUserId());
         user.setUserName(userDto.getUserName());
         user.setImage(userDto.getImage());
-        boolean isSuccess = userService.updateById(user);
-        if (!isSuccess) {
-            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
-        }
-        return Result.success();
-    }
-
-    @Operation(summary = "修改密码接口")
-    @PostMapping("/changePassword")
-    @GlobalInterceptor(checkLogin = true)
-    public Result<Object> changePassword(@RequestParam String password) {
-        String userId = getUserIdFromToken();
-        User user = new User();
-        user.setId(userId);
-        user.setPassword(password);
+        user.setPassword(userDto.getPassword());
+        user.setStatus(userDto.getStatus());
+        user.setIsFirst(userDto.getIsFirst());
+        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdateBy(userId);
         boolean isSuccess = userService.updateById(user);
         if (!isSuccess) {
             throw new BaseException(MessageConstant.UNKNOWN_ERROR);

@@ -66,6 +66,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
      * 基础数据验证
      */
     private void validateDepartmentBasic(DepartmentDTO addDepartmentDTO) {
+        //todo 参数限制的功能可以在类属性上使用注解实现
         //部门信息不能为空
         if (addDepartmentDTO == null) {
             throw new BaseException(MessageConstant.DEPARTMENT_EMPTY);
@@ -78,21 +79,18 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         if (addDepartmentDTO.getDepartmentName().length() > 20) {
             throw new BaseException(MessageConstant.DEPARTMENT_NAME_TOO_LONG);
         }
-
+        //todo 数据库表已有默认的上级部门id值
 //        // 设置默认上级部门
 //        if (StringUtils.isBlank(addDepartmentDTO.getFatherDepartmentId())) {
 //            addDepartmentDTO.setFatherDepartmentId("-1");
 //        }
-        // 设置默认上级部门，确保不为null
-        if (StringUtils.isBlank(addDepartmentDTO.getFatherDepartmentId())) {
-            addDepartmentDTO.setFatherDepartmentId("-1");
-        }
-
-        // 额外确保不是null
-        if (addDepartmentDTO.getFatherDepartmentId() == null) {
-            addDepartmentDTO.setFatherDepartmentId("-1");
-        }
-
+//        // 设置默认上级部门，确保不为null
+//        if (StringUtils.isBlank(addDepartmentDTO.getFatherDepartmentId())) {
+//            addDepartmentDTO.setFatherDepartmentId("-1");
+//        }
+//        if (addDepartmentDTO.getFatherDepartmentId() == null) {
+//            addDepartmentDTO.setFatherDepartmentId("-1");
+//        }
     }
 
     /**
@@ -105,6 +103,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         // 生成部门ID：如果前端传入了ID则使用前端的，否则自动生成
         String deptId;
         if (StringUtils.isNotBlank(addDepartmentDTO.getId())) {
+            //todo 新增部门传的请求体不需要传id
             deptId = addDepartmentDTO.getId();
             // 验证ID是否已存在
             Department existingDept = departmentMapper.selectById(deptId);
