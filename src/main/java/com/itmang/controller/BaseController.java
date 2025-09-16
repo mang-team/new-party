@@ -42,6 +42,7 @@ public class BaseController {
      */
     protected String getUserIdFromToken() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        //TODO 自动登录也要传token吗
         String token = request.getHeader("token");
         Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
         return (String) claims.get(JwtClaimsConstant.USER_ID);

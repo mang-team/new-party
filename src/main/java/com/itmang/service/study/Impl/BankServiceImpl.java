@@ -12,7 +12,6 @@ import com.itmang.mapper.study.QuestionBankMapper;
 import com.itmang.pojo.dto.AddBankDTO;
 import com.itmang.pojo.dto.BankPageDTO;
 import com.itmang.pojo.dto.BankUpdateDTO;
-import com.itmang.pojo.entity.Datas;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.QuestionBank;
 import com.itmang.pojo.vo.BankPageVO;
@@ -37,6 +36,17 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
      * @param addBankDTO
      */
     public void addQuestionBank(AddBankDTO addBankDTO) {
+        //判断传入的数据是否完整
+        if (addBankDTO == null || addBankDTO.getQuestion() == null || addBankDTO.getQuestion() == ""
+                || addBankDTO.getType() == null || addBankDTO.getType() == ""
+                || addBankDTO.getAnswerType() == null || addBankDTO.getAnswerType() == "") {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        if ((addBankDTO.getAnswerType().equals(QuestionOptionConstant.SINGLE_CHOICE)  ||
+                addBankDTO.getAnswerType().equals(QuestionOptionConstant.MULTI_CHOICE))
+                && (addBankDTO.getQuestionOption() == null || addBankDTO.getQuestionOption() == "")){
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
         //先查询是否存在这个题目
         QuestionBank questionBank = questionBankMapper.selectOne(
                 new QueryWrapper<QuestionBank>()
@@ -47,6 +57,26 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
             throw new BaseException(MessageConstant.QUESTION_BANK_EXIST);
         }
         //题库中没有这个题目，可以添加
+        //需要判断选择题中的提供的答案是否有提供到选项中
+        //TODO 后续可增加判断功能
+//        if (addBankDTO.getAnswerType().equals(QuestionOptionConstant.SINGLE_CHOICE)  ||
+//            addBankDTO.getAnswerType().equals(QuestionOptionConstant.MULTI_CHOICE)) {
+//            String[] answerArray = addBankDTO.getQuestionOption().split(",");
+//            for (String answer : answerArray) {
+//                //进行判断选项中是否有给的答案的选项
+//                if (!addBankDTO.getAnswerType().contains(answer)) {
+//                    throw new BaseException(MessageConstant.ANSWER_NOT_EXIST);
+//                }
+//            }
+//        }
+        //判断传入的题目类型是否是指定的四种题目类型
+        if (!addBankDTO.getType().equals(QuestionOptionConstant.SINGLE_CHOICE) &&
+            !addBankDTO.getType().equals(QuestionOptionConstant.MULTI_CHOICE) &&
+            !addBankDTO.getType().equals(QuestionOptionConstant.JUDGEMENT) &&
+            !addBankDTO.getType().equals(QuestionOptionConstant.FILL_BLANKS)) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        //添加题目
         IdGenerate idGenerate = new IdGenerate();
         QuestionBank addQuestionBank = BeanUtil.copyProperties(addBankDTO, QuestionBank.class);
         addQuestionBank.setIsDelete(DeleteConstant.NO);
@@ -91,6 +121,17 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
      * @param bankUpdateDTO
      */
     public void updateQuestionBank(BankUpdateDTO bankUpdateDTO) {
+        //判断传入的数据是否完整
+        if (bankUpdateDTO == null || bankUpdateDTO.getId() == null || bankUpdateDTO.getId().isEmpty()) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        // 如果只有id传进来，其他数据都是空的话就报错
+        if ((bankUpdateDTO.getQuestion() == null || bankUpdateDTO.getQuestion().isEmpty()) &&
+            (bankUpdateDTO.getType() == null || bankUpdateDTO.getType().isEmpty()) &&
+            (bankUpdateDTO.getAnswerType() == null || bankUpdateDTO.getAnswerType().isEmpty()) &&
+            (bankUpdateDTO.getQuestionOption() == null || bankUpdateDTO.getQuestionOption().isEmpty())) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
         //先查询是否存在这个题目
         QuestionBank questionBank =
                 questionBankMapper.selectById(bankUpdateDTO.getId());
@@ -120,6 +161,28 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
      * @return
      */
     public PageResult queryQuestionBankList(BankPageDTO bankPageDTO) {
+        //配置默认页码1和分页大小5
+        if(bankPageDTO.getPage() == null || bankPageDTO.getPage() < 1){
+            bankPageDTO.setPage(PageConstant.PAGE_NUM);
+        }
+        //查看是否有分页大小
+        if(bankPageDTO.getPageSize() == null || bankPageDTO.getPageSize() < 1){
+            bankPageDTO.setPageSize(PageConstant.PAGE_SIZE);
+        }
+        //对是否选中的题目的标识符进行判断，若不是1或者2则报错
+        if (bankPageDTO.getIsChoose() != null && 
+            !(bankPageDTO.getIsChoose().equals(StatusConstant.ENABLE)
+                    || bankPageDTO.getIsChoose().equals(StatusConstant.DISABLE))) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        //对题目类型进行判断，若不是四种题目类型则报错
+        if (bankPageDTO.getType() != null && !bankPageDTO.getType().isEmpty()
+                && !(bankPageDTO.getType().equals(QuestionOptionConstant.SINGLE_CHOICE)
+                        || bankPageDTO.getType().equals(QuestionOptionConstant.MULTI_CHOICE)
+                        || bankPageDTO.getType().equals(QuestionOptionConstant.JUDGEMENT)
+                        || bankPageDTO.getType().equals(QuestionOptionConstant.FILL_BLANKS))) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
         PageHelper.startPage(bankPageDTO.getPage(), bankPageDTO.getPageSize());
         List<BankPageVO> bankPageVOList = questionBankMapper.queryQuestionBankList(bankPageDTO);
         PageInfo<BankPageVO> pageInfo = new PageInfo<>(bankPageVOList);

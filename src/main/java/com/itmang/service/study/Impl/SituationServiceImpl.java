@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.itmang.constant.DeleteConstant;
-import com.itmang.constant.MessageConstant;
-import com.itmang.constant.StatusConstant;
-import com.itmang.constant.SituationConstant;
+import com.itmang.constant.*;
 import com.itmang.exception.BaseException;
 import com.itmang.mapper.study.DatasMapper;
 import com.itmang.mapper.study.StudyRecordMapper;
@@ -91,6 +88,12 @@ public class SituationServiceImpl extends ServiceImpl<StudyRecordMapper, StudyRe
      * @param situationUpdateDTO
      */
     public void updateSituation(SituationUpdateDTO situationUpdateDTO) {
+        //先对数据进行验证
+        //如果只有id则不报错
+        if ((situationUpdateDTO.getContent() == null ||
+            situationUpdateDTO.getContent() == " " ) && situationUpdateDTO.getLearningTime() == null) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
         //先查询学习情况是否存在
         StudyRecord studyRecord = studyRecordMapper.selectById(situationUpdateDTO.getId());
         if (studyRecord == null || studyRecord.getIsDelete().equals(DeleteConstant.YES)) {
@@ -101,17 +104,20 @@ public class SituationServiceImpl extends ServiceImpl<StudyRecordMapper, StudyRe
                 .id(situationUpdateDTO.getId())
                 .content(situationUpdateDTO.getContent())
                 .build();
-        //根据学习时间判断并记录的当前学习进度与是否获得积分
-        if (situationUpdateDTO.getLearningTime() > studyRecord.getLearningTime()
-            && situationUpdateDTO.getLearningTime() != studyRecord.getLearningTime()) {
-            //学习时间有改动，且是增加，进行判断修改
-            updateStudyRecord.setLearningTime(situationUpdateDTO.getLearningTime());
-            int progressPercentage = (int) Math.min(
-                    (situationUpdateDTO.getLearningTime() * 100) / SituationConstant.PASS_TIME,
-                    SituationConstant.FULL_PROGRAM);
-            updateStudyRecord.setLearningProgress(progressPercentage);
-            if (updateStudyRecord.getLearningProgress() >= SituationConstant.PASS_PROGRAM) {
-                updateStudyRecord.setIsPoints(StatusConstant.ENABLE);
+        //对是否传入正确的学习时间类型是否为Integer类型且是否为正数进行判断，如果不是则不对学习时间进行判断
+        if (situationUpdateDTO.getLearningTime() != null && situationUpdateDTO.getLearningTime() > 0) {
+            //根据学习时间判断并记录的当前学习进度与是否获得积分
+            if (situationUpdateDTO.getLearningTime() > studyRecord.getLearningTime()
+                    && situationUpdateDTO.getLearningTime() != studyRecord.getLearningTime()) {
+                //学习时间有改动，且是增加，进行判断修改
+                updateStudyRecord.setLearningTime(situationUpdateDTO.getLearningTime());
+                int progressPercentage = (int) Math.min(
+                        (situationUpdateDTO.getLearningTime() * 100) / SituationConstant.PASS_TIME,
+                        SituationConstant.FULL_PROGRAM);
+                updateStudyRecord.setLearningProgress(progressPercentage);
+                if (updateStudyRecord.getLearningProgress() >= SituationConstant.PASS_PROGRAM) {
+                    updateStudyRecord.setIsPoints(StatusConstant.ENABLE);
+                }
             }
         }
         studyRecordMapper.updateStudyRecord(updateStudyRecord);
@@ -169,6 +175,15 @@ public class SituationServiceImpl extends ServiceImpl<StudyRecordMapper, StudyRe
      */
     public PageResult pageSituation(SituationPageDTO situationPageDTO) {
         //使用pageHelper工具进行分页查询
+        //查看是否有页数据
+        //配置默认页码1和分页大小5
+        if(situationPageDTO.getPage() == null || situationPageDTO.getPage() < 1){
+            situationPageDTO.setPage(PageConstant.PAGE_NUM);
+        }
+        //查看是否有分页大小
+        if(situationPageDTO.getPageSize() == null || situationPageDTO.getPageSize() < 1){
+            situationPageDTO.setPageSize(PageConstant.PAGE_SIZE);
+        }
         PageHelper.startPage(situationPageDTO.getPage(),situationPageDTO.getPageSize());
         List<SituationPageVO> situationList= studyRecordMapper.pageSearch(situationPageDTO);//进行条件查询
         PageInfo<SituationPageVO> pageInfo = new PageInfo<>(situationList);
