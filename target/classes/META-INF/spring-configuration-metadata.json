@@ -1,0 +1,28 @@
+{
+  "groups": [
+    {
+      "name": "jwt",
+      "type": "com.itmang.properties.JwtProperties",
+      "sourceType": "com.itmang.properties.JwtProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "jwt.admin-secret-key",
+      "type": "java.lang.String",
+      "description": "管理端用户生成jwt令牌相关配置",
+      "sourceType": "com.itmang.properties.JwtProperties"
+    },
+    {
+      "name": "jwt.admin-token-name",
+      "type": "java.lang.String",
+      "sourceType": "com.itmang.properties.JwtProperties"
+    },
+    {
+      "name": "jwt.admin-ttl",
+      "type": "java.lang.Long",
+      "sourceType": "com.itmang.properties.JwtProperties"
+    }
+  ],
+  "hints": []
+}
