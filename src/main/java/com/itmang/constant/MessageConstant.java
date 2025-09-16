@@ -82,7 +82,7 @@ public class MessageConstant {
     public static final String DEPARTMENT_ID_EMPTY = "部门id不为空";
     public static final String DEPARTMENT_FAIL_DELETED = "部门删除失败，所选部门均无法删除";
     public static final String DEPARTMENT_PART_DELETED = "部分部门删除成功，部分部门无法删除";
-
+    public static final String PARAMETER_ERROR = "参数错误";
 
 
 
