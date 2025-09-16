@@ -67,7 +67,7 @@ public class UserController extends BaseController {
                 .token(token)
                 .build();
         //修改： 将token持久化保存在cookie
-        saveToken2cookie(response, token);
+//        saveToken2cookie(response, token);
         log.info("用户登录成功,返回数据:{}", loginVO);
         return Result.success(loginVO);
     }
@@ -106,7 +106,7 @@ public class UserController extends BaseController {
         }
         //重置token
         String token = resetTokenTime();
-        saveToken2cookie(response,token);
+//        saveToken2cookie(response,token);
         LoginVO loginVO = new LoginVO();
         loginVO.setId(userId);
         loginVO.setName(user.getUserName());
@@ -120,7 +120,7 @@ public class UserController extends BaseController {
         //将token加入黑名单中
         blacklistToken();
         //清除cookie持久化保存的token
-        cleanTokenFromCookie(response);
+//        cleanTokenFromCookie(response);
         return Result.success();
     }
 
