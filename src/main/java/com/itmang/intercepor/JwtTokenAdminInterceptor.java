@@ -2,6 +2,7 @@ package com.itmang.intercepor;
 
 
 
+import com.alibaba.fastjson.JSON;
 import com.itmang.constant.JwtClaimsConstant;
 import com.itmang.context.BaseContext;
 import com.itmang.properties.JwtProperties;
@@ -48,12 +49,15 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         try {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            String userId = String.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
+//            String userId = String.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
+            //todo 修复解析jwt失败的bug
+            String userId = claims.getSubject();
             log.info("当前用户id：{}", userId);
             BaseContext.setCurrentId(userId);//将用户id存入ThreadLocal，方便在service层获取
             //3、通过，放行
             return true;
         } catch (Exception ex) {
+            log.error(JSON.toJSONString(ex));
             //4、不通过，响应401状态码
             response.setStatus(401);
             return false;

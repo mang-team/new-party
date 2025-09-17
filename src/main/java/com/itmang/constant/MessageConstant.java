@@ -82,4 +82,8 @@ public class MessageConstant {
     public static final String IS_AT_SCHOOL_VALUE_MUST_BE_1_OR_2 = "是否在校值必须是1或2";
     public static final String MEMBER_INFORMATION_FAIL_DELETED = "删除成员信息失败";
     public static final String MEMBER_INFORMATION_PART_DELETED = "删除成员信息成功";
+    public static final String PARAMETER_ERROR = "参数错误";
+    public static final String DATA_INVALID = "资料不存在";
+    public static final String POINTS_NOT_NUMBER = "积分不是整形";
+    public static final String STATUS_NOT_NUMBER = "状态不是整形";
 }
