@@ -1,4 +1,5 @@
 package com.itmang.mapper.party;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.itmang.pojo.dto.MemberAddDTO;
@@ -17,6 +18,7 @@ public interface MemberMapper extends BaseMapper<Member> {
 
     // 新增成员
     // int insertMember(Member member);
+
 
     // 更新成员信息
     int updateMember(Member member);
@@ -45,4 +47,5 @@ public interface MemberMapper extends BaseMapper<Member> {
     Set<String> findExistingIdCards(List<String> idCardList);
 
     String findExistingUserId(String userId);
+
 }

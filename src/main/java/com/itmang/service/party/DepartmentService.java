@@ -1,10 +1,16 @@
 package com.itmang.service.party;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import com.itmang.pojo.dto.AddDepartmentDTO;
+
 import com.itmang.pojo.dto.DepartmentDTO;
 import com.itmang.pojo.dto.DepartmentPageQueryDTO;
 import com.itmang.pojo.entity.Department;
 import com.itmang.pojo.entity.PageResult;
+
+import com.itmang.pojo.entity.Result;
+
 import com.itmang.pojo.vo.DepartmentVO;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +27,8 @@ public interface DepartmentService extends IService<Department> {
     /**
      * 新增部门
      */
-    void addDept(DepartmentDTO addDepartment);
+
+    void addDept(AddDepartmentDTO addDepartment);
 
     /**
      * 更新部门
@@ -32,7 +39,6 @@ public interface DepartmentService extends IService<Department> {
      * 批量删除部门
      */
     void deleteDepartments(String[] departmentIds);
-
 //    /**
 //     * 查询部门树形结构（用于前端展示层级）
 //     */
@@ -63,5 +69,8 @@ public interface DepartmentService extends IService<Department> {
     DepartmentVO getDepartmentDetail(String id);
 
 
-    List<DepartmentVO> departmentList();
+
+
+    List<DepartmentVO> getChildrenByParentId(String fatherDepartmentId);
+
 }

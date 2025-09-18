@@ -1,11 +1,13 @@
 package com.itmang.pojo.dto;
 
 
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -28,6 +30,7 @@ public class MemberUpdateDTO {
 
     @NotNull(message = "性别不能为空")
     @Schema(description = "性别（1为男，2为女）", required = true)
+
     private Integer sex;
 
     @Schema(description = "专业")
@@ -35,6 +38,7 @@ public class MemberUpdateDTO {
 
     @Schema(description = "班级")
     private String classInfo;
+
 
     @NotNull(message = "政治面貌不能为空")
     @Schema(description = "政治面貌（1群众,2共青团员,3入党积极分子,4发展对象,5预备党员,6正式党员）", required = true)
@@ -46,10 +50,12 @@ public class MemberUpdateDTO {
 
     @NotBlank(message = "手机号不能为空")
     @Schema(description = "手机号", required = true)
+
     private String telephone;
 
     @Schema(description = "学历")
     private String educationBackground;
+
 
     @NotBlank(message = "民族不能为空")
     @Schema(description = "民族")
@@ -62,6 +68,7 @@ public class MemberUpdateDTO {
     @NotBlank(message = "出生日期不能为空")
     @Schema(description = "出生日期")
     private LocalDateTime dateOfBirth;
+
 
 
     @Schema(description = "入团时间")
@@ -90,8 +97,5 @@ public class MemberUpdateDTO {
 
     @Schema(description = "是否在校（1在校，2不在校）")
     private Integer isAtSchool;
-
-
-
 
 }

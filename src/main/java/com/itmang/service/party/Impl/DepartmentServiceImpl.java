@@ -1,9 +1,11 @@
 package com.itmang.service.party.Impl;
 
+
+import com.itmang.pojo.dto.AddDepartmentDTO;
 import com.itmang.pojo.dto.DepartmentDTO;
 import com.itmang.pojo.entity.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -17,6 +19,10 @@ import com.itmang.mapper.party.MemberMapper;
 import com.itmang.pojo.dto.DepartmentPageQueryDTO;
 import com.itmang.pojo.vo.DepartmentVO;
 import com.itmang.service.party.DepartmentService;
+
+import com.itmang.utils.IdGenerate;
+
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+
+
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 
 @Service
@@ -41,10 +50,8 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     //新增部门
     @Override
     @Transactional
-    public void addDept(DepartmentDTO addDepartmentDTO) {
-        //新增部门
-        // 1. 基础数据验证
-        validateDepartmentBasic(addDepartmentDTO);
+
+    public void addDept(AddDepartmentDTO addDepartmentDTO) {
 
         // 2. 检查部门名称是否已存在
         if (checkDepartmentNameExists(addDepartmentDTO.getDepartmentName(), null)) {
@@ -60,66 +67,20 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         departmentMapper.insert(department);
 
     }
-
-
-    /**
-     * 基础数据验证
-     */
-    private void validateDepartmentBasic(DepartmentDTO addDepartmentDTO) {
-        //todo 参数限制的功能可以在类属性上使用注解实现
-        //部门信息不能为空
-        if (addDepartmentDTO == null) {
-            throw new BaseException(MessageConstant.DEPARTMENT_EMPTY);
-        }
-        //部门名称不能为空
-        if (StringUtils.isBlank(addDepartmentDTO.getDepartmentName())) {
-            throw new BaseException(MessageConstant.DEPARTMENT_NAME_EMPTY);
-        }
-        //部门名称长度不能超过20个字符
-        if (addDepartmentDTO.getDepartmentName().length() > 20) {
-            throw new BaseException(MessageConstant.DEPARTMENT_NAME_TOO_LONG);
-        }
-        //todo 数据库表已有默认的上级部门id值
-//        // 设置默认上级部门
-//        if (StringUtils.isBlank(addDepartmentDTO.getFatherDepartmentId())) {
-//            addDepartmentDTO.setFatherDepartmentId("-1");
-//        }
-//        // 设置默认上级部门，确保不为null
-//        if (StringUtils.isBlank(addDepartmentDTO.getFatherDepartmentId())) {
-//            addDepartmentDTO.setFatherDepartmentId("-1");
-//        }
-//        if (addDepartmentDTO.getFatherDepartmentId() == null) {
-//            addDepartmentDTO.setFatherDepartmentId("-1");
-//        }
-    }
-
-    /**
+    /*
      * 将AddDTO转换为Entity
      */
-    private Department convertAddDTOToEntity(DepartmentDTO addDepartmentDTO) {
+    private Department convertAddDTOToEntity(AddDepartmentDTO addDepartmentDTO) {
+
         Department department = new Department();
+            //先生成id
+            IdGenerate idGenerate = new IdGenerate();
+            String deptId = idGenerate.nextUUID(Department.class);
+            String currentUserId = BaseContext.getCurrentId();
+    if (currentUserId == null) {
+        throw new BaseException("用户未登录，无法操作");
+    }
 
-        // 生成唯一ID
-        // 生成部门ID：如果前端传入了ID则使用前端的，否则自动生成
-        String deptId;
-        if (StringUtils.isNotBlank(addDepartmentDTO.getId())) {
-            //todo 新增部门传的请求体不需要传id
-            deptId = addDepartmentDTO.getId();
-            // 验证ID是否已存在
-            Department existingDept = departmentMapper.selectById(deptId);
-            if (existingDept != null) {
-                throw new BaseException("部门ID已存在");
-            }
-        } else {
-            deptId = generateNextDeptId();
-        }
-        String currentUserId = BaseContext.getCurrentId();
-        if (currentUserId == null) {
-            throw new BaseException("当前用户未登录或会话已过期");
-        }
-
-        department.setId(deptId);
-        department.setCreateBy(currentUserId);
         department.setId(deptId);
         department.setDepartmentName(addDepartmentDTO.getDepartmentName());
         department.setFatherDepartmentId(addDepartmentDTO.getFatherDepartmentId());
@@ -239,7 +200,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         }
     }
 
-
     /**
      * 根据部门ID查询部门详细信息（VO）
      */
@@ -264,8 +224,22 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     }
 
     @Override
-    public List<DepartmentVO> departmentList() {
-        return departmentMapper.listDepartments();
+
+    public List<DepartmentVO> getChildrenByParentId(String fatherDepartmentId) {
+// 1. 构建查询条件
+        LambdaQueryWrapper<Department> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Department::getFatherDepartmentId, fatherDepartmentId);
+        queryWrapper.eq(Department::getIsDelete, DeleteConstant.NO);
+        queryWrapper.orderByAsc(Department::getCreateTime);
+
+        // 2. 查询部门列表
+        List<Department> departmentList = this.list(queryWrapper);
+
+        // 3. 转换为VO列表
+        return departmentList.stream()
+                .map(this::convertToVO) // 使用你已有的convertToVO方法
+                .collect(Collectors.toList());
+
     }
 
 
@@ -282,7 +256,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         vo.setUpdateBy(department.getUpdateBy());
         vo.setUpdateTime(department.getUpdateTime());
         vo.setIsDelete(department.getIsDelete());
-        vo.setStatusDisplay(getStatusDisplay(department.getIsDelete()));
+
         return vo;
     }
 
@@ -344,36 +318,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
 
     }
-//部门列表
-
-    private String getStatusDisplay(Integer isDelete) {
-        if (DeleteConstant.YES.equals(isDelete)) {
-            return "已删除";
-        } else {
-            return "正常";
-        }
-    }
-
-
-    //辅助方法
-
-    private String generateNextDeptId() {
-        // 查询当前最大ID
-        String maxId = departmentMapper.selectMaxDeptId();
-
-        if (maxId == null) {
-            // 若没有数据，默认从DEPT_001开始
-            return "DEPT_001";
-        }
-
-        // 提取数字部分（假设格式固定为DEPT_XXX）
-        String numStr = maxId.substring(5); // 从"DEPT_"后开始截取，得到"010"
-        int num = Integer.parseInt(numStr);
-        num++; // 自增1
-
-        // 补零保持3位格式（如1→001，10→010，100→100）
-        return String.format("DEPT_%03d", num);
-    }
 //更新部门要用到的辅助方法
 
     /**
@@ -418,26 +362,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         return count(wrapper) > 0;
     }
 
-    //删除部门
-         /*
-          验证部门是否可以删除
-          */
-    private void validateDepartmentCanDelete(String departmentId) {
-        // 1. 检查部门是否存在
-        Department department = getById(departmentId);
-        if (department == null || department.getIsDelete().equals(DeleteConstant.YES)) {
-            throw new BaseException(MessageConstant.DEPARTMENT_NOT_EXISTS);
-        }
-
-        // 2. 检查是否有子部门（简化版，不查询数量）
-        if (hasChildrenDepartments(departmentId)) {
-            throw new BaseException(MessageConstant.DEPARTMENT_HAS_CHILDREN);
-        }
-        // 3. 检查部门下是否有用户
-        if (hasUsersInDepartment(departmentId)) {
-            throw new BaseException(MessageConstant.DEPARTMENT_HAS_USERS);
-        }
-    }
 
     private boolean hasUsersInDepartment(String departmentId) {
 
@@ -453,9 +377,10 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     private boolean hasChildrenDepartments(String departmentId) {
         LambdaQueryWrapper<Department> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Department::getFatherDepartmentId, departmentId)
-                .eq(Department::getIsDelete, DeleteConstant.NO)
-                .last("LIMIT 1"); // 只需要知道是否存在
-        return count(wrapper) > 0;
+
+                .eq(Department::getIsDelete, DeleteConstant.NO);// 只需要知道是否存在
+        return departmentMapper.selectCount(wrapper) > 0;
+
     }
 
 }

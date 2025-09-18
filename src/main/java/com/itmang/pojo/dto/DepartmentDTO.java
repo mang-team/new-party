@@ -2,10 +2,13 @@ package com.itmang.pojo.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 @Data
-@Schema(description = "部门请求")
+@Schema(description = "更新部门请求")
+@NotNull(message = "部门信息不能为空")
 
 public class DepartmentDTO {
 

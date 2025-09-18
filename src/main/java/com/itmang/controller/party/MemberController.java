@@ -20,13 +20,14 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin/party/member")
+
 @Tag(name = "成员相关接口")
+
 public class MemberController {
 
     // 注入MemberService实例
     @Autowired
     private MemberService memberService;
-
 
 
     @Operation(summary = "分页查询部门成员")
@@ -37,7 +38,6 @@ public class MemberController {
         PageResult pageResult = memberService.queryMemberList(memberQueryDTO);
         return Result.success(pageResult);
     }
-
 
     @Operation(summary = "查询成员详细信息")
     @GetMapping("/detail/{id}")
@@ -56,8 +56,6 @@ public class MemberController {
         return Result.success();
     }
 
-
-
     @PostMapping("/batch")
     @ApiOperation("批量新增成员")
     public Result<String> batchAddMembers(@Valid @RequestBody List<MemberAddDTO> memberDTOList) {
@@ -73,7 +71,6 @@ public class MemberController {
         memberService.deleteMember(ids);
         return Result.success();
     }
-
 
 
 }

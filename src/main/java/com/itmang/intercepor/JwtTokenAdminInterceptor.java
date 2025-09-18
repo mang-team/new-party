@@ -49,8 +49,11 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         try {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
+
+
             String userId = String.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
 //            String userId = claims.getSubject();
+
             log.info("当前用户id：{}", userId);
             BaseContext.setCurrentId(userId);//将用户id存入ThreadLocal，方便在service层获取
             //3、通过，放行

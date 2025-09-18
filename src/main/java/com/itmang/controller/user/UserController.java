@@ -73,12 +73,14 @@ public class UserController extends BaseController {
     }
 
 
-//    /**
-//     * 注册用户接口
-//     *
-//     * @param registerUserDTO
-//     * @return
-//     */
+
+    /**
+     * 注册用户接口
+     *
+     * @param registerUserDTO
+     * @return
+     */
+
 //    @Operation(summary = "注册接口")
 //    @PostMapping("/register")
 //    public Result save(@RequestBody RegisterUserDTO registerUserDTO){

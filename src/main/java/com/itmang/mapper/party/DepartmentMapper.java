@@ -27,11 +27,5 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 //    );
     void updateBatchById(@Param("list")List<Department> updateList);
     List<DepartmentVO> pageSearch(DepartmentPageQueryDTO departmentPageDTO);
-    String selectMaxDeptId();
-    /**
-     * 查询所有部门列表
-     * @return 部门VO列表
-     */
-    List<DepartmentVO> listDepartments();
 
 }

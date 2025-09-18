@@ -13,11 +13,6 @@
         d.update_by as updateBy,
         d.update_time as updateTime,
         d.is_delete as isDelete,
-        CASE
-        WHEN d.is_delete = 1 THEN '已删除'
-        WHEN d.is_delete = 2 THEN '正常'
-        ELSE '未知'
-        END as statusDisplay
         FROM department d
         LEFT JOIN department fd ON d.father_department_id = fd.id AND fd.is_delete = 2
         <where>
@@ -61,31 +56,6 @@
             AND d.is_delete = 2
         </where>
         ORDER BY d.create_time DESC
-    </select>
-    <!-- 部门列表查询（返回所有数据） -->
-    <select id="listDepartments" resultType="com.itmang.pojo.vo.DepartmentVO">
-        SELECT
-            d.id,
-            d.department_name as departmentName,
-            d.father_department_id as fatherDepartmentId,
-            fd.department_name as fatherDepartmentName,
-            d.create_by as createBy,
-            d.create_time as createTime,
-            d.update_by as updateBy,
-            d.update_time as updateTime,
-            d.is_delete as isDelete,
-            CASE
-                WHEN d.is_delete = 1 THEN '已删除'
-                WHEN d.is_delete = 2 THEN '正常'
-                ELSE '未知'
-                END as statusDisplay
-        FROM department d
-                 LEFT JOIN department fd ON d.father_department_id = fd.id AND fd.is_delete = 2
-        WHERE d.is_delete = 2
-       ORDER BY d.id ASC
-    </select>
-    <select id="selectMaxDeptId" resultType="java.lang.String">
-        SELECT MAX(id) FROM department WHERE id LIKE 'DEPT_%' AND is_delete = 2;
     </select>
     <update id="updateBatchById">
         <foreach collection="list" item="item" index="index" separator=";">

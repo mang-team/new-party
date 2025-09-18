@@ -17,7 +17,9 @@ public class MemberAddDTO {
 
     @NotBlank(message = "部门ID不能为空")
     @Schema(description = "部门ID", required = true)
+
     private String departmentId = "NULL";
+
 
     @NotBlank(message = "姓名不能为空")
     @Schema(description = "姓名", required = true)
@@ -34,7 +36,9 @@ public class MemberAddDTO {
     private String classInfo;
 
     @NotNull(message = "政治面貌不能为空")
+
     @Schema(description = "政治面貌（1群众,2共青团员,3入党积极分子,4发展对象,5预备党员,6正式党员）")
+
     private Integer politicalStatus;
 
     @NotBlank(message = "身份证号不能为空")

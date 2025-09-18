@@ -78,6 +78,7 @@ public class MemberVO {
     @Schema(name = "isAtSchool", description = "是否在校（在校 1，不在校2）（默认值：1）")
     private Integer isAtSchool;
 
+
     @Schema(name = "isDelete", description = "是否删除（1为删除，2为未删除）（默认为2）")
     private Integer isDelete ;
 
@@ -96,3 +97,4 @@ public class MemberVO {
 
 
 }
+

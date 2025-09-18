@@ -1,17 +1,21 @@
 package com.itmang.service.party.Impl;
 
 
+
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.itmang.constant.DeleteConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.context.BaseContext;
 import com.itmang.exception.BaseException;
+
 import com.itmang.mapper.party.MemberMapper;
 import com.itmang.pojo.dto.MemberAddDTO;
 import com.itmang.pojo.dto.MemberQueryDTO;
 import com.itmang.pojo.dto.MemberUpdateDTO;
+
 import com.itmang.pojo.entity.*;
 
 import com.itmang.pojo.vo.MemberBriefVO;
@@ -19,16 +23,19 @@ import com.itmang.pojo.vo.MemberVO;
 import com.itmang.service.party.MemberService;
 import com.itmang.utils.IdGenerate;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -52,8 +59,6 @@ public class MemberServiceImpl implements MemberService {
         PageInfo<MemberBriefVO> pageInfo = new PageInfo<>(memberBriefVOList);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
-
-
 
 
     /**
@@ -81,6 +86,7 @@ public class MemberServiceImpl implements MemberService {
 
         member.setUpdateBy(BaseContext.getCurrentId());
         member.setUpdateTime(LocalDateTime.now());
+
         int result = memberMapper.updateMember(member);
         if (result <= 0) {
             throw new BaseException("更新成员信息失败");
@@ -96,6 +102,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional  // 添加事务注解
     public void deleteMember(String[] ids) {
         List<String> canDeleteIds = new ArrayList<>();
+
 
         //判断成员是否存在
         for (String id : ids) {
@@ -160,6 +167,7 @@ public class MemberServiceImpl implements MemberService {
         Set<String> idCards = new HashSet<>();
 
         // 批量查询已存在的身份证号
+
         List<String> idCardList = memberDTOList.stream()
                 .map(MemberAddDTO::getIdCard)
                 .collect(Collectors.toList());
@@ -295,10 +303,6 @@ public class MemberServiceImpl implements MemberService {
             throw new BaseException(MessageConstant.TELEPHONE_CANNOT_BE_NULL);
         }
 
-//        // 手机号格式校验
-//        if (!Pattern.matches("^1[3-9]\\d{9}$", dto.getTelephone())) {
-//            throw new BaseException(MessageConstant.TELEPHONE_FORMAT_INCORRECT);
-//        }
 
         // 身份证号格式校验
         if (!isValidIdCard(dto.getIdCard())) {
@@ -316,6 +320,7 @@ public class MemberServiceImpl implements MemberService {
             throw new BaseException(MessageConstant.IS_AT_SCHOOL_VALUE_MUST_BE_1_OR_2);
         }
     }
+
 
 
 
@@ -374,6 +379,7 @@ public class MemberServiceImpl implements MemberService {
 
         return member;
     }
+
 
     // 身份证校验工具方法
     private boolean isValidIdCard(String idCard) {
