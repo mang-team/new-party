@@ -1,0 +1,55 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/party_building_system?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 186722
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+  #redis配置
+  data:
+    redis:
+      host: 192.168.10.101
+      port: 6379
+      database: 0
+
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml # 匹配实际包结构
+  type-aliases-package: com.itmang.pojo.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 启用SQL日志，便于调试
+
+
+
+jwt:
+  admin-secret-key: itmang
+  admin-ttl: 7200000
+  admin-token-name: token
+
+#日志输出
+logging:
+  level:
+    com:
+      itmang:
+        mapper: debug
+        service: info
+        controller: info
+
+springdoc:
+  api-docs:
+    #是否开启文档功能
+    enabled: true
+    #swagger后端文档请求地址
+    path: /api-docs
+  swagger-ui:
+    #自定义前端请求路径
+    path: /swagger-ui
+  #包扫描的路径,可定义多个扫描路径，如果是多个则用逗号隔开
+  packages-to-scan: com.itmang.controller
+
