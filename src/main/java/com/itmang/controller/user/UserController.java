@@ -73,20 +73,20 @@ public class UserController extends BaseController {
     }
 
 
-   /* *//**
+    /**
      * 注册用户接口
      *
-  //   * @param registerUserDTO
+     * @param registerUserDTO
      * @return
-     *//*
-    @Operation(summary = "注册接口")
-    @PostMapping("/register")
-    public Result save(@RequestBody RegisterUserDTO registerUserDTO){
-      log.info("注册用户信息:{}", registerUserDTO);
-       userService.register(registerUserDTO);
-        return Result.success();
-   }
-*/
+     */
+//    @Operation(summary = "注册接口")
+//    @PostMapping("/register")
+//    public Result save(@RequestBody RegisterUserDTO registerUserDTO){
+//        log.info("注册用户信息:{}", registerUserDTO);
+//        userService.register(registerUserDTO);
+//        return Result.success();
+//    }
+
 
     @Operation(summary = "自动登录接口")
     @GetMapping("/autoLogin")

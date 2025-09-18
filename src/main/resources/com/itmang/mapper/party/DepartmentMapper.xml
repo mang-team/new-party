@@ -12,7 +12,7 @@
         d.create_time as createTime,
         d.update_by as updateBy,
         d.update_time as updateTime,
-        d.is_delete as isDelete
+        d.is_delete as isDelete,
         FROM department d
         LEFT JOIN department fd ON d.father_department_id = fd.id AND fd.is_delete = 2
         <where>
@@ -57,7 +57,6 @@
         </where>
         ORDER BY d.create_time DESC
     </select>
-
     <update id="updateBatchById">
         <foreach collection="list" item="item" index="index" separator=";">
             UPDATE department

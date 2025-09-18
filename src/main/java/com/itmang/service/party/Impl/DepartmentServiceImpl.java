@@ -1,5 +1,6 @@
 package com.itmang.service.party.Impl;
 
+
 import com.itmang.pojo.dto.AddDepartmentDTO;
 import com.itmang.pojo.dto.DepartmentDTO;
 import com.itmang.pojo.entity.*;
@@ -17,7 +18,9 @@ import com.itmang.mapper.party.MemberMapper;
 import com.itmang.pojo.dto.DepartmentPageQueryDTO;
 import com.itmang.pojo.vo.DepartmentVO;
 import com.itmang.service.party.DepartmentService;
+
 import com.itmang.utils.IdGenerate;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 
 @Service
@@ -42,7 +47,9 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     //新增部门
     @Override
     @Transactional
+
     public void addDept(AddDepartmentDTO addDepartmentDTO) {
+
         // 2. 检查部门名称是否已存在
         if (checkDepartmentNameExists(addDepartmentDTO.getDepartmentName(), null)) {
             throw new BaseException(MessageConstant.DEPARTMENT_NAME_EXISTS);
@@ -59,17 +66,12 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     }
 
 
-
-
     /**
      * 将AddDTO转换为Entity
      */
     private Department convertAddDTOToEntity(AddDepartmentDTO addDepartmentDTO) {
+
         Department department = new Department();
-
-        // 生成唯一ID
-        // 生成部门ID：如果前端传入了ID则使用前端的，否则自动生成
-
             //先生成id
             IdGenerate idGenerate = new IdGenerate();
             String deptId = idGenerate.nextUUID(Department.class);
@@ -77,6 +79,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     if (currentUserId == null) {
         throw new BaseException("用户未登录，无法操作");
     }
+
         department.setId(deptId);
         department.setDepartmentName(addDepartmentDTO.getDepartmentName());
         department.setFatherDepartmentId(addDepartmentDTO.getFatherDepartmentId());
@@ -144,61 +147,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
         return department;
     }
-
-    /*//删除部门
-    @Override
-    @Transactional
-    public void deleteDepartments(String[] departmentIds) {
-        List<String> canDeleteIds = new ArrayList<>();
-       // List<String> canNotDeleteIds = new ArrayList<>();
-        List<DepartmentDeleteError> errorList = new ArrayList<>();
-        // 判断部门是否存在且是否可以删除
-        for (String id : departmentIds) {
-            Department department = departmentMapper.selectById(id);
-
-            if (department == null || department.getIsDelete().equals(DeleteConstant.YES)) {
-              //  canNotDeleteIds.add(id);
-                errorList.add(new DepartmentDeleteError(id, "部门不存在或者已经删除"));
-                continue;
-            }
-
-            if (hasChildrenDepartments(id)) {
-              //  canNotDeleteIds.add(id);
-                errorList.add(new DepartmentDeleteError(id, "部门有子部门"));
-                continue;
-            }
-
-            if (hasUsersInDepartment(id)) {
-               // canNotDeleteIds.add(id);
-                errorList.add(new DepartmentDeleteError(id, "部门有成员"));
-                continue;
-            }
-
-            canDeleteIds.add(id);
-        }
-
-        // 执行删除逻辑 - 改为单条更新
-        if (!canDeleteIds.isEmpty()) {
-            for (String departmentId : canDeleteIds) {
-                Department department = new Department();
-                department.setId(departmentId);
-                department.setIsDelete(DeleteConstant.YES);
-                department.setUpdateBy(BaseContext.getCurrentId());
-                department.setUpdateTime(LocalDateTime.now());
-                departmentMapper.updateById(department); // 单条更新
-            }
-        }
-
-        // 处理删除结果
-        if (!errorList.isEmpty()) {
-            String errorMessage = canDeleteIds.isEmpty() ?
-                    MessageConstant.DEPARTMENT_FAIL_DELETED :
-                    MessageConstant.DEPARTMENT_PART_DELETED;
-
-            throw new DepartmentDeleteException(errorMessage, errorList, canDeleteIds);
-        }
-    }*/
-
     //删除部门
     @Override
     @Transactional
@@ -364,19 +312,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
 
     }
-//部门列表
-//
-//    private String getStatusDisplay(Integer isDelete) {
-//        if (DeleteConstant.YES.equals(isDelete)) {
-//            return "已删除";
-//        } else {
-//            return "正常";
-//        }
-//    }
-
-
-    //辅助方法
-
 
 //更新部门要用到的辅助方法
 
@@ -438,6 +373,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         wrapper.eq(Department::getFatherDepartmentId, departmentId)
                 .eq(Department::getIsDelete, DeleteConstant.NO);// 只需要知道是否存在
         return departmentMapper.selectCount(wrapper) > 0;
+
     }
 
 }

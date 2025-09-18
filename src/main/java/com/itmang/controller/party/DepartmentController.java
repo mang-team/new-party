@@ -1,7 +1,9 @@
 package com.itmang.controller.party;
 
 
+
 import com.itmang.pojo.dto.AddDepartmentDTO;
+
 import com.itmang.pojo.dto.DepartmentDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.dto.DepartmentPageQueryDTO;
@@ -33,6 +35,7 @@ public class DepartmentController {
     @PostMapping("/add")
     @Operation(summary = "新增部门")
     public Result addDepartment(@Valid @RequestBody AddDepartmentDTO DepartmentDTO) {
+
         log.info("新增部门：{}", DepartmentDTO);
         departmentService.addDept(DepartmentDTO);
         return Result.success();
@@ -72,6 +75,7 @@ public class DepartmentController {
      * @param departmentPageDTO 查询参数
      * @return 分页结果
      */
+
     //todo 将原数据库的数据直接返回出来就行了，不需要转换为d特定的字符串，由前端对数据进行判断
     @Operation(summary = "分页查询部门")
     @PostMapping("/page")
@@ -92,9 +96,9 @@ public class DepartmentController {
         log.info("根据上级部门返回查询子级部门列表");
         List<DepartmentVO> children = departmentService.getChildrenByParentId(fatherDepartmentId);
         return Result.success(children);
+
+
     }
-
-
 }
 
 

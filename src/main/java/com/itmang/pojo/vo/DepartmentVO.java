@@ -17,6 +17,10 @@ public class DepartmentVO {
         @Schema(description = "上级部门ID")
         private String fatherDepartmentId;
 
+
+        @Schema(description = "上级部门名称")
+        private String fatherDepartmentName;
+
         @Schema(description = "创建人")
         private String createBy;
 
@@ -31,8 +35,10 @@ public class DepartmentVO {
 
         @Schema(description = "是否删除（1为删除，2为未删除）")
         private Integer isDelete;
+
        /* @Schema(description = "状态显示")
         private String statusDisplay;*/
+
 //不知道要不要衍生出来
 //        @Schema(description = "子部门数量")
 //        private Integer childrenCount;

@@ -33,9 +33,5 @@ public class Result<T> implements Serializable {
         return new Result<T>(0, msg, null);
     }
 
-    // ✅ 新增：支持错误信息和数据的方法
-    public static <T> Result<T> error(String msg, T data) {
-        return new Result<T>(0, msg, data);
-    }
 }
 

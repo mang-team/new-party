@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @Schema(description = "更新部门请求")
 @NotNull(message = "部门信息不能为空")
+
 public class DepartmentDTO {
 
         @Schema(description = "部门ID", required = true)
