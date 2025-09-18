@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.party.MemberMapper">
+
+    <resultMap id="BaseMap" type="com.itmang.pojo.entity.Member">
+        <id column="id" property="id" />
+        <!-- 基本字段映射 -->
+        <result column="user_id" property="userId"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="major" property="major"/>
+        <result column="class" property="classInfo"/>
+        <result column="political_status" property="politicalStatus"/>
+        <result column="id_card" property="idCard"/>
+        <result column="telephone" property="telephone"/>
+        <result column="education_background" property="educationBackground"/>
+        <result column="nationality" property="nationality"/>
+        <result column="native_place" property="nativePlace"/>
+        <result column="date_of_birth" property="dateOfBirth"/>
+        <result column="join_communist_time" property="joinCommunistTime"/>
+        <result column="submit_communist_time" property="submitCommunistTime"/>
+        <result column="contacts" property="contacts"/>
+        <result column="recommending_time" property="recommendingTime"/>
+        <result column="confirmed_active_member_time" property="confirmedActiveMemberTime"/>
+        <result column="confirmed_development_target_time" property="confirmedDevelopmentTargetTime"/>
+        <result column="confirmed_probationary_member_time" property="confirmedProbationaryMemberTime"/>
+        <result column="become_full_member_time" property="becomeFullMemberTime"/>
+        <result column="is_at_school" property="isAtSchool"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_delete" property="isDelete"/>
+
+    </resultMap>
+
+
+
+    <!-- 批量逻辑删除成员信息（更新is_delete字段） -->
+    <update id="removeBatchByIds" parameterType="java.util.List">
+        UPDATE member
+        SET
+        is_delete = 1,                     <!-- 设置删除标志为1（已删除） -->
+        update_time = NOW()                <!-- 更新时间为当前时间 -->
+        WHERE id IN                        <!-- 条件：ID在以下列表中 -->
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}                          <!-- 动态生成IN条件的每个ID值 -->
+        </foreach>
+        AND is_delete = 2                  <!-- 确保只更新未删除的记录 -->
+    </update>
+
+
+
+
+
+
+    <!-- 批量插入成员 -->
+    <insert id="batchInsertMembers" parameterType="java.util.List">
+        INSERT INTO member (
+        id,  <!-- 添加主键字段 -->
+        user_id,
+        department_id,
+        name,
+        sex,
+        major,
+        class,
+        political_status,
+        id_card,
+        telephone,
+        education_background,
+        nationality,
+        native_place,
+        date_of_birth,
+        join_communist_time,
+        submit_communist_time,
+        contacts,
+        recommending_time,
+        confirmed_active_member_time,
+        confirmed_development_target_time,
+        confirmed_probationary_member_time,
+        become_full_member_time,
+        is_at_school,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        is_delete
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},  <!-- 添加主键参数 -->
+            #{item.userId},
+            #{item.departmentId},
+            #{item.name},
+            #{item.sex},
+            #{item.major},
+            #{item.classInfo},
+            #{item.politicalStatus},
+            #{item.idCard},
+            #{item.telephone},
+            #{item.educationBackground},
+            #{item.nationality},
+            #{item.nativePlace},
+            #{item.dateOfBirth},
+            #{item.joinCommunistTime},
+            #{item.submitCommunistTime},
+            #{item.contacts},
+            #{item.recommendingTime},
+            #{item.confirmedActiveMemberTime},
+            #{item.confirmedDevelopmentTargetTime},
+            #{item.confirmedProbationaryMemberTime},
+            #{item.becomeFullMemberTime},
+            #{item.isAtSchool},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.updateBy},
+            #{item.updateTime},
+            #{item.isDelete}
+            )
+        </foreach>
+    </insert>
+
+
+    <!-- 更新成员信息 -->
+    <update id="updateMember" parameterType="com.itmang.pojo.entity.Member">
+        UPDATE member
+        <set>
+            <!--            <if test="userId != null">user_id = #{userId},</if>-->
+            <if test="departmentId != null">department_id = #{departmentId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="major ">major = #{major},</if>
+            <if test="classInfo ">class = #{classInfo},</if>
+            <if test="politicalStatus != null">political_status = #{politicalStatus},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="telephone != null">telephone = #{telephone},</if>
+            <if test="educationBackground ">education_background = #{educationBackground},</if>
+            <if test="nationality != null">nationality = #{nationality},</if>
+            <if test="nativePlace != null">native_place = #{nativePlace},</if>
+            <if test="dateOfBirth != null">date_of_birth = #{dateOfBirth},</if>
+            <if test="joinCommunistTime ">join_communist_time = #{joinCommunistTime},</if>
+            <if test="submitCommunistTime ">submit_communist_time = #{submitCommunistTime},</if>
+            <if test="contacts ">contacts = #{contacts},</if>
+            <if test="recommendingTime ">recommending_time = #{recommendingTime},</if>
+            <if test="confirmedActiveMemberTime ">confirmed_active_member_time = #{confirmedActiveMemberTime},</if>
+            <if test="confirmedDevelopmentTargetTime ">confirmed_development_target_time = #{confirmedDevelopmentTargetTime},</if>
+            <if test="confirmedProbationaryMemberTime ">confirmed_probationary_member_time = #{confirmedProbationaryMemberTime},</if>
+            <if test="becomeFullMemberTime ">become_full_member_time = #{becomeFullMemberTime},</if>
+            <if test="isAtSchool != null">is_at_school = #{isAtSchool},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+
+
+    <!-- MemberVO 结果映射 -->
+    <resultMap id="MemberVOResultMap" type="com.itmang.pojo.vo.MemberVO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="major" property="major"/>
+        <result column="class" property="classInfo"/>
+        <result column="political_status" property="politicalStatus"/>
+        <result column="id_card" property="idCard"/>
+        <result column="telephone" property="telephone"/>
+        <result column="education_background" property="educationBackground"/>
+        <result column="nationality" property="nationality"/>
+        <result column="native_place" property="nativePlace"/>
+        <result column="date_of_birth" property="dateOfBirth"/>
+        <result column="join_communist_time" property="joinCommunistTime"/>
+        <result column="submit_communist_time" property="submitCommunistTime"/>
+        <result column="contacts" property="contacts"/>
+        <result column="recommending_time" property="recommendingTime"/>
+        <result column="confirmed_active_member_time" property="confirmedActiveMemberTime"/>
+        <result column="confirmed_development_target_time" property="confirmedDevelopmentTargetTime"/>
+        <result column="confirmed_probationary_member_time" property="confirmedProbationaryMemberTime"/>
+        <result column="become_full_member_time" property="becomeFullMemberTime"/>
+        <result column="is_at_school" property="isAtSchool"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_delete" property="isDelete"/>
+
+
+    </resultMap>
+
+
+
+    <!-- MemberBriefVO 结果映射 -->
+    <resultMap id="MemberBriefVOResultMap" type="com.itmang.pojo.vo.MemberBriefVO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="political_status" property="politicalStatus"/>
+        <result column="is_at_school" property="isAtSchool"/>
+        <result column="is_delete" property="isDelete"/>
+
+
+    </resultMap>
+
+    <!-- 批量查询已存在的手机号 -->
+    <select id="findExistingPhones" resultType="java.lang.String">
+        SELECT telephone FROM member
+        WHERE telephone IN
+        <foreach collection="phones" item="phone" open="(" separator="," close=")">
+            #{phone}
+        </foreach>
+        AND is_delete = 2  <!-- 只查询未删除的记录 -->
+    </select>
+
+
+    <!-- 分页查询 -->
+    <select id="selectMemberList" resultType="com.itmang.pojo.vo.MemberBriefVO">
+        select
+        m.id,
+        m.user_id,
+        m.name,
+        m.department_id,
+        m.political_status,
+        m.is_at_school,
+        m.is_delete,
+        m.create_time,
+        m.update_time
+        from member m
+        <where>
+            <if test="id != null and id != ''">
+                and m.id = #{id}
+            </if>
+            <if test="userId != null and userId != ''">
+                and m.user_id = #{userId}
+            </if>
+            <if test="name != null and name != ''">
+                and m.name like concat('%',#{name},'%')
+            </if>
+            <if test="departmentId != null and departmentId != ''">
+                and m.department_id = #{departmentId}
+            </if>
+            <if test="politicalStatus != null">
+                and m.political_status = #{politicalStatus}
+            </if>
+            <if test="isAtSchool != null">
+                and m.is_at_school = #{isAtSchool}
+            </if>
+            <if test="isDelete != null">
+                and m.is_delete = #{isDelete}
+            </if>
+
+
+
+        </where>
+        AND is_delete = 2  <!-- 只查询未删除的记录 -->
+        order by m.create_time desc
+
+    </select>
+
+    <!-- 根据id查询成员详细信息 -->
+    <select id="selectById" resultType="com.itmang.pojo.vo.MemberVO">
+        SELECT
+            id,
+            user_id AS userId,
+            department_id AS departmentId,
+            name,
+            sex,
+            major,
+            class AS classInfo,
+            political_status AS politicalStatus,
+            id_card AS idCard,
+            telephone,
+            education_background AS educationBackground,
+            nationality,
+            native_place AS nativePlace,
+            date_of_birth AS dateOfBirth,
+            join_communist_time AS joinCommunistTime,
+            submit_communist_time AS submitCommunistTime,
+            contacts,
+            recommending_time AS recommendingTime,
+            confirmed_active_member_time AS confirmedActiveMemberTime,
+            confirmed_development_target_time AS confirmedDevelopmentTargetTime,
+            confirmed_probationary_member_time AS confirmedProbationaryMemberTime,
+            become_full_member_time AS becomeFullMemberTime,
+            is_at_school AS isAtSchool,
+            is_delete AS isDelete,
+            create_by AS createBy,
+            create_time AS createTime,
+            update_by AS updateBy,
+            update_time AS updateTime
+
+        FROM member
+        WHERE id = #{id}
+
+    </select>
+
+    <!-- 查询userId是否在user表中出现 -->
+    <select id="findExistingUserId" resultType="java.lang.String">
+        SELECT id
+        FROM user  <!-- user表名 -->
+        WHERE id = #{userId}
+
+    </select>
+
+    <!-- 批量查询已存在的身份证号 -->
+    <select id="findExistingIdCards" resultType="java.lang.String">
+        SELECT id_card FROM member
+        WHERE id_card IN
+        <foreach collection="idCardList" item="idCard" open="(" separator="," close=")">
+            #{idCard}
+        </foreach>
+        AND is_delete = 2  <!-- 只查询未删除的记录 -->
+    </select>
+</mapper>
