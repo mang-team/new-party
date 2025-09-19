@@ -66,8 +66,10 @@ public class MessageConstant {
     public static final String DEPARTMENT_ID_EMPTY = "部门id不为空";
     public static final String DEPARTMENT_FAIL_DELETED = "部门删除失败，所选部门均无法删除";
     public static final String DEPARTMENT_PART_DELETED = "部分部门删除成功，部分部门无法删除";
-
-
+    public static final String QUESTION_ADD_FAILED = "题目添加失败";
+    public static final String EXAMINATION_TIME_ERROR = "考试时间错误";
+    public static final String EXAMINATION_SCORE_ERROR ="未设置分值";
+    public static final String EXAMINATION_SCORE_ERROR_2 ="分值设置错误";
     //部门成员
     public static final String MEMBER_ID_CANNOT_BE_NULL = "成员ID不能为空";
 
