@@ -1,6 +1,7 @@
 package com.itmang.mapper.user;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.itmang.pojo.dto.PageUserDto;
 import com.itmang.pojo.entity.Datas;
 import com.itmang.pojo.entity.User;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,4 +18,6 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     List<String> queryUserNames(String[] userIds);
+
+    List<User> getUserPage(PageUserDto pageUserDto);
 }

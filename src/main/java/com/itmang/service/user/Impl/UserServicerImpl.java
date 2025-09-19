@@ -3,12 +3,16 @@ package com.itmang.service.user.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.itmang.constant.MessageConstant;
 import com.itmang.constant.StatusConstant;
 import com.itmang.exception.PasswordErrorException;
 import com.itmang.exception.UserNotLoginException;
 import com.itmang.mapper.user.UserMapper;
 import com.itmang.pojo.dto.LoginDTO;
+import com.itmang.pojo.dto.PageUserDto;
+import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.User;
 import com.itmang.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import com.itmang.exception.AccountNotFoundException;
+
+import java.util.List;
 
 
 @Slf4j
@@ -59,6 +65,13 @@ public class UserServicerImpl extends ServiceImpl<UserMapper, User> implements U
         return user;
     }
 
+    @Override
+    public PageResult getUserPage(PageUserDto pageUserDto) {
+        PageHelper.startPage(pageUserDto.getCurrent(),pageUserDto.getSize());
+        List<User> userList = userMapper.getUserPage(pageUserDto);
+        PageInfo<User> userPage = new PageInfo<>(userList);
+        return new PageResult(userPage.getTotal(),userPage.getList());
+    }
 
 
 }

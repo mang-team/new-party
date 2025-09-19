@@ -2,13 +2,18 @@ package com.itmang.controller.user;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
 import com.itmang.annotation.GlobalInterceptor;
 import com.itmang.constant.JwtClaimsConstant;
 import com.itmang.constant.MessageConstant;
+import com.itmang.context.BaseContext;
 import com.itmang.controller.BaseController;
 import com.itmang.exception.BaseException;
+import com.itmang.pojo.dto.AddUserDto;
 import com.itmang.pojo.dto.LoginDTO;
+import com.itmang.pojo.dto.PageUserDto;
 import com.itmang.pojo.dto.UserDto;
+import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.pojo.entity.User;
 import com.itmang.pojo.vo.LoginVO;
@@ -24,14 +29,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -45,10 +49,9 @@ public class UserController extends BaseController {
     @Autowired
     private JwtProperties jwtProperties;//导入jwt配置类
 
-
     @Operation(summary = "登录接口")
     @PostMapping("/login")
-    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
+    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
         log.info("用户登录,登录的信息:{}", loginDTO);
         //先查询数据库是否有这个用户的信息
         User user = userService.login(loginDTO);
@@ -90,7 +93,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "自动登录接口")
     @GetMapping("/autoLogin")
-    public Result<LoginVO> autoLogin(HttpServletResponse response) {
+    public Result<LoginVO> autoLogin() {
         //检验token是否有效
         if (!isTokenValid()) {
             throw new BaseException(MessageConstant.USER_NOT_LOGIN);
@@ -116,7 +119,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "退出登录接口")
     @PostMapping("/logout")
-    public Result<Object> logout(HttpServletResponse response) {
+    public Result<Object> logout() {
         //将token加入黑名单中
         blacklistToken();
         //清除cookie持久化保存的token
@@ -171,7 +174,7 @@ public class UserController extends BaseController {
         user.setId(userDto.getUserId());
         user.setUserName(userDto.getUserName());
         user.setImage(userDto.getImage());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(DigestUtils.md5DigestAsHex(userDto.getPassword().getBytes()));
         user.setStatus(userDto.getStatus());
         user.setIsFirst(userDto.getIsFirst());
         user.setUpdateTime(LocalDateTime.now());
@@ -180,6 +183,55 @@ public class UserController extends BaseController {
         if (!isSuccess) {
             throw new BaseException(MessageConstant.UNKNOWN_ERROR);
         }
+        return Result.success();
+    }
+
+    @Operation(summary = "改变用户状态")
+    @PostMapping("/changeUserStatus/{userId}")
+    public Result<Object> changeUserStatus(@PathVariable String userId) {
+        String updateUserId = BaseContext.getCurrentId();
+        User user = userService.getById(userId);
+        user.setStatus(user.getStatus() == 0 ? 1 : 0);
+        user.setUpdateBy(updateUserId);
+        user.setUpdateTime(LocalDateTime.now());
+        userService.updateById(user);
+        return Result.success();
+    }
+
+    @Operation(summary = "分页获取用户列表")
+    @GetMapping("/getUserPage")
+    public Result<Object> getUserPage(@RequestBody PageUserDto pageUserDto) {
+        PageResult pageResult = userService.getUserPage(pageUserDto);
+        return Result.success(pageResult);
+    }
+
+    @Operation(summary = "批量新增用户")
+    @PostMapping("/addUserBatch")
+    public Result<Object> addUser(@RequestBody List<AddUserDto> addUserDtoList) {
+        List<User> userList = new ArrayList<>();
+        for (AddUserDto addUserDto :
+                addUserDtoList) {
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(User::getNumber,addUserDto.getNumber());
+            long count = userService.count(queryWrapper);
+            if(count != 0){
+                throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);
+            }
+            queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(User::getUserName,addUserDto.getUserName());
+            count = userService.count(queryWrapper);
+            if(count != 0){
+                throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);
+            }
+            User user = new User();
+            user.setNumber(addUserDto.getNumber());
+            user.setUserName(addUserDto.getUserName());
+            user.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+            user.setCreateBy(BaseContext.getCurrentId());
+            user.setCreateTime(LocalDateTime.now());
+            userList.add(user);
+        }
+        userService.saveBatch(userList);
         return Result.success();
     }
 }
