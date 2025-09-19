@@ -26,10 +26,13 @@ public class MemberQueryDTO {
     private Integer isAtSchool;
 
     @Schema(description = "是否删除标记")
-    private Integer isDelete;
+
+    private Integer isDelete = 2;
 
     @Schema(name = "page", description = "当前页")
     private Integer page;
+
+
     @Schema(name = "pageSize", description = "每页大小")
     private Integer pageSize;
 

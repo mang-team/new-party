@@ -5,6 +5,7 @@ import com.itmang.pojo.dto.AddDepartmentDTO;
 import com.itmang.pojo.dto.DepartmentDTO;
 import com.itmang.pojo.entity.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -21,6 +22,7 @@ import com.itmang.service.party.DepartmentService;
 
 import com.itmang.utils.IdGenerate;
 
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,9 +67,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         departmentMapper.insert(department);
 
     }
-
-
-    /**
+    /*
      * 将AddDTO转换为Entity
      */
     private Department convertAddDTOToEntity(AddDepartmentDTO addDepartmentDTO) {
@@ -147,6 +148,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
         return department;
     }
+
     //删除部门
     @Override
     @Transactional
@@ -197,6 +199,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
             }
         }
     }
+
     /**
      * 根据部门ID查询部门详细信息（VO）
      */
@@ -221,6 +224,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     }
 
     @Override
+
     public List<DepartmentVO> getChildrenByParentId(String fatherDepartmentId) {
 // 1. 构建查询条件
         LambdaQueryWrapper<Department> queryWrapper = new LambdaQueryWrapper<>();
@@ -235,6 +239,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         return departmentList.stream()
                 .map(this::convertToVO) // 使用你已有的convertToVO方法
                 .collect(Collectors.toList());
+
     }
 
 
@@ -251,6 +256,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         vo.setUpdateBy(department.getUpdateBy());
         vo.setUpdateTime(department.getUpdateTime());
         vo.setIsDelete(department.getIsDelete());
+
         return vo;
     }
 
@@ -312,7 +318,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
 
     }
-
 //更新部门要用到的辅助方法
 
     /**
@@ -357,6 +362,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         return count(wrapper) > 0;
     }
 
+
     private boolean hasUsersInDepartment(String departmentId) {
 
         return memberMapper.selectCount(new LambdaQueryWrapper<Member>()
@@ -371,6 +377,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     private boolean hasChildrenDepartments(String departmentId) {
         LambdaQueryWrapper<Department> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Department::getFatherDepartmentId, departmentId)
+
                 .eq(Department::getIsDelete, DeleteConstant.NO);// 只需要知道是否存在
         return departmentMapper.selectCount(wrapper) > 0;
 

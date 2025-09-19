@@ -3,6 +3,7 @@ package com.itmang.pojo.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -16,7 +17,9 @@ public class MemberAddDTO {
 
     @NotBlank(message = "部门ID不能为空")
     @Schema(description = "部门ID", required = true)
-    private String departmentId;
+
+    private String departmentId = "NULL";
+
 
     @NotBlank(message = "姓名不能为空")
     @Schema(description = "姓名", required = true)
@@ -33,7 +36,9 @@ public class MemberAddDTO {
     private String classInfo;
 
     @NotNull(message = "政治面貌不能为空")
-    @Schema(description = "政治面貌（1群众,2共青团员,3入党积极分子,4发展对象,5预备党员,6正式党员）", required = true)
+
+    @Schema(description = "政治面貌（1群众,2共青团员,3入党积极分子,4发展对象,5预备党员,6正式党员）")
+
     private Integer politicalStatus;
 
     @NotBlank(message = "身份证号不能为空")
@@ -47,14 +52,18 @@ public class MemberAddDTO {
     @Schema(description = "学历")
     private String educationBackground;
 
+    @NotBlank(message = "民族不能为空")
     @Schema(description = "民族")
     private String nationality;
 
+    @NotBlank(message = "籍贯不能为空")
     @Schema(description = "籍贯")
     private String nativePlace;
 
+    @NotBlank(message = "出生日期不能为空")
     @Schema(description = "出生日期")
     private LocalDateTime dateOfBirth;
+
 
     @Schema(description = "入团时间")
     private LocalDateTime joinCommunistTime;
@@ -83,6 +92,9 @@ public class MemberAddDTO {
     @Schema(description = "是否在校（1在校，2不在校）", defaultValue = "1")
     private Integer isAtSchool = 1;
 
-    @Schema(description = "创建人")
-    private String createBy;
+    @Schema(description = "是否删除（1删除，2未删除）")
+    private Integer isDelete = 2;
+
+
+
 }

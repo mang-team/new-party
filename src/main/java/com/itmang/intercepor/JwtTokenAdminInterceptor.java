@@ -50,6 +50,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
 
+
             String userId = String.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
 //            String userId = claims.getSubject();
 

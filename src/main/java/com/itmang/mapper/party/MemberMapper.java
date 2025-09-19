@@ -1,11 +1,14 @@
 package com.itmang.mapper.party;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.itmang.pojo.dto.MemberAddDTO;
 import com.itmang.pojo.dto.MemberQueryDTO;
 import com.itmang.pojo.entity.Member;
-import com.itmang.pojo.vo.BankPageVO;
 import com.itmang.pojo.vo.MemberBriefVO;
 import com.itmang.pojo.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.util.List;
 import java.util.Set;
@@ -14,7 +17,8 @@ import java.util.Set;
 public interface MemberMapper extends BaseMapper<Member> {
 
     // 新增成员
-    int insertMember(Member member);
+    // int insertMember(Member member);
+
 
     // 更新成员信息
     int updateMember(Member member);
@@ -41,4 +45,7 @@ public interface MemberMapper extends BaseMapper<Member> {
 
     //查询成员身份证是否存在
     Set<String> findExistingIdCards(List<String> idCardList);
+
+    String findExistingUserId(String userId);
+
 }

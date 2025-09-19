@@ -1,10 +1,8 @@
 package com.itmang.service.party;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.itmang.pojo.dto.MemberAddDTO;
 import com.itmang.pojo.dto.MemberQueryDTO;
 import com.itmang.pojo.dto.MemberUpdateDTO;
-import com.itmang.pojo.entity.Department;
 import com.itmang.pojo.entity.Member;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.vo.MemberVO;
@@ -13,7 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public interface MemberService  extends IService<Member> {
+
+public interface MemberService  {
 
     /**
      * 分页查询成员简略信息

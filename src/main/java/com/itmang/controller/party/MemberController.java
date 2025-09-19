@@ -20,7 +20,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin/party/member")
-@Tag(name = "成员管理")
+
+@Tag(name = "成员相关接口")
+
 public class MemberController {
 
     // 注入MemberService实例
@@ -28,8 +30,6 @@ public class MemberController {
     private MemberService memberService;
 
 
-
-    //todo 一般都不会查询已经删除的部门成员
     @Operation(summary = "分页查询部门成员")
     @PostMapping("/page")
     @Transactional(readOnly = true)
@@ -47,16 +47,7 @@ public class MemberController {
         return Result.success(member);
     }
 
-   /* @Operation(summary = "新增部门成员")
-    @PostMapping("/add")
-    public Result addMember(@Valid @RequestBody MemberAddDTO memberAddDTO) {
-        log.info("新增部门成员:{}", memberAddDTO);
-        memberService.addMember(memberAddDTO);
-        return Result.success();
-    }
-*/
 
-    //todo 校验手机号一般由前端负责
     @Operation(summary = "编辑成员信息")
     @PostMapping("/update")
     public Result updateMember(@Valid @RequestBody MemberUpdateDTO memberUpdateDTO) {
@@ -70,6 +61,7 @@ public class MemberController {
     public Result<String> batchAddMembers(@Valid @RequestBody List<MemberAddDTO> memberDTOList) {
         memberService.batchAddMembers(memberDTOList);
         return Result.success();
+
     }
 
     @Operation(summary = "删除成员信息（可批量）")
@@ -79,8 +71,6 @@ public class MemberController {
         memberService.deleteMember(ids);
         return Result.success();
     }
-
-
 
 
 }

@@ -1,9 +1,7 @@
 package com.itmang.controller.party;
 
 
-
 import com.itmang.pojo.dto.AddDepartmentDTO;
-
 import com.itmang.pojo.dto.DepartmentDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.dto.DepartmentPageQueryDTO;
@@ -32,6 +30,7 @@ public class DepartmentController {
     /**
      * 新增部门
      */
+
     @PostMapping("/add")
     @Operation(summary = "新增部门")
     public Result addDepartment(@Valid @RequestBody AddDepartmentDTO DepartmentDTO) {
@@ -76,7 +75,6 @@ public class DepartmentController {
      * @return 分页结果
      */
 
-    //todo 将原数据库的数据直接返回出来就行了，不需要转换为d特定的字符串，由前端对数据进行判断
     @Operation(summary = "分页查询部门")
     @PostMapping("/page")
     public Result<PageResult> pageDepartment(@RequestBody DepartmentPageQueryDTO departmentPageDTO) {
@@ -86,9 +84,9 @@ public class DepartmentController {
     }
 
 
+
     @Operation(summary = "子级部门列表查询")
 
-    //todo 不需要将父级部门的信息返回给前端，增加一个请求参数父级id，根据父级id查询其所有子级部门
     @GetMapping("/children/{fatherDepartmentId}")
     public Result<List<DepartmentVO>> getChildren(@PathVariable String fatherDepartmentId) {
         // 业务逻辑：这里可以添加对 parentId 的校验

@@ -6,15 +6,44 @@
 
     <insert id="insertExaminationInformation">
         insert into examination_information
-            (id,examination_name,user_ids,score_value,
-             single_choice_ids,multiple_choice_ids,judge_ids,fill_blank_ids,
-             question_quantity,examination_instruction,start_time,end_time,
-             create_by,create_time,update_by,update_time,is_delete)
-        values
-            (#{id},#{examinationName},#{userIds},#{scoreValue},
-             #{singleChoiceIds},#{multipleChoiceIds},#{judgeIds},#{fillBlankIds},
-             #{questionQuantity},#{examinationInstruction},#{startTime},#{endTime},
-             #{createBy},#{createTime},#{updateBy},#{updateTime},#{isDelete})
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="examinationName != null and examinationName != ''">examination_name,</if>
+            <if test="userIds != null and userIds != ''">user_ids,</if>
+            <if test="scoreValue != null and scoreValue != ''">score_value,</if>
+            <if test="singleChoiceIds != null and singleChoiceIds != ''">single_choice_ids,</if>
+            <if test="multipleChoiceIds != null and multipleChoiceIds != ''">multiple_choice_ids,</if>
+            <if test="judgeIds != null and judgeIds != ''">judge_ids,</if>
+            <if test="fillBlankIds != null and fillBlankIds != ''">fill_blank_ids,</if>
+            <if test="questionQuantity != null">question_quantity,</if>
+            <if test="examinationInstruction != null and examinationInstruction != ''">examination_instruction,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDelete != null">is_delete,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="examinationName != null and examinationName != ''">#{examinationName},</if>
+            <if test="userIds != null and userIds != ''">#{userIds},</if>
+            <if test="scoreValue != null and scoreValue != ''">#{scoreValue},</if>
+            <if test="singleChoiceIds != null and singleChoiceIds != ''">#{singleChoiceIds},</if>
+            <if test="multipleChoiceIds != null and multipleChoiceIds != ''">#{multipleChoiceIds},</if>
+            <if test="judgeIds != null and judgeIds != ''">#{judgeIds},</if>
+            <if test="fillBlankIds != null and fillBlankIds != ''">#{fillBlankIds},</if>
+            <if test="questionQuantity != null">#{questionQuantity},</if>
+            <if test="examinationInstruction != null and examinationInstruction != ''">#{examinationInstruction},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+        </trim>
     </insert>
 
     <update id="removeBatchByIds">

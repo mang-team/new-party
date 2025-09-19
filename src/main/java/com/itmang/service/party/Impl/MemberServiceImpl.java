@@ -1,45 +1,48 @@
 package com.itmang.service.party.Impl;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+
+
+
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.itmang.constant.DeleteConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.context.BaseContext;
 import com.itmang.exception.BaseException;
-import com.itmang.mapper.party.DepartmentMapper;
+
 import com.itmang.mapper.party.MemberMapper;
 import com.itmang.pojo.dto.MemberAddDTO;
 import com.itmang.pojo.dto.MemberQueryDTO;
 import com.itmang.pojo.dto.MemberUpdateDTO;
-import com.itmang.pojo.entity.Department;
-import com.itmang.pojo.entity.Member;
-import com.itmang.pojo.entity.PageResult;
-import com.itmang.pojo.entity.Result;
-import com.itmang.pojo.vo.BankPageVO;
+
+import com.itmang.pojo.entity.*;
+
 import com.itmang.pojo.vo.MemberBriefVO;
 import com.itmang.pojo.vo.MemberVO;
 import com.itmang.service.party.MemberService;
-import com.itmang.utils.SecurityUtil;
-import jakarta.validation.Valid;
+import com.itmang.utils.IdGenerate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-
 @Slf4j
 @Service
-public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements MemberService {
+public class MemberServiceImpl implements MemberService {
 
     @Autowired
     private MemberMapper memberMapper;
@@ -56,38 +59,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         PageInfo<MemberBriefVO> pageInfo = new PageInfo<>(memberBriefVOList);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
-
-
-    /*/**
-     * 增加成员信息
-     * @param memberAddDTO
-
-    @Override
-    @Transactional
-    public void addMember(MemberAddDTO memberAddDTO) {
-        Member member = new Member();
-        BeanUtils.copyProperties(memberAddDTO, member);
-
-        // 处理特殊字段映射
-        member.setClassInfo(memberAddDTO.getClassInfo());
-
-        // 添加重复性检查
-        MemberVO exists = memberMapper.selectById(memberAddDTO.getIdCard());
-        if (exists!=null) {
-            throw new RuntimeException("成员已存在");
-        }
-        else{
-            // 设置默认值
-            member.setIsDelete(2); // 默认未删除
-            member.setCreateBy("admin");
-            member.setUpdateBy("admin");
-            int result = memberMapper.insertMember(member);
-            if (result <= 0) {
-                throw new RuntimeException("新增成员失败");
-            }
-        }
-    }
-*/
 
 
     /**
@@ -112,7 +83,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
         // 处理特殊字段映射
         member.setClassInfo(memberUpdateDTO.getClassInfo());
-        member.setUpdateBy("admin"); // 实际应从登录信息中获取
+
+        member.setUpdateBy(BaseContext.getCurrentId());
+        member.setUpdateTime(LocalDateTime.now());
 
         int result = memberMapper.updateMember(member);
         if (result <= 0) {
@@ -129,8 +102,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Transactional  // 添加事务注解
     public void deleteMember(String[] ids) {
         List<String> canDeleteIds = new ArrayList<>();
-       // String currentUser = BaseContext.getCurrentId();
-       // LocalDateTime now = LocalDateTime.now();
 
 
         //判断成员是否存在
@@ -160,10 +131,25 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
     }
 
+
+    /**
+     * 查询详细成员信息（可批量）
+     * @param id
+     */
     @Override
     public MemberVO getMemberDetailById(String id) {
-        MemberVO member = memberMapper.selectById(id);
-        return Result.success(member).getData();
+        if (StringUtils.isBlank(id)) {
+            throw new BaseException(MessageConstant.MEMBER_ID_CANNOT_BE_NULL);
+        }
+
+        // 查询成员信息
+        MemberVO memberVO = memberMapper.selectById(id);
+        if (memberVO == null ) {
+            throw new BaseException(MessageConstant.MEMBER_NOT_EXISTS);
+        }
+
+        return memberVO;
+
     }
 
 
@@ -173,49 +159,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
      * 增加成员信息（可批量）
      * @param memberDTOList
      */
-
+    @Transactional
     @Override
     public void batchAddMembers(List<MemberAddDTO> memberDTOList) {
-        if (CollectionUtils.isEmpty(memberDTOList)) {
-            throw new BaseException("成员列表不能为空");
-        }
-
-        // 批量校验
-        validateBatchMembers(memberDTOList);
-
-        // 转换DTO为Entity
-        List<Member> members = convertToMembers(memberDTOList);
-
-        // 分批插入（每500条一批，避免SQL过长）
-        int batchSize = 500;
-        int totalBatches = (int) Math.ceil((double) members.size() / batchSize);
-        int totalInserted = 0;
-
-        for (int i = 0; i < totalBatches; i++) {
-            int fromIndex = i * batchSize;
-            int toIndex = Math.min(fromIndex + batchSize, members.size());
-            List<Member> batchList = members.subList(fromIndex, toIndex);
-
-            int result = memberMapper.batchInsertMembers(batchList);
-            totalInserted += result;
-
-        }
-
-        if (totalInserted != memberDTOList.size()) {
-            throw new BaseException(String.format(
-                    "批量新增成员失败，成功%d条",
-                    memberDTOList.size(), totalInserted));
-        }
-
-        log.info("批量新增成员完成，总共插入{}条记录", totalInserted);
-    }
-
-
-    private void validateBatchMembers(List<MemberAddDTO> memberDTOList) {
+        log.info("开始批量新增事务，记录数: {}", memberDTOList.size());
         Set<String> phones = new HashSet<>();
         Set<String> idCards = new HashSet<>();
 
-        // 先批量查询已存在的身份证号
+        // 批量查询已存在的身份证号
 
         List<String> idCardList = memberDTOList.stream()
                 .map(MemberAddDTO::getIdCard)
@@ -224,33 +175,105 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
         Set<String> existingIdCards = memberMapper.findExistingIdCards(idCardList);
 
+        List<Member> memberList = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
+
+        // 校验和转换
         for (int i = 0; i < memberDTOList.size(); i++) {
             MemberAddDTO dto = memberDTOList.get(i);
+            int recordNumber = i + 1;
 
             try {
-                // 基础校验（会触发@Valid注解的校验）
-
                 validateMemberDTO(dto);
 
-                // 检查批次内重复
                 if (!phones.add(dto.getTelephone())) {
-                    throw new BaseException("第" + (i + 1) + "条记录：手机号重复: " + dto.getTelephone());
+                    errorMessages.add("第" + recordNumber + "条记录：手机号重复: " + dto.getTelephone());
+                    continue;
                 }
                 if (!idCards.add(dto.getIdCard())) {
-                    throw new BaseException("第" + (i + 1) + "条记录：身份证号重复: " + dto.getIdCard());
+                    errorMessages.add("第" + recordNumber + "条记录：身份证号重复: " + dto.getIdCard());
+                    continue;
                 }
-
-                // 检查数据库中是否已存在
-
                 if (existingIdCards.contains(dto.getIdCard())) {
-                    throw new BaseException("第" + (i + 1) + "条记录：身份证号已存在: " + dto.getIdCard());
+                    errorMessages.add("第" + recordNumber + "条记录：身份证号已存在: " + dto.getIdCard());
+                    continue;
                 }
+                if (memberMapper.findExistingUserId(dto.getUserId())==null) {
+                    errorMessages.add("第" + recordNumber + "条记录：UserId不存在: " + dto.getUserId());
+                    continue;
+                }
+
+                memberList.add(convertToMember(dto));
 
             } catch (BaseException e) {
-                throw new BaseException("第" + (i + 1) + "条记录校验失败: " + e.getMessage());
+                errorMessages.add("第" + recordNumber + "条记录校验失败: " + e.getMessage());
+            }
+        }
+
+        // 统一处理错误
+        if (!errorMessages.isEmpty()) {
+            throw new BaseException("批量新增校验失败: " + String.join("; ", errorMessages));
+        }
+
+        // 批量插入（只调用一次）
+        if (!memberList.isEmpty()) {
+            log.info("开始插入 {} 条记录", memberList.size());
+            int result = memberMapper.batchInsertMembers(memberList);
+            log.info("插入完成，影响行数: {}", result);
+
+            if (result != memberList.size()) {
+                throw new BaseException("插入行数不匹配");
             }
         }
     }
+    /**
+     * 校验信息（可批量）
+     * @param dto
+     */
+    private void validateMemberDTO(MemberUpdateDTO dto) {
+
+
+        if (StringUtils.isBlank(dto.getDepartmentId())) {
+            throw new BaseException(MessageConstant.DEPARTMENT_ID_CANNOT_BE_NULL);
+        }
+        if (StringUtils.isBlank(dto.getName())) {
+            throw new BaseException(MessageConstant.NAME_CANNOT_BE_NULL);
+        }
+        if (dto.getSex() == null) {
+            throw new BaseException(MessageConstant.SEX_CANNOT_BE_NULL);
+        }
+        if (dto.getPoliticalStatus() == null) {
+            throw new BaseException();
+        }
+        if (StringUtils.isBlank(dto.getIdCard())) {
+            throw new BaseException(MessageConstant.ID_CARD_CANNOT_BE_NULL);
+        }
+        if (StringUtils.isBlank(dto.getTelephone())) {
+            throw new BaseException(MessageConstant.TELEPHONE_CANNOT_BE_NULL);
+        }
+
+//        // 手机号格式校验
+//        if (!Pattern.matches("^1[3-9]\\d{9}$", dto.getTelephone())) {
+//            throw new BaseException(MessageConstant.TELEPHONE_FORMAT_INCORRECT);
+//        }
+
+        // 身份证号格式校验
+        if (!isValidIdCard(dto.getIdCard())) {
+            throw new BaseException(MessageConstant.ID_CARD_FORMAT_INCORRECT);
+        }
+
+        // 枚举值校验
+        if (dto.getSex() != 1 && dto.getSex() != 2) {
+            throw new BaseException(MessageConstant.SEX_VALUE_MUST_BE_1_OR_2);
+        }
+        if (dto.getPoliticalStatus() < 1 || dto.getPoliticalStatus() > 6) {
+            throw new BaseException(MessageConstant.POLITICAL_STATUS_VALUE_MUST_BE_1_TO_6);
+        }
+        if (dto.getIsAtSchool() != null && (dto.getIsAtSchool() < 1 || dto.getIsAtSchool() > 2)) {
+            throw new BaseException(MessageConstant.IS_AT_SCHOOL_VALUE_MUST_BE_1_OR_2);
+        }
+    }
+
 
     /**
      * 校验信息（可批量）
@@ -280,59 +303,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             throw new BaseException(MessageConstant.TELEPHONE_CANNOT_BE_NULL);
         }
 
-        // 手机号格式校验
-        if (!Pattern.matches("^1[3-9]\\d{9}$", dto.getTelephone())) {
-            throw new BaseException(MessageConstant.TELEPHONE_FORMAT_INCORRECT);
-        }
-
-        // 身份证号格式校验
-        if (!isValidIdCard(dto.getIdCard())) {
-            throw new BaseException(MessageConstant.ID_CARD_FORMAT_INCORRECT);
-        }
-
-        // 枚举值校验
-        if (dto.getSex() != 1 && dto.getSex() != 2) {
-            throw new BaseException(MessageConstant.SEX_VALUE_MUST_BE_1_OR_2);
-        }
-        if (dto.getPoliticalStatus() < 1 || dto.getPoliticalStatus() > 6) {
-            throw new BaseException(MessageConstant.POLITICAL_STATUS_VALUE_MUST_BE_1_TO_6);
-        }
-        if (dto.getIsAtSchool() != null && (dto.getIsAtSchool() < 1 || dto.getIsAtSchool() > 2)) {
-            throw new BaseException(MessageConstant.IS_AT_SCHOOL_VALUE_MUST_BE_1_OR_2);
-        }
-    }
-
-    /**
-     * 校验信息（可批量）
-     * @param dto
-     */
-    private void validateMemberDTO(MemberUpdateDTO dto) {
-        if (StringUtils.isBlank(dto.getUserId())) {
-            throw new BaseException(MessageConstant.USER_ID_CANNOT_BE_NULL);
-        }
-        if (StringUtils.isBlank(dto.getDepartmentId())) {
-            throw new BaseException(MessageConstant.DEPARTMENT_ID_CANNOT_BE_NULL);
-        }
-        if (StringUtils.isBlank(dto.getName())) {
-            throw new BaseException(MessageConstant.NAME_CANNOT_BE_NULL);
-        }
-        if (dto.getSex() == null) {
-            throw new BaseException(MessageConstant.SEX_CANNOT_BE_NULL);
-        }
-        if (dto.getPoliticalStatus() == null) {
-            throw new BaseException();
-        }
-        if (StringUtils.isBlank(dto.getIdCard())) {
-            throw new BaseException(MessageConstant.ID_CARD_CANNOT_BE_NULL);
-        }
-        if (StringUtils.isBlank(dto.getTelephone())) {
-            throw new BaseException(MessageConstant.TELEPHONE_CANNOT_BE_NULL);
-        }
-
-        // 手机号格式校验
-        if (!Pattern.matches("^1[3-9]\\d{9}$", dto.getTelephone())) {
-            throw new BaseException(MessageConstant.TELEPHONE_FORMAT_INCORRECT);
-        }
 
         // 身份证号格式校验
         if (!isValidIdCard(dto.getIdCard())) {
@@ -352,32 +322,62 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     }
 
 
-    // 转换DTO为Entity
-    private List<Member> convertToMembers(List<MemberAddDTO> dtos) {
-        String currentUser = BaseContext.getCurrentId();
+
+
+    // DTO转Entity方法
+    private Member convertToMember(MemberAddDTO dto) {
+        Member member = new Member();
+
+        // 设置基础信息
+        IdGenerate idGenerate = new IdGenerate();
+        String memberId = idGenerate.nextUUID(Member.class);
+        member.setId(memberId);
+        member.setUserId(dto.getUserId());
+        member.setDepartmentId(dto.getDepartmentId());
+        member.setName(dto.getName());
+        member.setSex(dto.getSex());
+        member.setMajor(dto.getMajor());
+        member.setClassInfo(dto.getClassInfo());
+        member.setPoliticalStatus(dto.getPoliticalStatus());
+        member.setIdCard(dto.getIdCard());
+        member.setTelephone(dto.getTelephone());
+        member.setEducationBackground(dto.getEducationBackground());
+        member.setNationality(dto.getNationality());
+        member.setNativePlace(dto.getNativePlace());
+
+        // 设置时间字段（注意处理可能的null值）
+        member.setDateOfBirth(dto.getDateOfBirth());
+        member.setJoinCommunistTime(dto.getJoinCommunistTime());
+        member.setSubmitCommunistTime(dto.getSubmitCommunistTime());
+        member.setContacts(dto.getContacts());
+        member.setRecommendingTime(dto.getRecommendingTime());
+        member.setConfirmedActiveMemberTime(dto.getConfirmedActiveMemberTime());
+        member.setConfirmedDevelopmentTargetTime(dto.getConfirmedDevelopmentTargetTime());
+        member.setConfirmedProbationaryMemberTime(dto.getConfirmedProbationaryMemberTime());
+        member.setBecomeFullMemberTime(dto.getBecomeFullMemberTime());
+
+        // 设置状态字段（使用DTO中的值或默认值）
+        member.setIsAtSchool(dto.getIsAtSchool() != null ? dto.getIsAtSchool() : 1);
+        member.setIsDelete(dto.getIsDelete() != null ? dto.getIsDelete() : 2);
+
+        // 设置审计字段（当前时间）
         LocalDateTime now = LocalDateTime.now();
+        member.setCreateTime(now);
+        member.setUpdateTime(now);
 
-        return dtos.stream().map(dto -> {
-            Member member = new Member();
+        // 创建人和更新人
 
-            // 基础信息拷贝
-            BeanUtils.copyProperties(dto, member);
+        String currentUser = BaseContext.getCurrentId();
+        if (StringUtils.isBlank(currentUser)) {
+            currentUser = "Admin"; // 默认系统用户
+            log.warn("当前用户ID为空，使用默认值: Admin");
+        }
+        member.setCreateBy(currentUser);
+        member.setUpdateBy(currentUser);
 
-            // 设置系统字段
-            member.setCreateBy(currentUser);
-            member.setUpdateBy(currentUser);
-            member.setCreateTime(now);
-            member.setUpdateTime(now);
-            member.setDepartmentId("无");
-            member.setIsDelete(2); // 未删除
 
-            // 确保默认值
-            if (member.getIsAtSchool() == null) {
-                member.setIsAtSchool(2); // 默认在校
-            }
 
-            return member;
-        }).collect(Collectors.toList());
+        return member;
     }
 
 

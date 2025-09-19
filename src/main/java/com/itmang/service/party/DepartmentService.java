@@ -1,12 +1,14 @@
 package com.itmang.service.party;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+
 import com.itmang.pojo.dto.AddDepartmentDTO;
 
 import com.itmang.pojo.dto.DepartmentDTO;
 import com.itmang.pojo.dto.DepartmentPageQueryDTO;
 import com.itmang.pojo.entity.Department;
 import com.itmang.pojo.entity.PageResult;
+
 import com.itmang.pojo.entity.Result;
 
 import com.itmang.pojo.vo.DepartmentVO;
@@ -25,6 +27,7 @@ public interface DepartmentService extends IService<Department> {
     /**
      * 新增部门
      */
+
     void addDept(AddDepartmentDTO addDepartment);
 
     /**
@@ -67,7 +70,7 @@ public interface DepartmentService extends IService<Department> {
 
 
 
-    List<DepartmentVO> getChildrenByParentId(String fatherDepartmentId);
 
+    List<DepartmentVO> getChildrenByParentId(String fatherDepartmentId);
 
 }
