@@ -19,6 +19,7 @@ import com.itmang.pojo.entity.User;
 import com.itmang.pojo.vo.LoginVO;
 import com.itmang.properties.JwtProperties;
 import com.itmang.service.user.UserService;
+import com.itmang.utils.IdGenerate;
 import com.itmang.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,6 +49,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private JwtProperties jwtProperties;//导入jwt配置类
+
+    @Resource
+    private IdGenerate idGenerate;
 
     @Operation(summary = "登录接口")
     @PostMapping("/login")
@@ -231,6 +235,7 @@ public class UserController extends BaseController {
             user.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
             user.setCreateBy(BaseContext.getCurrentId());
             user.setCreateTime(LocalDateTime.now());
+            user.setId(idGenerate.nextId(user).toString());
             userList.add(user);
         }
         userService.saveBatch(userList);
