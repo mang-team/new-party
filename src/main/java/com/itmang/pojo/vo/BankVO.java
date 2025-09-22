@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 @Builder
-@Schema(name = "QuestionBank", description = "题目VO")
+@Schema(name = "BankVO", description = "题目VO")
 public class BankVO {
 
     @Schema(name = "type", description = "题目类型")

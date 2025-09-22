@@ -13,8 +13,10 @@ import com.itmang.pojo.dto.AddExaminationDTO;
 import com.itmang.pojo.dto.ExaminationPageDTO;
 import com.itmang.pojo.dto.ExaminationUpdateDTO;
 import com.itmang.pojo.entity.*;
+import com.itmang.pojo.vo.ChoiceVO;
 import com.itmang.pojo.vo.ExaminationPageVO;
 import com.itmang.pojo.vo.ExaminationVO;
+import com.itmang.pojo.vo.WriteVO;
 import com.itmang.service.study.ExaminationService;
 import com.itmang.utils.IdGenerate;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -470,6 +470,7 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
      * @return
      */
     public ExaminationVO queryExaminationInformation(String id) {
+        //TODO 返回题目
         //判断考试信息是否存在
         ExaminationInformation examinationInformation = examinationInformationMapper.selectById(id);
         if(examinationInformation == null
@@ -481,8 +482,89 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
         String[] userIds = examinationInformation.getUserIds().split(",");
         //将用户的id转换成用户名字
         List<String> userNameList = userMapper.queryUserNames(userIds);
+        //返回用户名字集合
         examinationVO.setUserNames(String.join(",", userNameList));
+        //返回修改人姓名
         examinationVO.setUpdateName(userMapper.selectById(examinationInformation.getUpdateBy()).getUserName());
+        //将题目拆解，返回各类题目信心
+        //1.先得到各类题目的id集合
+        String[] singleChoiceIds = examinationInformation.getSingleChoiceIds().split(",");
+        String[] multipleChoiceIds = examinationInformation.getMultipleChoiceIds().split(",");
+        String[] judgeIds = examinationInformation.getJudgeIds().split(",");
+        String[] fillBlankIds = examinationInformation.getFillBlankIds().split(",");
+        //2.根据id集合查询题目信息
+        List singleChoiceList = new ArrayList<>();
+        List multipleChoiceList = new ArrayList<>();
+        List judgeList = new ArrayList<>();
+        List fillBlankList = new ArrayList<>();
+        if(singleChoiceIds != null && singleChoiceIds.length > 0 && !singleChoiceIds[0].isEmpty()){
+            List<QuestionBank> singleChoiceIdsList = questionBankMapper.selectBatchIds(Arrays.asList(singleChoiceIds));
+            for (QuestionBank singleChoice : singleChoiceIdsList) {
+                //将单选题信息进行存储
+                List<String> questionOptionList = new ArrayList<>();
+                if(singleChoice.getQuestionOption() != null && !singleChoice.getQuestionOption().isEmpty()) {
+                    String[] questionOptions = singleChoice.getQuestionOption().split(",");
+                    for (String questionOption : questionOptions) {
+                        questionOptionList.add(questionOption);
+                    }
+                }
+                //创建一个ChoiceVO对象，来进行存储
+                ChoiceVO choiceVO = ChoiceVO.builder()
+                        .id(singleChoice.getId())
+                        .question(singleChoice.getQuestion())
+                        .questionOption(questionOptionList)
+                        .build();
+                singleChoiceList.add(choiceVO);
+            }
+        }
+        if(multipleChoiceIds != null && multipleChoiceIds.length > 0 && !multipleChoiceIds[0].isEmpty()){
+            List<QuestionBank> multipleChoiceIdsList = questionBankMapper.selectBatchIds(Arrays.asList(multipleChoiceIds));
+            for (QuestionBank multipleChoice : multipleChoiceIdsList) {
+                //将多选题信息进行存储
+                List<String> questionOptionList = new ArrayList<>();
+                if(multipleChoice.getQuestionOption() != null && !multipleChoice.getQuestionOption().isEmpty()) {
+                    String[] questionOptions = multipleChoice.getQuestionOption().split(",");
+                    for (String questionOption : questionOptions) {
+                        questionOptionList.add(questionOption);
+                    }
+                }
+                //创建一个ChoiceVO对象，来进行存储
+                ChoiceVO choiceVO = ChoiceVO.builder()
+                        .id(multipleChoice.getId())
+                        .question(multipleChoice.getQuestion())
+                        .questionOption(questionOptionList)
+                        .build();
+                multipleChoiceList.add(choiceVO);
+            }
+        }
+        //判断题和填空题只用将题目储存在list集合中
+        if(judgeIds != null && judgeIds.length > 0 && !judgeIds[0].isEmpty()){
+            List<QuestionBank> judgeIdsList = questionBankMapper.selectBatchIds(Arrays.asList(judgeIds));
+            for (QuestionBank judge : judgeIdsList) {
+                //创建一个WriteVO对象，来进行存储
+                WriteVO writeVO = WriteVO.builder()
+                        .id(judge.getId())
+                        .question(judge.getQuestion())
+                        .build();
+                judgeList.add(writeVO);
+            }
+        }
+        if(fillBlankIds != null && fillBlankIds.length > 0 && !fillBlankIds[0].isEmpty()){
+            List<QuestionBank> fillBlankIdsList = questionBankMapper.selectBatchIds(Arrays.asList(fillBlankIds));
+            for (QuestionBank fillBlank : fillBlankIdsList) {
+                //创建一个WriteVO对象，来进行存储
+                WriteVO writeVO = WriteVO.builder()
+                        .id(fillBlank.getId())
+                        .question(fillBlank.getQuestion())
+                        .build();
+                fillBlankList.add(writeVO);
+            }
+        }
+        //3.讲题目处理成对应格式，并返回
+        examinationVO.setSingleChoice(singleChoiceList);
+        examinationVO.setMultipleChoice(multipleChoiceList);
+        examinationVO.setJudge(judgeList);
+        examinationVO.setFillBlank(fillBlankList);
         return examinationVO;
     }
 

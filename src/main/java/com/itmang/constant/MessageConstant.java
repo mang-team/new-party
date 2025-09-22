@@ -93,5 +93,8 @@ public class MessageConstant {
     public static final String DATA_INVALID = "资料不存在";
     public static final String POINTS_NOT_NUMBER = "积分不是整形";
     public static final String STATUS_NOT_NUMBER = "状态不是整形";
+    public static final String EXAMINATION_INFORMATION_START_TIME_ERROR = "考试已经开始或结束";
+    public static final String SCORE_NOT_NUMBER = "分数不是数字";
+    public static final String PAPER_IS_NULL = "考卷为空";
 
 }

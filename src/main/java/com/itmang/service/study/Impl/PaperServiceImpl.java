@@ -1,10 +1,12 @@
 package com.itmang.service.study.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.itmang.constant.DeleteConstant;
 import com.itmang.constant.MessageConstant;
+import com.itmang.constant.PageConstant;
 import com.itmang.constant.StatusConstant;
 import com.itmang.context.BaseContext;
 import com.itmang.exception.BaseException;
@@ -23,9 +25,11 @@ import com.itmang.utils.AnswerParserUtil;
 import com.itmang.utils.CodeUtil;
 import com.itmang.utils.IdGenerate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Paper;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -48,12 +52,23 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
      * @param addPaperDTO
      */
     public void addPaperById(AddPaperDTO addPaperDTO) {
+        //对传入的参数进行校验
+        if (addPaperDTO == null || addPaperDTO.getIds() == null || addPaperDTO.getExaminationInformationId() == null) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        if (addPaperDTO.getIds().isEmpty() || addPaperDTO.getExaminationInformationId().isEmpty()) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
         //先查看考试信息存不存在
         ExaminationInformation examinationInformation =
                 examinationInformationMapper.selectById(addPaperDTO.getExaminationInformationId());
         if (examinationInformation == null ||
                 examinationInformation.getIsDelete().equals(DeleteConstant.YES)) {
             throw new BaseException(MessageConstant.EXAMINATION_INFORMATION_NOT_EXIST);
+        }
+        //判断考试的时间是否已经在当前时间后面
+        if (examinationInformation.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new BaseException(MessageConstant.EXAMINATION_INFORMATION_START_TIME_ERROR);
         }
         //再查看用户是否存在
         String[] userIds = addPaperDTO.getIds().split(",");
@@ -63,10 +78,19 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
             if ( user == null || user.getIsDelete().equals(DeleteConstant.YES)){
                 continue;
             }
+            //判断用户是否有该考卷
+            ExaminationPaper examinationPaper = examinationPaperMapper.selectOne(
+                    new QueryWrapper<ExaminationPaper>().eq("user_id", user.getId())
+                            .eq("examination_information_id", addPaperDTO.getExaminationInformationId())
+                            .eq("is_delete", DeleteConstant.NO)
+                            .eq("is_submit", StatusConstant.DISABLE));
+            if (examinationPaper != null) {
+                continue;
+            }
             canAddUserIds.add(userId);
         }
         if (!canAddUserIds.isEmpty()) {
-            // 为每个用户生成独立的考卷记录
+            // 为每个用户生成独立的考卷记录，途中进行判断试卷是否已经存在（没有被删除）并且未经提交，以上这种情况不能新增考卷
             List<ExaminationPaper> examinationPapers = new ArrayList<>();
             IdGenerate idGenerate = new IdGenerate();
             for (String userId : canAddUserIds) {
@@ -177,6 +201,90 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
         if (examinationPaper.getIsSubmit().equals(StatusConstant.ENABLE)) {
             throw new BaseException(MessageConstant.PAPER_HAVE_ALREADY_SUBMIT);
         }
+        //判断是否有修改答案
+        if((paperUpdateDTO.getSingleChoiceAnswers() == null || paperUpdateDTO.getSingleChoiceAnswers().isEmpty())
+                && (paperUpdateDTO.getMultipleChoiceAnswers() == null || paperUpdateDTO.getMultipleChoiceAnswers().isEmpty())
+                && (paperUpdateDTO.getJudgeAnswers() == null || paperUpdateDTO.getJudgeAnswers().isEmpty())
+                && (paperUpdateDTO.getFillBlankAnswers() == null || paperUpdateDTO.getFillBlankAnswers().isEmpty())){
+            throw new BaseException(MessageConstant.PAPER_IS_NULL);
+        }
+        //TODO 后续需要对答案与题目数量进行校验
+        //对传入的数据进行判断，对各类题型的答案进行拆解，并将其处理成需要的存贮格式
+        if(paperUpdateDTO.getSingleChoiceAnswers() != null && !paperUpdateDTO.getSingleChoiceAnswers().isEmpty()){
+            //答案不为空，对答案进行截取处理，传进来的答案格式为：1,2,3,4,3,2,3,2
+            //需要将其处理成：[1,2,3,4,3,2,3,2]
+            String singleChoiceAnswers = paperUpdateDTO.getSingleChoiceAnswers();
+            String[] singleChoiceArray = singleChoiceAnswers.split(",");
+            StringBuilder singleChoiceBuilder = new StringBuilder();
+            singleChoiceBuilder.append("[");
+            for(int i = 0; i < singleChoiceArray.length; i++){
+                singleChoiceBuilder.append(singleChoiceArray[i]);
+                if(i != singleChoiceArray.length - 1){
+                    singleChoiceBuilder.append(",");
+                }
+            }
+            singleChoiceBuilder.append("]");
+            paperUpdateDTO.setSingleChoiceAnswers(singleChoiceBuilder.toString());
+        }
+        if(paperUpdateDTO.getMultipleChoiceAnswers() != null && !paperUpdateDTO.getMultipleChoiceAnswers().isEmpty()){
+            //答案不为空，对答案进行截取处理传进来的答案格式为：1,2,3,4;2,3;1,2,3;1,2
+            //需要将其处理成：[[1,2,3,4],[2,3],[1,2,3],[1,2]]
+            String multipleChoiceAnswers = paperUpdateDTO.getMultipleChoiceAnswers();
+            String[] multipleChoiceArray = multipleChoiceAnswers.split(";");
+            StringBuilder multipleChoiceBuilder = new StringBuilder();
+            multipleChoiceBuilder.append("[");
+            for(int i = 0; i < multipleChoiceArray.length; i++){
+                multipleChoiceBuilder.append("[");
+                String[] subArray = multipleChoiceArray[i].split(",");
+                for(int j = 0; j < subArray.length; j++){
+                    multipleChoiceBuilder.append(subArray[j]);
+                    if(j != subArray.length - 1){
+                        multipleChoiceBuilder.append(",");
+                    }
+                }
+                multipleChoiceBuilder.append("]");
+                if(i != multipleChoiceArray.length - 1){
+                    multipleChoiceBuilder.append(",");
+                }
+            }
+            multipleChoiceBuilder.append("]");
+            paperUpdateDTO.setMultipleChoiceAnswers(multipleChoiceBuilder.toString());
+        }
+        if(paperUpdateDTO.getJudgeAnswers() != null && !paperUpdateDTO.getJudgeAnswers().isEmpty()){
+            //答案不为空，对答案进行截取处理，传进来的答案格式为：1,2,2,1,1,2,1
+            //需要将其处理成：[1,2,2,1,1,2,1]
+            String judgeAnswers = paperUpdateDTO.getJudgeAnswers();
+            String[] judgeArray = judgeAnswers.split(",");
+            StringBuilder judgeBuilder = new StringBuilder();
+            judgeBuilder.append("[");
+            for(int i = 0; i < judgeArray.length; i++){
+                judgeBuilder.append(judgeArray[i]);
+                if(i != judgeArray.length - 1){
+                    judgeBuilder.append(",");
+                }
+            }
+            judgeBuilder.append("]");
+            paperUpdateDTO.setJudgeAnswers(judgeBuilder.toString());
+        }
+        if(paperUpdateDTO.getFillBlankAnswers() != null && !paperUpdateDTO.getFillBlankAnswers().isEmpty()){
+            //答案不为空，对答案进行截取处理传进来的答案格式为：....;...;...;...
+            //需要将其处理成：[[....],[...],[...],[...]]
+            String fillBlankAnswers = paperUpdateDTO.getFillBlankAnswers();
+            String[] fillBlankArray = fillBlankAnswers.split(";");
+            StringBuilder fillBlankBuilder = new StringBuilder();
+            fillBlankBuilder.append("[");
+            for(int i = 0; i < fillBlankArray.length; i++){
+                fillBlankBuilder.append("[");
+                fillBlankBuilder.append(fillBlankArray[i]);
+                fillBlankBuilder.append("]");
+                if(i != fillBlankArray.length - 1){
+                    fillBlankBuilder.append(",");
+                }
+            }
+            fillBlankBuilder.append("]");
+            paperUpdateDTO.setFillBlankAnswers(fillBlankBuilder.toString());
+        }
+
         // 构建更新对象
         ExaminationPaper updatePaper = ExaminationPaper.builder()
                 .id(paperUpdateDTO.getId())
@@ -214,6 +322,24 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
      * @return
      */
     public PageResult queryPaperPageList(PaperPageDTO paperPageDTO) {
+        //对传入的参数进行校验
+        if(paperPageDTO.getIsSubmit() != null && !NumberUtils.isCreatable(paperPageDTO.getIsSubmit().toString())){
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        if(paperPageDTO.getScoreMin() != null && !NumberUtils.isCreatable(paperPageDTO.getScoreMin().toString())){
+            throw new BaseException(MessageConstant.SCORE_NOT_NUMBER);
+        }
+        if(paperPageDTO.getScoreMax() != null && !NumberUtils.isCreatable(paperPageDTO.getScoreMax().toString())){
+            throw new BaseException(MessageConstant.SCORE_NOT_NUMBER);
+        }
+        //配置默认页码1和分页大小5
+        if(paperPageDTO.getPage() == null || paperPageDTO.getPage() < 1){
+            paperPageDTO.setPage(PageConstant.PAGE_NUM);
+        }
+        //查看是否有分页大小
+        if(paperPageDTO.getPageSize() == null || paperPageDTO.getPageSize() < 1){
+            paperPageDTO.setPageSize(PageConstant.PAGE_SIZE);
+        }
         PageHelper.startPage(paperPageDTO.getPage(), paperPageDTO.getPageSize());
         List<PaperPageVO> paperVOList = examinationPaperMapper.getPaperList(paperPageDTO);
         PageInfo<PaperPageVO> pageInfo = new PageInfo<>(paperVOList);
@@ -306,6 +432,10 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
 //
 //        }
 //    }
+    /**
+     * 批量批改考卷
+     * @param ids
+     */
     public void correctPapers(String[] ids) {
         // 缓存：考试信息ID -> 正确答案容器（避免重复查询）
         Map<String, List<Map<String, String>>> correctPaperIds = new HashMap<>();
