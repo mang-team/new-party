@@ -470,7 +470,6 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
      * @return
      */
     public ExaminationVO queryExaminationInformation(String id) {
-        //TODO 返回题目
         //判断考试信息是否存在
         ExaminationInformation examinationInformation = examinationInformationMapper.selectById(id);
         if(examinationInformation == null
