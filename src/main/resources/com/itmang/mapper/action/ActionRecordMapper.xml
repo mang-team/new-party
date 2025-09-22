@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.action.ActionRecordMapper">
+
+    <!-- 分页查询活动记录信息 -->
+    <select id="pageGetActionRecordMessage" resultType="com.itmang.pojo.vo.action.PageActionRecordMessageVO">
+        select * from action_record where is_delete = 2
+        <if test="actionInformationId != null and actionInformationId != ''">
+            and action_information_id like concat('%',#{actionInformationId},'%')
+        </if>
+        order by create_time
+    </select>
+
+    <!-- 根据活动记录id修改活动记录表信息 -->
+    <update id="modifyActionRecordMessage">
+        update action_record
+        <set>
+            <if test="state != 0">state = #{state},</if>
+            <if test="notes != null and notes != ''">notes = #{notes},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据活动记录id删除活动记录 -->
+    <update id="deleteActionRecordMessage">
+        update action_record
+        set is_delete = 1,update_by = #{currentId},update_time = #{dateTime} where id in
+        <foreach collection="idList" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>
