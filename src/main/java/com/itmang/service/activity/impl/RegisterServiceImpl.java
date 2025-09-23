@@ -128,6 +128,7 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
         }
     }
 
+    //逻辑删除没判断
     @Override
     public PageResult queryRegisterInformationList(FindRegisterDTO dto) {
         // 使用 MyBatis-Plus LambdaQueryWrapper 构建条件

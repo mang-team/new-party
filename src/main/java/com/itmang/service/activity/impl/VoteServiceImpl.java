@@ -133,6 +133,7 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
         }
     }
 
+    //todo 数据库的假数据格式有问题
     @Override
     public PageResult queryVoteInformationList(FindVoteDTO dto) {
         // 使用 MyBatis-Plus LambdaQueryWrapper 构建条件

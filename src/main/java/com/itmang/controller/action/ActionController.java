@@ -40,6 +40,7 @@ public class ActionController {
      * 分页查询简略活动信息
      * @return
      */
+    //todo 没有id以及没有足够的展示数据
     // TODO: 可删？？？
     @Operation(summary = "分页查询简略活动信息")
     @PostMapping("/pageGetShortActionMessage")
@@ -78,6 +79,7 @@ public class ActionController {
      * @param idList
      * @return
      */
+    //请求参数应该是一个删除id集合的json字符串
     @Operation(summary = "根据活动id批量删除活动信息")
     @PostMapping("/deleteActionMessage")
     public Result<String> deleteActionMessage(@RequestParam List<String> idList){
