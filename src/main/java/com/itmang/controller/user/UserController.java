@@ -2,8 +2,6 @@ package com.itmang.controller.user;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.github.pagehelper.PageHelper;
-import com.itmang.annotation.GlobalInterceptor;
 import com.itmang.constant.JwtClaimsConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.context.BaseContext;
@@ -22,19 +20,13 @@ import com.itmang.properties.JwtProperties;
 import com.itmang.service.user.UserService;
 import com.itmang.utils.IdGenerate;
 import com.itmang.utils.JwtUtil;
-import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -248,6 +240,7 @@ public class UserController extends BaseController {
     public Result<Object> getUserInfo() {
         String userId = BaseContext.getCurrentId();
         UserQueryVo userQueryVo = userService.getUserInfo(userId);
+        BaseContext.removeCurrentId();
         return Result.success(userQueryVo);
     }
 }
