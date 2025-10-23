@@ -17,6 +17,7 @@ import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.pojo.entity.User;
 import com.itmang.pojo.vo.LoginVO;
+import com.itmang.pojo.vo.UserQueryVo;
 import com.itmang.properties.JwtProperties;
 import com.itmang.service.user.UserService;
 import com.itmang.utils.IdGenerate;
@@ -240,5 +241,13 @@ public class UserController extends BaseController {
         }
         userService.saveBatch(userList);
         return Result.success();
+    }
+
+    @Operation(summary = "获取用户信息")
+    @PostMapping("/getUserInfo")
+    public Result<Object> getUserInfo() {
+        String userId = BaseContext.getCurrentId();
+        UserQueryVo userQueryVo = userService.getUserInfo(userId);
+        return Result.success(userQueryVo);
     }
 }

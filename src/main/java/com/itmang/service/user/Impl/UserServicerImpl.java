@@ -14,6 +14,7 @@ import com.itmang.pojo.dto.LoginDTO;
 import com.itmang.pojo.dto.PageUserDto;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.User;
+import com.itmang.pojo.vo.UserQueryVo;
 import com.itmang.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,11 @@ public class UserServicerImpl extends ServiceImpl<UserMapper, User> implements U
         List<User> userList = userMapper.getUserPage(pageUserDto);
         PageInfo<User> userPage = new PageInfo<>(userList);
         return new PageResult(userPage.getTotal(),userPage.getList());
+    }
+
+    @Override
+    public UserQueryVo getUserInfo(String userId) {
+        return userMapper.getUserInfo(userId);
     }
 
 

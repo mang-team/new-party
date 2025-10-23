@@ -41,7 +41,7 @@ public class ActionController {
      * @return
      */
     //todo 没有id以及没有足够的展示数据
-    // TODO: 可删？？？
+    //TODO: 可删？？？
     @Operation(summary = "分页查询简略活动信息")
     @PostMapping("/pageGetShortActionMessage")
     public Result<PageResult> pageGetShortActionMessage(@RequestBody PageDetailActionMessageDTO actionMessageDTO){

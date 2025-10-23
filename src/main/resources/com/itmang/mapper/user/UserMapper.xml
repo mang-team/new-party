@@ -31,4 +31,11 @@
             </if>
         </where>
     </select>
+    <select id="getUserInfo" resultType="com.itmang.pojo.vo.UserQueryVo">
+        select user.*, department.department_name, member.*
+        from user
+                 left join member on member.user_id = user.id
+                 left join department on member.department_id = department.id
+        where user.id = #{userId}
+    </select>
 </mapper>
