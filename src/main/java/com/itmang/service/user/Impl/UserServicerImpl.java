@@ -47,14 +47,14 @@ public class UserServicerImpl extends ServiceImpl<UserMapper, User> implements U
         if(user == null){
             //没有查询到，则返回信息
             log.info("用户登录失败，用户名不存在");
-            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_OR_PASSWORD_ERROR);
         }
         //将明文密码转成md5的加密数组
         password= DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(user.getPassword())) { //将密码进行比对
             //密码错误
             log.info("用户登录失败，密码错误");
-            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+            throw new PasswordErrorException(MessageConstant.ACCOUNT_OR_PASSWORD_ERROR);
         }
         //判断账号是否被锁定
         if (user.getStatus().equals(StatusConstant.DISABLE)) {

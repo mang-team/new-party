@@ -7,6 +7,7 @@ public class MessageConstant {
 
     public static final String PASSWORD_ERROR = "密码错误";
     public static final String ACCOUNT_NOT_FOUND = "账号不存在";
+    public static final String ACCOUNT_OR_PASSWORD_ERROR = "账号或密码错误";
     public static final String ACCOUNT_LOCKED = "账号被锁定";
     public static final String ACCOUNT_EXISTS = "账号已存在";
     public static final String UNKNOWN_ERROR = "未知错误";
@@ -57,19 +58,19 @@ public class MessageConstant {
     public static final String CANNOT_SET_SELF_AS_PARENT = "不能将本部门设为上级部门";
     public static final String DEPARTMENT_IDS_EMPTY = "部门ID列表不能为空";
     public static final String DEPARTMENT_HAS_CHILDREN = "该部门下有子级部门，不能删除";
-    public static final String DEPARTMENT_EMPTY="部门信息不能为空";
-    public static final String DEPARTMENT_NAME_EMPTY="部门名称不能为空";
-    public static final String DEPARTMENT_NAME_TOO_LONG="部门名称长度不能超过20个字符";
+    public static final String DEPARTMENT_EMPTY = "部门信息不能为空";
+    public static final String DEPARTMENT_NAME_EMPTY = "部门名称不能为空";
+    public static final String DEPARTMENT_NAME_TOO_LONG = "部门名称长度不能超过20个字符";
 
 
-    public static final String DEPARTMENT_HAS_USERS ="该部门下有成员，不能删除" ;
+    public static final String DEPARTMENT_HAS_USERS = "该部门下有成员，不能删除";
     public static final String DEPARTMENT_ID_EMPTY = "部门id不为空";
     public static final String DEPARTMENT_FAIL_DELETED = "部门删除失败，所选部门均无法删除";
     public static final String DEPARTMENT_PART_DELETED = "部分部门删除成功，部分部门无法删除";
     public static final String QUESTION_ADD_FAILED = "题目添加失败";
     public static final String EXAMINATION_TIME_ERROR = "考试时间错误";
-    public static final String EXAMINATION_SCORE_ERROR ="未设置分值";
-    public static final String EXAMINATION_SCORE_ERROR_2 ="分值设置错误";
+    public static final String EXAMINATION_SCORE_ERROR = "未设置分值";
+    public static final String EXAMINATION_SCORE_ERROR_2 = "分值设置错误";
     //部门成员
     public static final String MEMBER_ID_CANNOT_BE_NULL = "成员ID不能为空";
 
