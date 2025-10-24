@@ -40,8 +40,6 @@ public class VoteController extends BaseController {
         return Result.success();
     }
 
-
-    //todo 同样问题
     @Operation(summary = "删除投票信息")
     @PostMapping("/deleteVote")
     public Result deleteVoteInformation(@RequestBody DeleteVoteDTO deleteVoteDTO){

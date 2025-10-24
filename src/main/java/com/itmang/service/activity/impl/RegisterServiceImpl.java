@@ -128,7 +128,7 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
         }
     }
 
-    //逻辑删除没判断
+    //新加逻辑删除判断
     @Override
     public PageResult queryRegisterInformationList(FindRegisterDTO dto) {
         // 使用 MyBatis-Plus LambdaQueryWrapper 构建条件
@@ -156,24 +156,22 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
         }
 
         // 精确匹配逻辑删除
-        if (dto.getIsDelete() != null) {
-            queryWrapper.eq(SignInInformation::getIsDelete, dto.getIsDelete());
-        }
+        queryWrapper.eq(SignInInformation::getIsDelete,
+                dto.getIsDelete() != null ? dto.getIsDelete() : 2);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        // 范围查询开始时间
-        if (StringUtils.isNotBlank(dto.getStartTime())) {
-            LocalDateTime start = LocalDateTime.parse(dto.getStartTime(), formatter);
-            queryWrapper.ge(SignInInformation::getStartTime, start);
-        }
-
-        // 范围查询结束时间
-        if (StringUtils.isNotBlank(dto.getEndTime())) {
-            LocalDateTime end = LocalDateTime.parse(dto.getEndTime(), formatter);
-            queryWrapper.le(SignInInformation::getEndTime, end);
-        }
-
+                // 范围查询开始时间
+                if (StringUtils.isNotBlank(dto.getStartTime())) {
+                    LocalDateTime start = LocalDateTime.parse(dto.getStartTime(), formatter);
+                    queryWrapper.ge(SignInInformation::getStartTime, start);
+                }
+        
+                // 范围查询结束时间
+                if (StringUtils.isNotBlank(dto.getEndTime())) {
+                    LocalDateTime end = LocalDateTime.parse(dto.getEndTime(), formatter);
+                    queryWrapper.le(SignInInformation::getEndTime, end);
+                }
         // 可选分页
         List<SignInInformation> records;
         long total;

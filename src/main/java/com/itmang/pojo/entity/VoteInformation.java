@@ -1,5 +1,8 @@
 package com.itmang.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,12 +10,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
 @Schema(name = "VoteInformation", description = "投票信息表实体类")
+@TableName(autoResultMap = true)
 public class VoteInformation {
 
     @Schema(name = "id", description = "id，主键自增")
@@ -24,8 +29,8 @@ public class VoteInformation {
     @Schema(name = "voteContent", description = "投票说明")
     private String voteContent;
 
-    @Schema(name = "options", description = "投票选项（按顺序存储投票的选项，字符串集合的形式存储）")
-    private String options;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<String> options;
 
     @Schema(name = "startTime", description = "投票开始时间")
     private LocalDateTime startTime;

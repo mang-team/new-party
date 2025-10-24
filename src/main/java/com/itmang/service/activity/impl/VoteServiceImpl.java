@@ -1,5 +1,6 @@
 package com.itmang.service.activity.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -133,7 +134,7 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
         }
     }
 
-    //todo 数据库的假数据格式有问题
+    //Option已转化为String类型
     @Override
     public PageResult queryVoteInformationList(FindVoteDTO dto) {
         // 使用 MyBatis-Plus LambdaQueryWrapper 构建条件
@@ -152,9 +153,12 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
             queryWrapper.eq(VoteInformation::getUpdateBy, dto.getUpdateBy());
         }
 
-        if (StringUtils.isNotBlank(dto.getOptions())) {
-            queryWrapper.eq(VoteInformation::getOptions, dto.getOptions());
+        if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
+            // 用 JSON 序列化匹配
+            String jsonOptions = JSON.toJSONString(dto.getOptions());
+            queryWrapper.eq(VoteInformation::getOptions, jsonOptions);
         }
+
 
         // 模糊匹配标题和内容
         if (StringUtils.isNotBlank(dto.getVoteInTitle())) {
@@ -167,6 +171,8 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
         // 精确匹配逻辑删除
         if (dto.getIsDelete() != null) {
             queryWrapper.eq(VoteInformation::getIsDelete, dto.getIsDelete());
+        } else {
+            queryWrapper.eq(VoteInformation::getIsDelete, 2); // 默认未删除
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

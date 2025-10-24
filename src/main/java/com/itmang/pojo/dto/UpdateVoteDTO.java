@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @Author luo
@@ -15,7 +16,7 @@ public class UpdateVoteDTO implements Serializable {
     private String id;               // 签到 ID
     private String voteInTitle;    // 签到标题
     private String voteInContent;  // 签到内容说明
-    private String options;
+    private List<String> options;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime; // 签到开始时间

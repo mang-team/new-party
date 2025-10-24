@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Author luo
@@ -13,7 +14,7 @@ import java.io.Serializable;
 public class AddVoteDTO implements Serializable {
     private String voteInTitle;      // 签到标题
     private String voteInContent;    // 签到内容
-    private String options;
+    private List<String> options;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private String startTime;        // 开始时间，格式: yyyy-MM-dd HH:mm:ss

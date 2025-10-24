@@ -3,6 +3,7 @@ package com.itmang.pojo.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 public class FindVoteDTO implements Serializable {
@@ -13,7 +14,7 @@ public class FindVoteDTO implements Serializable {
     private String updateTime;     // 更新时间，可为空
     private String createBy;
     private String updateBy;
-    private String options;
+    private List<String> options;
     private String startTime;      // 签到开始时间，可为空
     private String endTime;        // 签到结束时间，可为空
     private Integer isDelete;      // 是否删除，可为空
