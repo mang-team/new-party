@@ -73,7 +73,6 @@ public class UserController extends BaseController {
     }
 
 
-
     /**
      * 注册用户接口
      *
@@ -88,8 +87,6 @@ public class UserController extends BaseController {
 //        userService.register(registerUserDTO);
 //        return Result.success();
 //    }
-
-
     @Operation(summary = "自动登录接口")
     @GetMapping("/autoLogin")
     public Result<LoginVO> autoLogin() {
@@ -173,14 +170,14 @@ public class UserController extends BaseController {
         user.setId(userDto.getUserId());
         user.setUserName(userDto.getUserName());
         user.setImage(userDto.getImage());
-        user.setPassword(DigestUtils.md5DigestAsHex(userDto.getPassword().getBytes()));
+        user.setPassword(userDto.getPassword() == null ? null : DigestUtils.md5DigestAsHex(userDto.getPassword().getBytes()));
         user.setStatus(userDto.getStatus());
         user.setIsFirst(userDto.getIsFirst());
         user.setUpdateTime(LocalDateTime.now());
         user.setUpdateBy(userId);
         boolean isSuccess = userService.updateById(user);
         if (!isSuccess) {
-            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
+            throw new BaseException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
         return Result.success();
     }
@@ -190,6 +187,9 @@ public class UserController extends BaseController {
     public Result<Object> changeUserStatus(@PathVariable String userId) {
         String updateUserId = BaseContext.getCurrentId();
         User user = userService.getById(userId);
+        if (user == null) {
+            throw new BaseException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
         user.setStatus(user.getStatus() == 0 ? 1 : 0);
         user.setUpdateBy(updateUserId);
         user.setUpdateTime(LocalDateTime.now());
@@ -211,15 +211,15 @@ public class UserController extends BaseController {
         for (AddUserDto addUserDto :
                 addUserDtoList) {
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(User::getNumber,addUserDto.getNumber());
+            queryWrapper.eq(User::getNumber, addUserDto.getNumber());
             long count = userService.count(queryWrapper);
-            if(count != 0){
+            if (count != 0) {
                 throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);
             }
             queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(User::getUserName,addUserDto.getUserName());
+            queryWrapper.eq(User::getUserName, addUserDto.getUserName());
             count = userService.count(queryWrapper);
-            if(count != 0){
+            if (count != 0) {
                 throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);
             }
             User user = new User();

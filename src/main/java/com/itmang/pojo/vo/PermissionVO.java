@@ -1,25 +1,19 @@
-package com.itmang.pojo.entity;
+package com.itmang.pojo.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-@Builder
-@Schema(name = "Permission", description = "权限表实体类")
-public class Permission {
+@Schema(name = "PermissionVO", description = "权限信息VO")
+public class PermissionVO {
 
     @Schema(name = "id", description = "id，主键自增")
     private String id;
 
     @Schema(name = "description", description = "权限描述")
-    private String description; // 注意：Java中建议避免使用关键字，可改为description
+    private String description;
 
     @Schema(name = "url", description = "权限路径")
     private String url;
@@ -36,6 +30,4 @@ public class Permission {
     @Schema(name = "updateTime", description = "修改时间")
     private LocalDateTime updateTime;
 
-    @Schema(name = "isDelete", description = "是否删除（1为删除，2为未删除）（默认为2）")
-    private Integer isDelete;
 }
