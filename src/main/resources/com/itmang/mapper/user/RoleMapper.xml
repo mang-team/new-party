@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itmang.mapper.user.RoleMapper">
+
+    <!-- 分页查询角色 -->
+    <select id="pageQuery" resultType="com.itmang.pojo.vo.RoleVO">
+        SELECT 
+            id,
+            role_name AS roleName,
+            create_by AS createBy,
+            create_time AS createTime,
+            update_by AS updateBy,
+            update_time AS updateTime
+        FROM role
+        <where>
+            is_delete = 2
+            <if test="roleName != null and roleName != ''">
+                AND role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 分页查询角色总数 -->
+    <select id="pageQueryCount" resultType="java.lang.Long">
+        SELECT 
+            COUNT(*)
+        FROM role
+        <where>
+            is_delete = 2
+            <if test="roleName != null and roleName != ''">
+                AND role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>
