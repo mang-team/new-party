@@ -100,6 +100,10 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
             throw new RuntimeException("签到信息不存在，无法修改");
         }
 
+        if(signIn.getIsDelete()==1){
+            throw new RuntimeException("签到信息已删除");
+        }
+
         // 2. 将 DTO 的字段更新到实体类中
         if (StringUtils.isNotBlank(updateRegisterDTO.getSignInTitle())) {
         signIn.setSignInTitle(updateRegisterDTO.getSignInTitle());

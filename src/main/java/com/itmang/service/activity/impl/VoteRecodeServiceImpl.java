@@ -98,6 +98,10 @@ public class VoteRecodeServiceImpl extends ServiceImpl<VoteRecordMapper, VoteRec
             throw new RuntimeException("投票信息不存在，无法修改");
         }
 
+        if(Vote.getIsDelete()==1){
+            throw new RuntimeException("投票信息已删除");
+        }
+
         // 2. 将 DTO 的字段更新到实体类中
         if (updateVoteRecordDTO.getChoose()!=null) {
             Vote.setChoose(updateVoteRecordDTO.getChoose());
