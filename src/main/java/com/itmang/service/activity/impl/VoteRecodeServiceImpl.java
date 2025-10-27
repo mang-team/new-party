@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.itmang.exception.BaseException;
 import com.itmang.mapper.activity.VoteRecordMapper;
 import com.itmang.pojo.dto.AddVoteRecordDTO;
 import com.itmang.pojo.dto.DeleteVoteRecodeDTO;
@@ -66,7 +67,7 @@ public class VoteRecodeServiceImpl extends ServiceImpl<VoteRecordMapper, VoteRec
         boolean saved = this.saveBatch(list);
         if (!saved) {
             log.error("批量保存投票记录失败，userId={}, count={}", userId, list.size());
-            throw new RuntimeException("新增投票记录失败");
+            throw new BaseException("新增投票记录失败");
         }
 
         log.info("批量新增投票记录成功，userId={}, count={}", userId, list.size());
@@ -78,7 +79,7 @@ public class VoteRecodeServiceImpl extends ServiceImpl<VoteRecordMapper, VoteRec
         // 根据 id 查询记录
         VoteRecord record = this.getById(deleteVoteRecodeDTO.getId());
         if (record == null) {
-            throw new RuntimeException("要删除的投票记录不存在");
+            throw new BaseException("要删除的投票记录不存在");
         }
 
         // 更新逻辑删除标志
@@ -95,33 +96,33 @@ public class VoteRecodeServiceImpl extends ServiceImpl<VoteRecordMapper, VoteRec
         // 1. 根据传入的 ID 查询是否存在
         VoteRecord Vote = this.getById(updateVoteRecordDTO.getId());
         if (Vote == null) {
-            throw new RuntimeException("投票信息不存在，无法修改");
+            throw new BaseException("投票信息不存在，无法修改");
         }
 
-        if(Vote.getIsDelete()==1){
-            throw new RuntimeException("投票信息已删除");
+        if(Vote.getIsDelete()==2){
+            // 2. 将 DTO 的字段更新到实体类中
+            if (updateVoteRecordDTO.getChoose()!=null) {
+                Vote.setChoose(updateVoteRecordDTO.getChoose());
+            }
+
+            if (StringUtils.isNotBlank(updateVoteRecordDTO.getNotes())) {
+                Vote.setNotes(updateVoteRecordDTO.getNotes());
+            }
+
+
+
+            // 3. 设置更新信息
+            Vote.setUpdateBy(userId); // 或者从登录用户获取
+            Vote.setUpdateTime(LocalDateTime.now());
+
+            // 4. 执行更新
+            boolean isUpdated = this.updateById(Vote);
+            if (!isUpdated) {
+                throw new BaseException("修改投票信息失败");
+            }
         }
 
-        // 2. 将 DTO 的字段更新到实体类中
-        if (updateVoteRecordDTO.getChoose()!=null) {
-            Vote.setChoose(updateVoteRecordDTO.getChoose());
-        }
 
-        if (StringUtils.isNotBlank(updateVoteRecordDTO.getNotes())) {
-            Vote.setNotes(updateVoteRecordDTO.getNotes());
-        }
-
-
-
-        // 3. 设置更新信息
-        Vote.setUpdateBy(userId); // 或者从登录用户获取
-        Vote.setUpdateTime(LocalDateTime.now());
-
-        // 4. 执行更新
-        boolean isUpdated = this.updateById(Vote);
-        if (!isUpdated) {
-            throw new RuntimeException("修改投票信息失败");
-        }
     }
 
     @Override
