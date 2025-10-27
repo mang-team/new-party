@@ -7,12 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class PageDetailActionMessageVO {
+public class DetailActionMessageVO {
 
     // action_information 表信息
     private String actionName;        // 活动名称
@@ -33,9 +34,11 @@ public class PageDetailActionMessageVO {
     private String updateBy;   // 修改人
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;  // 修改时间
+    private int isDelete;              // 是否删除
+    private List<String> userList; // 参加此次活动的用户id
 
     // action_record 表信息   利用活动id连接
-    private int state;  // 状态 未开始1 进行中2 已结束3
-    private String notes; // 备注
+//    private int state;  // 状态 未开始1 进行中2 已结束3
+//    private String notes; // 备注
 
 }

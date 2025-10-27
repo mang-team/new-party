@@ -5,13 +5,15 @@ import com.github.pagehelper.PageHelper;
 import com.itmang.context.BaseContext;
 import com.itmang.exception.BaseException;
 import com.itmang.mapper.action.ActionMapper;
+import com.itmang.mapper.action.ActionRecordMapper;
 import com.itmang.pojo.dto.action.AddActionMessageDTO;
 import com.itmang.pojo.dto.action.ModifyActionMessageDTO;
 import com.itmang.pojo.dto.action.PageDetailActionMessageDTO;
 import com.itmang.pojo.entity.PageResult;
-import com.itmang.pojo.vo.action.PageDetailActionMessageVO;
-import com.itmang.pojo.vo.action.pageShortActionMessageVO;
+import com.itmang.pojo.vo.action.DetailActionMessageVO;
+import com.itmang.pojo.vo.action.PageShortActionMessageVO;
 import com.itmang.service.action.ActionService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,25 +28,31 @@ public class ActionServiceImpl implements ActionService {
     @Autowired
     private ActionMapper actionMapper;
 
+    @Autowired
+    private ActionRecordMapper actionRecordMapper;
+
     /**
-     * 分页查询详细活动信息
-     * @param actionMessageDTO
+     * 根据活动信息id查询详细活动信息
+     * @param id
      * @return
      */
     @Override
-    public PageResult pageGetDetailActionMessage(PageDetailActionMessageDTO actionMessageDTO) {
-        // 使用PageHelper插件进行分页查询
-        PageHelper.startPage(actionMessageDTO.getPage(), actionMessageDTO.getPageSize());
-
-        // 将查询到的结果存储起来  注意已被删除活动信息 is_delete 为 1
-        Page<PageDetailActionMessageVO> page = actionMapper.pageGetDetailActionMessage(actionMessageDTO);
-
-        // 得到总个数和具体内容
-        Long total = page.getTotal();
-        List<PageDetailActionMessageVO> records = page.getResult();
-
-        // 返回结果
-        return new PageResult(total,records);
+    public DetailActionMessageVO getDetailActionMessage(String id) {
+        // 判断id是否为空或长度为0
+        if(id == null || id.isEmpty()){
+            throw new BaseException("活动信息查询id为空");
+        }
+        // 根据id获取活动详细信息
+        DetailActionMessageVO detailActionMessageVO = actionMapper.getDetailActionMessage(id);
+        // 判断当前活动是否被删除
+        if(detailActionMessageVO.getIsDelete() == 1){
+            throw new BaseException("该活动信息已被删除");
+        }
+        // 查询参加活动的用户id
+        List<String> list = actionRecordMapper.getJoinActionIdList(id);
+        // 添加到返回对象中
+        detailActionMessageVO.setUserList(list);
+        return detailActionMessageVO;
     }
 
     /**
@@ -58,7 +66,7 @@ public class ActionServiceImpl implements ActionService {
         PageHelper.startPage(actionMessageDTO.getPage(), actionMessageDTO.getPageSize());
 
         // 将查询到的结果存储起来  注意已被删除活动信息 is_delete 为 1
-        Page<pageShortActionMessageVO> page = actionMapper.pageGetShortActionMessage(actionMessageDTO);
+        Page<PageShortActionMessageVO> page = actionMapper.pageGetShortActionMessage(actionMessageDTO);
 
         // 返回结果
         return new PageResult(page.getTotal(),page.getResult());
@@ -127,5 +135,28 @@ public class ActionServiceImpl implements ActionService {
         LocalDateTime dateTime = LocalDateTime.parse(now.format(formatter), formatter);
         // 调用mapper删除
         actionMapper.deleteActionMessage(idList, dateTime,BaseContext.getCurrentId());
+    }
+
+    /**
+     * 修改活动状态
+     * @param id
+     * @param state
+     * @return
+     */
+    @Override
+    public boolean modifyState(String id, int state) {
+        // 判断id是否为空
+        if(id == null || id.isEmpty()){
+            throw new BaseException("活动id不能为空");
+        }
+        // 判断状态是否超出范围 1 未开始，2 进行中，3 已结束
+        if(state < 1 || state > 3){
+            throw new BaseException("活动状态不存在");
+        }
+
+        // 根据活动id修改活动状态，查看返回值modify是否为0，从而判断是否成功修改
+        int modify = actionRecordMapper.modifyState(id,state);
+
+        return modify > 0;
     }
 }

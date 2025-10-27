@@ -9,6 +9,8 @@ import com.itmang.pojo.dto.action.PageActionRecordMessageDTO;
 import com.itmang.pojo.vo.action.PageActionRecordMessageVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,4 +47,21 @@ public interface ActionRecordMapper {
      * @param currentId
      */
     void deleteActionRecordMessage(List<String> idList, LocalDateTime dateTime, String currentId);
+
+    /**
+     * 根据活动信息id查询参加活动的用户id
+     * @param id
+     * @return
+     */
+    @Select("select id from action_record where action_information_id = #{id}")
+    List<String> getJoinActionIdList(String id);
+
+    /**
+     * 修改活动状态
+     * @param id
+     * @param state
+     * @return
+     */
+    @Update("update action_record set state = #{state} where action_information_id = #{id}")
+    int modifyState(String id, int state);
 }

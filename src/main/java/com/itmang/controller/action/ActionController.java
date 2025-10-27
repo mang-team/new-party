@@ -6,6 +6,7 @@ import com.itmang.pojo.dto.action.ModifyActionMessageDTO;
 import com.itmang.pojo.dto.action.PageDetailActionMessageDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
+import com.itmang.pojo.vo.action.DetailActionMessageVO;
 import com.itmang.service.action.ActionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,22 +26,21 @@ public class ActionController {
     private ActionService actionService;
 
     /**
-     * 分页查询详细活动信息
+     * 根据活动信息id查询详细活动信息
      * @return
      */
-    @Operation(summary = "分页查询详细活动信息")
-    @PostMapping("/pageGetDetailActionMessage")
-    public Result<PageResult> pageGetDetailActionMessage(@RequestBody PageDetailActionMessageDTO actionMessageDTO) {
-        log.debug("分页查询详细的活动信息:{}", actionMessageDTO);
-        PageResult pageResult = actionService.pageGetDetailActionMessage(actionMessageDTO);
-        return Result.success(pageResult);
+    @Operation(summary = "根据活动信息id查询详细活动信息")
+    @PostMapping("/getDetailActionMessage")
+    public Result<DetailActionMessageVO> getDetailActionMessage(@RequestParam String id) {
+        log.debug("根据活动信息id查询详细活动信息:{}", id);
+        DetailActionMessageVO detailActionMessage = actionService.getDetailActionMessage(id);
+        return Result.success(detailActionMessage);
     }
 
     /**
      * 分页查询简略活动信息
      * @return
      */
-    // TODO: 可删？？？
     @Operation(summary = "分页查询简略活动信息")
     @PostMapping("/pageGetShortActionMessage")
     public Result<PageResult> pageGetShortActionMessage(@RequestBody PageDetailActionMessageDTO actionMessageDTO){
@@ -86,4 +86,17 @@ public class ActionController {
         return Result.success();
     }
 
+    /**
+     * 修改活动状态
+     * @param id
+     * @param state
+     * @return
+     */
+    @Operation(summary = "修改活动状态")
+    @PostMapping("/modifyState")
+    public Result<String> modifyState(@RequestParam String id,@RequestParam int state){
+        log.debug("修改活动状态:{},{}",id,state);
+        boolean result = actionService.modifyState(id,state);
+        return result ? Result.success() : Result.error("修改失败！");
+    }
 }

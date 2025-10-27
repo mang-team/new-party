@@ -6,10 +6,11 @@ import com.itmang.enumeration.OperationType;
 import com.itmang.pojo.dto.action.AddActionMessageDTO;
 import com.itmang.pojo.dto.action.ModifyActionMessageDTO;
 import com.itmang.pojo.dto.action.PageDetailActionMessageDTO;
-import com.itmang.pojo.vo.action.PageDetailActionMessageVO;
-import com.itmang.pojo.vo.action.pageShortActionMessageVO;
+import com.itmang.pojo.vo.action.DetailActionMessageVO;
+import com.itmang.pojo.vo.action.PageShortActionMessageVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,18 +18,19 @@ import java.util.List;
 @Mapper
 public interface ActionMapper {
     /**
-     * 分页查询详细活动信息
-     * @param actionMessageDTO
+     * 根据活动信息id查询详细活动信息
+     * @param id
      * @return
      */
-    Page<PageDetailActionMessageVO> pageGetDetailActionMessage(PageDetailActionMessageDTO actionMessageDTO);
+    @Select("select * from action_information where id = #{id}")
+    DetailActionMessageVO getDetailActionMessage(String id);
 
     /**
      * 分页查询简略活动信息
      * @param actionMessageDTO
      * @return
      */
-    Page<pageShortActionMessageVO> pageGetShortActionMessage(PageDetailActionMessageDTO actionMessageDTO);
+    Page<PageShortActionMessageVO> pageGetShortActionMessage(PageDetailActionMessageDTO actionMessageDTO);
 
     /**
      * 根据活动id修改活动信息
@@ -55,4 +57,6 @@ public interface ActionMapper {
      * @param currentId
      */
     void deleteActionMessage(List<String> idList, LocalDateTime now, String currentId);
+
+
 }

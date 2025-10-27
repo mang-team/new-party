@@ -2,22 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.itmang.mapper.action.ActionMapper">
-    <!--  分页查询详细活动信息  -->
-    <select id="pageGetDetailActionMessage" resultType="com.itmang.pojo.vo.action.PageDetailActionMessageVO">
-        select * from action_information
-        where is_delete = 2
-        <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
-        <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
-        order by create_time
-    </select>
-
     <!--  分页查询简略活动信息  -->
-    <select id="pageGetShortActionMessage" resultType="com.itmang.pojo.vo.action.pageShortActionMessageVO">
-        select action_name,organizer_phone,create_by from action_information
-        where is_delete = 2
+    <select id="pageGetShortActionMessage" resultType="com.itmang.pojo.vo.action.PageShortActionMessageVO">
+        select action_name,activity_content,sign_up_start_time,action_start_time,action_end_time,event_address
+        from action_information where is_delete = 2
         <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
         <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
-        order by create_time
     </select>
 
     <!--根据活动id修改活动信息-->
