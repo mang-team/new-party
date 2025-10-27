@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class PageShortActionMessageVO {
+    private String id;                // 活动id
     private String actionName;        // 活动名称
     private String activityContent;   // 活动内容详情
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
