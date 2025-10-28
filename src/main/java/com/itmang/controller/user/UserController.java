@@ -43,9 +43,6 @@ public class UserController extends BaseController {
     @Autowired
     private JwtProperties jwtProperties;//导入jwt配置类
 
-    @Resource
-    private IdGenerate idGenerate;
-
     @Operation(summary = "登录接口")
     @PostMapping("/login")
     public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
@@ -158,82 +155,6 @@ public class UserController extends BaseController {
 //        }
 //        return Result.success();
 //    }
-
-    //todo 修改： 为了与管理端的修改用户信息接口合并
-    @Operation(summary = "编辑用户接口")
-    @PostMapping("/editUser")
-//    @GlobalInterceptor(checkLogin = true)
-    public Result<Object> editUser(@RequestBody UserDto userDto) {
-        String userId = getUserIdFromToken();
-        User user = new User();
-        //修改： 为了与管理端的修改用户信息接口合并
-        user.setId(userDto.getUserId());
-        user.setUserName(userDto.getUserName());
-        user.setImage(userDto.getImage());
-        user.setPassword(userDto.getPassword() == null ? null : DigestUtils.md5DigestAsHex(userDto.getPassword().getBytes()));
-        user.setStatus(userDto.getStatus());
-        user.setIsFirst(userDto.getIsFirst());
-        user.setUpdateTime(LocalDateTime.now());
-        user.setUpdateBy(userId);
-        boolean isSuccess = userService.updateById(user);
-        if (!isSuccess) {
-            throw new BaseException(MessageConstant.ACCOUNT_NOT_FOUND);
-        }
-        return Result.success();
-    }
-
-    @Operation(summary = "改变用户状态")
-    @PostMapping("/changeUserStatus/{userId}")
-    public Result<Object> changeUserStatus(@PathVariable String userId) {
-        String updateUserId = BaseContext.getCurrentId();
-        User user = userService.getById(userId);
-        if (user == null) {
-            throw new BaseException(MessageConstant.ACCOUNT_NOT_FOUND);
-        }
-        user.setStatus(user.getStatus() == 0 ? 1 : 0);
-        user.setUpdateBy(updateUserId);
-        user.setUpdateTime(LocalDateTime.now());
-        userService.updateById(user);
-        return Result.success();
-    }
-
-    @Operation(summary = "分页获取用户列表")
-    @GetMapping("/getUserPage")
-    public Result<Object> getUserPage(@RequestBody PageUserDto pageUserDto) {
-        PageResult pageResult = userService.getUserPage(pageUserDto);
-        return Result.success(pageResult);
-    }
-
-    @Operation(summary = "批量新增用户")
-    @PostMapping("/addUserBatch")
-    public Result<Object> addUser(@RequestBody List<AddUserDto> addUserDtoList) {
-        List<User> userList = new ArrayList<>();
-        for (AddUserDto addUserDto :
-                addUserDtoList) {
-            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(User::getNumber, addUserDto.getNumber());
-            long count = userService.count(queryWrapper);
-            if (count != 0) {
-                throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);
-            }
-            queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(User::getUserName, addUserDto.getUserName());
-            count = userService.count(queryWrapper);
-            if (count != 0) {
-                throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);
-            }
-            User user = new User();
-            user.setNumber(addUserDto.getNumber());
-            user.setUserName(addUserDto.getUserName());
-            user.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
-            user.setCreateBy(BaseContext.getCurrentId());
-            user.setCreateTime(LocalDateTime.now());
-            user.setId(idGenerate.nextId(user).toString());
-            userList.add(user);
-        }
-        userService.saveBatch(userList);
-        return Result.success();
-    }
 
     @Operation(summary = "获取用户信息")
     @PostMapping("/getUserInfo")
