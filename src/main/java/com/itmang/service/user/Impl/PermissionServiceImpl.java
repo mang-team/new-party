@@ -186,4 +186,9 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         PageInfo<PermissionVO> pageInfo = new PageInfo<>(permissionVOList);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
+
+    @Override
+    public List<String> getUserPermission(String id) {
+        return permissionMapper.getUserPermission(id);
+    }
 }

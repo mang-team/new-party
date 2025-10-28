@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GlobalInterceptor {
     boolean checkLogin() default false;
+    boolean checkPermission() default false;
 }
