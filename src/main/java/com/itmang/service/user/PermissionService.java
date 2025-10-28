@@ -45,4 +45,5 @@ public interface PermissionService extends IService<Permission> {
      */
     PageResult pagePermission(PermissionPageDTO permissionPageDTO);
 
+    List<String> getUserPermission(String id);
 }

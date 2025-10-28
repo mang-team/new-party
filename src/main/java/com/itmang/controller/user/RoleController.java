@@ -1,6 +1,7 @@
 package com.itmang.controller.user;
 
 
+import com.itmang.annotation.GlobalInterceptor;
 import com.itmang.constant.MessageConstant;
 import com.itmang.exception.BaseException;
 import com.itmang.pojo.dto.RoleAddDTO;
@@ -34,6 +35,7 @@ public class RoleController {
      */
     @Operation(summary = "新增角色")
     @PostMapping("/add")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result addRole(@RequestBody RoleAddDTO roleAddDTO) {
         if (roleAddDTO == null || StringUtils.isEmpty(roleAddDTO.getRoleName())) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -51,6 +53,7 @@ public class RoleController {
      */
     @Operation(summary = "根据ID查询角色")
     @GetMapping("/{id}")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result<RoleVO> getRoleById(@PathVariable String id) {
         if (id == null) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -68,6 +71,7 @@ public class RoleController {
      */
     @Operation(summary = "更新角色")
     @PutMapping("/update")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result updateRole(@RequestBody RoleUpdateDTO roleUpdateDTO) {
         if (roleUpdateDTO == null) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -89,6 +93,7 @@ public class RoleController {
      */
     @Operation(summary = "删除角色（可批量）")
     @DeleteMapping("/delete/{ids}")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result deleteRole(@PathVariable String ids) {
         if (ids == null || StringUtils.isEmpty(ids.trim())) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -107,6 +112,7 @@ public class RoleController {
      */
     @Operation(summary = "分页查询角色")
     @GetMapping("/page")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result<PageResult> pageRole(RolePageDTO rolePageDTO) {
         if (rolePageDTO == null) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -125,6 +131,7 @@ public class RoleController {
      */
     @Operation(summary = "给角色分配权限")
     @PostMapping("/assignPermissions")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result assignPermissions(@RequestParam String roleId, @RequestParam String permissionIds) {
         if (roleId == null || roleId.trim().isEmpty()) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);

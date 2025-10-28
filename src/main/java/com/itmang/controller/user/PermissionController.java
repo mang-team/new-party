@@ -1,6 +1,7 @@
 package com.itmang.controller.user;
 
 
+import com.itmang.annotation.GlobalInterceptor;
 import com.itmang.constant.MessageConstant;
 import com.itmang.exception.BaseException;
 import com.itmang.pojo.dto.PermissionAddDTO;
@@ -35,6 +36,7 @@ public class PermissionController {
      */
     @Operation(summary = "新增权限")
     @PostMapping("/add")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result addPermission(@RequestBody PermissionAddDTO permissionAddDTO) {
         if (permissionAddDTO == null || StringUtils.isEmpty(permissionAddDTO.getUrl().trim())) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -52,6 +54,7 @@ public class PermissionController {
      */
     @Operation(summary = "根据ID查询权限")
     @GetMapping("/{id}")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result<PermissionVO> getPermissionById(@PathVariable String id) {
         if (id == null) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -69,6 +72,7 @@ public class PermissionController {
      */
     @Operation(summary = "更新权限")
     @PutMapping("/update")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result updatePermission(@RequestBody PermissionUpdateDTO permissionUpdateDTO) {
         if(permissionUpdateDTO == null) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -90,6 +94,7 @@ public class PermissionController {
      */
     @Operation(summary = "删除权限（可批量）")
     @DeleteMapping("/delete/{ids}")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result deletePermission(@PathVariable String ids) {
         if (ids == null || StringUtils.isEmpty(ids.trim())) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
@@ -108,6 +113,7 @@ public class PermissionController {
      */
     @Operation(summary = "分页查询权限")
     @GetMapping("/page")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result<PageResult> pagePermission(PermissionPageDTO permissionPageDTO) {
         if (permissionPageDTO == null) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);

@@ -29,4 +29,6 @@ public interface PermissionMapper extends BaseMapper<Permission> {
      * @return
      */
     List<Permission> pagePermission(PermissionPageDTO permissionPageDTO);
+
+    List<String> getUserPermission(String id);
 }
