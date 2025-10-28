@@ -218,24 +218,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             throw new BaseException("角色不存在");
         }
 
-        // 2. 查询角色现有的权限
+        // 2. 删除角色现有的权限
         LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(RolePermission::getRoleId, role.getId());
-        List<RolePermission> rolePermissionList = rolePermissionMapper.selectList(queryWrapper);
-        Map<String, RolePermission> rolePermissionMap =
-                rolePermissionList.stream().collect(Collectors.toMap(RolePermission::getPermissionId, p -> p));
+        queryWrapper.eq(RolePermission::getRoleId, roleId);
+        rolePermissionMapper.delete(queryWrapper);
 
-        // 3. 筛选出哪些是新增的权限
-        List<String> newPermissionIds = new ArrayList<>();
+        // 3. 添加新的角色权限关联
         for (String permissionId : permissionIds) {
-            if (!rolePermissionMap.containsKey(permissionId)) {
-                newPermissionIds.add(permissionId);
-            }
-        }
-
-        // 4. 添加新的角色权限关联
-        for (String permissionId : newPermissionIds) {
-            // 5. 判断权限是否存在
+            // 4. 判断权限是否存在
             Permission permission = permissionMapper.getPermissionById(permissionId);
             if (permission == null) {
                 throw new BaseException("权限不存在");
