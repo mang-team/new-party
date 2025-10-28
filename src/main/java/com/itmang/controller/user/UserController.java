@@ -2,30 +2,25 @@ package com.itmang.controller.user;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.itmang.annotation.GlobalInterceptor;
 import com.itmang.constant.JwtClaimsConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.context.BaseContext;
 import com.itmang.controller.BaseController;
 import com.itmang.exception.BaseException;
-import com.itmang.pojo.dto.AddUserDto;
 import com.itmang.pojo.dto.LoginDTO;
-import com.itmang.pojo.dto.PageUserDto;
 import com.itmang.pojo.dto.UserDto;
-import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.pojo.entity.User;
 import com.itmang.pojo.vo.LoginVO;
 import com.itmang.pojo.vo.UserQueryVo;
 import com.itmang.properties.JwtProperties;
 import com.itmang.service.user.UserService;
-import com.itmang.utils.IdGenerate;
 import com.itmang.utils.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -120,24 +115,24 @@ public class UserController extends BaseController {
         return Result.success();
     }
 
-//    @Operation(summary = "编辑用户接口")
-//    @PostMapping("/editUser")
-//    @GlobalInterceptor(checkLogin = true)
-//    public Result<Object> editUser(@RequestBody UserDto userDto) {
-//        String userId = getUserIdFromToken();
-//        User user = new User();
-//        //修改： 为了与管理端的修改用户信息接口合并
-//        user.setId(userDto.getUserId());
-//        user.setUserName(userDto.getUserName());
-//        user.setImage(userDto.getImage());
-//        user.setUpdateTime(LocalDateTime.now());
-//        user.setUpdateBy(userId);
-//        boolean isSuccess = userService.updateById(user);
-//        if (!isSuccess) {
-//            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
-//        }
-//        return Result.success();
-//    }
+    @Operation(summary = "编辑用户接口")
+    @PostMapping("/editUser")
+    @GlobalInterceptor(checkLogin = true)
+    public Result<Object> editUser(@RequestBody UserDto userDto) {
+        String userId = getUserIdFromToken();
+        User user = new User();
+        //修改： 为了与管理端的修改用户信息接口合并
+        user.setId(userDto.getUserId());
+        user.setUserName(userDto.getUserName());
+        user.setImage(userDto.getImage());
+        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdateBy(userId);
+        boolean isSuccess = userService.updateById(user);
+        if (!isSuccess) {
+            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
+        }
+        return Result.success();
+    }
 //
 //    @Operation(summary = "修改密码接口")
 //    @PostMapping("/changePassword")
