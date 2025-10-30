@@ -24,7 +24,6 @@ import com.itmang.utils.IdGenerate;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,6 +102,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         // 新增：校验ID非空
         if (updateDTO.getId().isEmpty()) {
             throw new BaseException(MessageConstant.ID_CANNOT_BE_NULL);
+
         }
         // 1、判断部门是否存在
         Department originalDept = departmentMapper.selectById(updateDTO.getId());
@@ -148,8 +148,8 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     }
 
     //删除部门
-    //todo 好像不能能删除的删除，不能删除的报错  (师兄他们添加了事务回滚）
     @Override
+
     public void deleteDepartments(String[] departmentIds) {
         List<String> canDeleteIds = new ArrayList<>();
         List<String> canNotDeleteIds = new ArrayList<>();
@@ -224,7 +224,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
 
     public List<DepartmentVO> getChildrenByParentId(String fatherDepartmentId) {
-        log.info("根据上级部门返回查询子级部门列表");
         //10.27 完善
         Department department = departmentMapper.selectById(fatherDepartmentId);
         if (department == null || department.getIsDelete().equals(DeleteConstant.YES)) {
@@ -257,6 +256,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         String fatherDepartmentId = vo.getFatherDepartmentId();
         String fatherDepartmentName=departmentMapper.selectParentName(fatherDepartmentId);
         vo.setFatherDepartmentName(fatherDepartmentName);
+
         return vo;
     }
 

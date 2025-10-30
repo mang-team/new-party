@@ -90,6 +90,7 @@ public class DepartmentController {
     public Result<List<DepartmentVO>> getChildren(@PathVariable String fatherDepartmentId) {
         // 业务逻辑：这里可以添加对 parentId 的校验//完成
         // 例如，如果查询根部门，parentId 可能是 "0" 或 "-1"//完成
+
         log.info("根据上级部门返回查询子级部门列表");
         List<DepartmentVO> children = departmentService.getChildrenByParentId(fatherDepartmentId);
         return Result.success(children);

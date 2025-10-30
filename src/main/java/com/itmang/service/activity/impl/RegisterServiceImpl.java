@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import com.itmang.exception.BaseException;
+
 import com.itmang.mapper.activity.SignInInformationMapper;
 import com.itmang.pojo.dto.AddRegisterDTO;
 import com.itmang.pojo.dto.DeleteRegisterDTO;
@@ -65,7 +68,8 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
         boolean saved = this.saveBatch(signInInformationList);
 
         if (!saved) {
-            throw new RuntimeException("新增签到信息失败");
+
+            throw new BaseException("新增签到信息失败");
         }
 
         log.info("新增签到信息成功，数量：{}", signInInformationList.size());
@@ -80,7 +84,8 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
         // 查询签到信息
         SignInInformation info = getById(deleteRegisterDTO.getId());
         if (info == null) {
-            throw new RuntimeException("未找到对应的签到信息");
+
+            throw new BaseException("未找到对应的签到信息");
         }
 
         // 逻辑删除：设置 isDelete = 1
@@ -97,35 +102,39 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
         // 1. 根据传入的 ID 查询是否存在
         SignInInformation signIn = this.getById(updateRegisterDTO.getId());
         if (signIn == null) {
-            throw new RuntimeException("签到信息不存在，无法修改");
+            throw new BaseException("签到信息不存在，无法修改");
         }
 
-        // 2. 将 DTO 的字段更新到实体类中
-        if (StringUtils.isNotBlank(updateRegisterDTO.getSignInTitle())) {
-        signIn.setSignInTitle(updateRegisterDTO.getSignInTitle());
+        if(signIn.getIsDelete()==2){
+
+            // 2. 将 DTO 的字段更新到实体类中
+            if (StringUtils.isNotBlank(updateRegisterDTO.getSignInTitle())) {
+                signIn.setSignInTitle(updateRegisterDTO.getSignInTitle());
+            }
+
+            if (StringUtils.isNotBlank(updateRegisterDTO.getSignInContent())) {
+                signIn.setSignInContent(updateRegisterDTO.getSignInContent());
+            }
+
+            if (updateRegisterDTO.getStartTime()!=null) {
+                signIn.setStartTime(updateRegisterDTO.getStartTime());
+            }
+
+            if (updateRegisterDTO.getEndTime()!=null) {
+                signIn.setEndTime(updateRegisterDTO.getEndTime());
+            }
+
+            // 3. 设置更新信息
+            signIn.setUpdateBy(UserId); // 或者从登录用户获取
+            signIn.setUpdateTime(LocalDateTime.now());
+
+            // 4. 执行更新
+            boolean isUpdated = this.updateById(signIn);
+            if (!isUpdated) {
+                throw new BaseException("修改签到信息失败");
+            }
         }
 
-        if (StringUtils.isNotBlank(updateRegisterDTO.getSignInContent())) {
-            signIn.setSignInContent(updateRegisterDTO.getSignInContent());
-        }
-
-        if (updateRegisterDTO.getStartTime()!=null) {
-            signIn.setStartTime(updateRegisterDTO.getStartTime());
-        }
-
-        if (updateRegisterDTO.getEndTime()!=null) {
-            signIn.setEndTime(updateRegisterDTO.getEndTime());
-        }
-
-        // 3. 设置更新信息
-        signIn.setUpdateBy(UserId); // 或者从登录用户获取
-        signIn.setUpdateTime(LocalDateTime.now());
-
-        // 4. 执行更新
-        boolean isUpdated = this.updateById(signIn);
-        if (!isUpdated) {
-            throw new RuntimeException("修改签到信息失败");
-        }
     }
 
     //新加逻辑删除判断

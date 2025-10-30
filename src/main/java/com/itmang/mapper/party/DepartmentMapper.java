@@ -14,9 +14,6 @@ import java.util.List;
 public interface DepartmentMapper extends BaseMapper<Department> {
 
 
-
-
-    //    /**
 //     * 校验部门名称唯一性（排除自身ID，用于更新场景）
 //     * @param departmentName 部门名称
 //     * @param fatherId 上级部门ID（同层级内名称唯一）
@@ -35,4 +32,5 @@ public interface DepartmentMapper extends BaseMapper<Department> {
 
 
     String selectParentName(String fatherDepartmentId);
+
 }

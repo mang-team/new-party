@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import com.itmang.exception.BaseException;
 import com.itmang.mapper.activity.SignInRecordMapper;
 import com.itmang.pojo.dto.AddRegisterRecordDTO;
 import com.itmang.pojo.dto.DeleteRegisterRecodeDTO;
@@ -70,7 +72,9 @@ public class RegisterRecodeServiceImpl extends ServiceImpl<SignInRecordMapper, S
         boolean saved = this.saveBatch(list);
         if (!saved) {
             log.error("批量保存签到记录失败，userId={}, count={}", userId, list.size());
-            throw new RuntimeException("新增签到记录失败");
+
+            throw new BaseException("新增签到记录失败");
+
         }
 
         log.info("批量新增签到记录成功，userId={}, count={}", userId, list.size());
@@ -82,7 +86,9 @@ public class RegisterRecodeServiceImpl extends ServiceImpl<SignInRecordMapper, S
         // 根据 id 查询记录
         SignInRecord record = this.getById(deleteRegisterRecodeDTO.getId());
         if (record == null) {
-            throw new RuntimeException("要删除的签到记录不存在");
+
+            throw new BaseException("要删除的签到记录不存在");
+
         }
 
         // 更新逻辑删除标志
@@ -99,29 +105,33 @@ public class RegisterRecodeServiceImpl extends ServiceImpl<SignInRecordMapper, S
         // 1. 根据传入的 ID 查询是否存在
         SignInRecord signIn = this.getById(updateRegisterRecordDTO.getId());
         if (signIn == null) {
-            throw new RuntimeException("签到信息不存在，无法修改");
+
+            throw new BaseException("签到信息不存在，无法修改");
         }
 
-        // 2. 将 DTO 的字段更新到实体类中
-        if (updateRegisterRecordDTO.getState()!=null) {
-            signIn.setState(updateRegisterRecordDTO.getState());
+        if(signIn.getIsDelete()==2){
+            // 2. 将 DTO 的字段更新到实体类中
+            if (updateRegisterRecordDTO.getState()!=null) {
+                signIn.setState(updateRegisterRecordDTO.getState());
+            }
+
+            if (StringUtils.isNotBlank(updateRegisterRecordDTO.getNotes())) {
+                signIn.setNotes(updateRegisterRecordDTO.getNotes());
+            }
+
+
+
+            // 3. 设置更新信息
+            signIn.setUpdateBy(userId); // 或者从登录用户获取
+            signIn.setUpdateTime(LocalDateTime.now());
+
+            // 4. 执行更新
+            boolean isUpdated = this.updateById(signIn);
+            if (!isUpdated) {
+                throw new BaseException("修改签到信息失败");
+            }
         }
 
-        if (StringUtils.isNotBlank(updateRegisterRecordDTO.getNotes())) {
-            signIn.setNotes(updateRegisterRecordDTO.getNotes());
-        }
-
-
-
-        // 3. 设置更新信息
-        signIn.setUpdateBy(userId); // 或者从登录用户获取
-        signIn.setUpdateTime(LocalDateTime.now());
-
-        // 4. 执行更新
-        boolean isUpdated = this.updateById(signIn);
-        if (!isUpdated) {
-            throw new RuntimeException("修改签到信息失败");
-        }
     }
 
     @Override
