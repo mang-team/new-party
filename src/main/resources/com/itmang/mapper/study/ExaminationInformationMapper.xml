@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.study.ExaminationInformationMapper">
+
+
+    <insert id="insertExaminationInformation">
+        insert into examination_information
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="examinationName != null and examinationName != ''">examination_name,</if>
+            <if test="userIds != null and userIds != ''">user_ids,</if>
+            <if test="scoreValue != null and scoreValue != ''">score_value,</if>
+            <if test="singleChoiceIds != null and singleChoiceIds != ''">single_choice_ids,</if>
+            <if test="multipleChoiceIds != null and multipleChoiceIds != ''">multiple_choice_ids,</if>
+            <if test="judgeIds != null and judgeIds != ''">judge_ids,</if>
+            <if test="fillBlankIds != null and fillBlankIds != ''">fill_blank_ids,</if>
+            <if test="questionQuantity != null">question_quantity,</if>
+            <if test="examinationInstruction != null and examinationInstruction != ''">examination_instruction,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isDelete != null">is_delete,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="examinationName != null and examinationName != ''">#{examinationName},</if>
+            <if test="userIds != null and userIds != ''">#{userIds},</if>
+            <if test="scoreValue != null and scoreValue != ''">#{scoreValue},</if>
+            <if test="singleChoiceIds != null and singleChoiceIds != ''">#{singleChoiceIds},</if>
+            <if test="multipleChoiceIds != null and multipleChoiceIds != ''">#{multipleChoiceIds},</if>
+            <if test="judgeIds != null and judgeIds != ''">#{judgeIds},</if>
+            <if test="fillBlankIds != null and fillBlankIds != ''">#{fillBlankIds},</if>
+            <if test="questionQuantity != null">#{questionQuantity},</if>
+            <if test="examinationInstruction != null and examinationInstruction != ''">#{examinationInstruction},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+        </trim>
+    </insert>
+
+    <update id="removeBatchByIds">
+        update examination_information
+        set is_delete = 1
+        where id in
+        <foreach item="item" collection="array" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateExaminationInformation">
+        update examination_information
+        <set>
+            <if test="examinationName != null and examinationName != ''">
+                examination_name = #{examinationName},
+            </if>
+            <if test="userIds != null and userIds != ''">
+                user_ids = #{userIds},
+            </if>
+            <if test="scoreValue != null and scoreValue != ''">
+                score_value = #{scoreValue},
+            </if>
+            <if test="singleChoiceIds != null and singleChoiceIds != ''">
+                single_choice_ids = #{singleChoiceIds},
+            </if>
+            <if test="multipleChoiceIds != null and multipleChoiceIds != ''">
+                multiple_choice_ids = #{multipleChoiceIds},
+            </if>
+            <if test="judgeIds != null and judgeIds != ''">
+                judge_ids = #{judgeIds},
+            </if>
+            <if test="fillBlankIds != null and fillBlankIds != ''">
+                fill_blank_ids = #{fillBlankIds},
+            </if>
+            <if test="questionQuantity != null">
+                question_quantity = #{questionQuantity},
+            </if>
+            <if test="examinationInstruction != null and examinationInstruction != ''">
+                examination_instruction = #{examinationInstruction},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectExaminationInformationList" resultType="com.itmang.pojo.vo.ExaminationPageVO">
+        select
+        id,examination_name as examinationName,question_quantity as questionQuantity,
+        start_time as startTime,end_time as endTime,update_time as updateTime
+        from examination_information
+        <where>
+            <if test="examinationName != null and examinationName != ''">
+                and examination_name like concat('%', #{examinationName}, '%')
+            </if>
+            <if test="startTimeStart != null">
+                and start_time &gt;= #{startTimeStart}
+            </if>
+            <if test="startTimeEnd != null">
+                and start_time &lt;= #{startTimeEnd}
+            </if>
+            <if test="endTimeStart != null">
+                and end_time &gt;= #{endTimeStart}
+            </if>
+            <if test="endTimeEnd != null">
+                and end_time &lt;= #{endTimeEnd}
+            </if>
+            and is_delete = 2
+        </where>
+    </select>
+
+
+</mapper>

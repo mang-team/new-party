@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.user.UserMapper">
+
+
+    <select id="queryUserNames" resultType="java.lang.String">
+        select user_name from user
+        where id in
+        <foreach collection="userIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getUserPage" resultType="com.itmang.pojo.entity.User">
+        select
+        u1.id,u1.user_name,u1.image,u1.is_first,u1.status,u1.password,u1.create_time,u1.update_time,u2.user_name
+        create_user_name,
+        u3.user_name update_user_name
+        from user u1
+        left join user u2 on u1.create_by = u2.id
+        left join user u3 on u1.update_by = u3.id
+        <where>
+            <if test="pageUserDto.getUserName != null and pageUserDto.getUserName != ''">
+                u1.user_name like concat('%',#{pageUserDto.getUserName},'%')
+            </if>
+            <if test="pageUserDto.createEndTime != null and pageUserDto.createStartTime != null">
+                date_format(u1.create_time,'%y-%m-%d') between #{pageUserDto.createStartTime} and #{pageUserDto.createEndTime}
+            </if>
+            <if test="pageUserDto.updateStartTime != null and pageUserDto.updateEndTime != null">
+                date_format(u1.update_time,'%y-%m-%d') between #{pageUserDto.updateStartTime} and #{pageUserDto.updateEndTime}
+            </if>
+        </where>
+    </select>
+    <select id="getUserInfo" resultType="com.itmang.pojo.vo.UserQueryVo">
+        select user.*, department.department_name, member.*
+        from user
+                 left join member on member.user_id = user.id
+                 left join department on member.department_id = department.id
+        where user.id = #{userId}
+    </select>
+
+</mapper>
