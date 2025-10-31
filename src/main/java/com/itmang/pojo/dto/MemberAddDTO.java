@@ -36,6 +36,7 @@ public class MemberAddDTO {
 
     @NotNull(message = "政治面貌不能为空")
     @Schema(description = "政治面貌（1群众,2共青团员,3入党积极分子,4发展对象,5预备党员,6正式党员）")
+
     private Integer politicalStatus;
 
     @NotBlank(message = "身份证号不能为空")
@@ -85,7 +86,6 @@ public class MemberAddDTO {
 
     @Schema(description = "转正时间")
     private LocalDateTime becomeFullMemberTime;
-
 
 
 

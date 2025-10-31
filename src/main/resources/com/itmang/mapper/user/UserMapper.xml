@@ -38,5 +38,4 @@
                  left join department on member.department_id = department.id
         where user.id = #{userId}
     </select>
-
 </mapper>

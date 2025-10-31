@@ -151,12 +151,9 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
             canDeleteIds.add(id);
         }
         // 执行删除逻辑
-        try{
-            if(!canDeleteIds.isEmpty()) {
-                datasMapper.removeBatchByIds(canDeleteIds.toArray(new String[0]));
-            }
-        }catch (Exception e){
-            throw new BaseException(MessageConstant.DATA_FAIL_DELETED);
+
+        if(!canDeleteIds.isEmpty()) {
+            datasMapper.removeBatchByIds(canDeleteIds.toArray(new String[0]));
         }
 
         // 处理删除结果

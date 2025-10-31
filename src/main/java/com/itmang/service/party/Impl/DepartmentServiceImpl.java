@@ -49,7 +49,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
     //新增部门
     @Override
-    @Transactional
 
     public void addDept(AddDepartmentDTO addDepartmentDTO) {
 
@@ -100,11 +99,13 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
     //更新部门信息
     @Override
-    @Transactional
-    public void updateDept(DepartmentDTO updateDTO) {
+
+     public void updateDept(DepartmentDTO updateDTO) {
         // 新增：校验ID非空
-        if (updateDTO.getId() == null) {
-            throw new BaseException(MessageConstant.DEPARTMENT_ID_EMPTY);
+        if (updateDTO.getId().isEmpty()) {
+            throw new BaseException(MessageConstant.ID_CANNOT_BE_NULL);
+
+
         }
         // 1、判断部门是否存在
         Department originalDept = departmentMapper.selectById(updateDTO.getId());
@@ -151,7 +152,9 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
 
     //删除部门
     @Override
-    @Transactional
+
+
+
     public void deleteDepartments(String[] departmentIds) {
         List<String> canDeleteIds = new ArrayList<>();
         List<String> canNotDeleteIds = new ArrayList<>();
@@ -226,20 +229,21 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
 
     public List<DepartmentVO> getChildrenByParentId(String fatherDepartmentId) {
-// 1. 构建查询条件
-        LambdaQueryWrapper<Department> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Department::getFatherDepartmentId, fatherDepartmentId);
-        queryWrapper.eq(Department::getIsDelete, DeleteConstant.NO);
-        queryWrapper.orderByAsc(Department::getCreateTime);
 
-        // 2. 查询部门列表
-        List<Department> departmentList = this.list(queryWrapper);
-
-        // 3. 转换为VO列表
-        return departmentList.stream()
-                .map(this::convertToVO) // 使用你已有的convertToVO方法
-                .collect(Collectors.toList());
-
+        //10.27 完善
+        Department department = departmentMapper.selectById(fatherDepartmentId);
+        if (department == null || department.getIsDelete().equals(DeleteConstant.YES)) {
+            throw new BaseException(MessageConstant.DEPARTMENT_NOT_EXISTS);
+        }
+        List<Department> departmentList = departmentMapper.selectByParentId(fatherDepartmentId);
+        List<DepartmentVO> departmentVOList=new ArrayList<>();
+        for(Department department1:departmentList)
+        {
+            DepartmentVO departmentVO=new DepartmentVO();
+            departmentVO=convertToVO(department1);
+            departmentVOList.add(departmentVO);
+        }
+        return departmentVOList;
     }
 
 
@@ -256,6 +260,11 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         vo.setUpdateBy(department.getUpdateBy());
         vo.setUpdateTime(department.getUpdateTime());
         vo.setIsDelete(department.getIsDelete());
+
+        String fatherDepartmentId = vo.getFatherDepartmentId();
+        String fatherDepartmentName=departmentMapper.selectParentName(fatherDepartmentId);
+        vo.setFatherDepartmentName(fatherDepartmentName);
+
 
         return vo;
     }

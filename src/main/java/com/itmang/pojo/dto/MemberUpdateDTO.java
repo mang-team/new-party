@@ -18,10 +18,10 @@ public class MemberUpdateDTO {
     @Schema(name = "id", description = "id")
     private String id;
 
+
     @NotBlank(message = "用户id不能为空")
     @Schema(name = "用户id", description = "user_id")
     private String userId;
-
 
     @NotBlank(message = "部门ID不能为空")
     @Schema(description = "部门ID", required = true)
@@ -52,6 +52,7 @@ public class MemberUpdateDTO {
 
     @NotBlank(message = "手机号不能为空")
     @Schema(description = "手机号", required = true)
+
     private String telephone;
 
     @Schema(description = "学历")
@@ -98,8 +99,10 @@ public class MemberUpdateDTO {
     @Schema(description = "是否在校（1在校，2不在校）")
     private Integer isAtSchool;
 
+
 //    @Schema(description = "是否删除标记")
 //    private Integer isDelete;
+
 
 
 }

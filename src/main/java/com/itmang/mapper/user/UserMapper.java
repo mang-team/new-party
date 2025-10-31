@@ -24,5 +24,4 @@ public interface UserMapper extends BaseMapper<User> {
 
     UserQueryVo getUserInfo(String userId);
 
-
 }

@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+
+import com.itmang.exception.BaseException;
+
 import com.itmang.mapper.activity.VoteInformationMapper;
 import com.itmang.pojo.dto.AddVoteDTO;
 import com.itmang.pojo.dto.DeleteVoteDTO;
@@ -67,7 +71,11 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
         boolean saved = this.saveBatch(VoteInformationList);
 
         if (!saved) {
-            throw new RuntimeException("新增投票信息失败");
+
+
+            throw new BaseException("新增投票信息失败");
+
+
         }
 
         log.info("新增投票信息成功，数量：{}", VoteInformationList.size());
@@ -82,7 +90,10 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
         // 查询投票信息
         VoteInformation info = getById(deleteVoteDTO.getId());
         if (info == null) {
-            throw new RuntimeException("未找到对应的投票信息");
+
+            throw new BaseException("未找到对应的投票信息");
+
+
         }
 
         // 逻辑删除：设置 isDelete = 1
@@ -99,39 +110,45 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
         // 1. 根据传入的 ID 查询是否存在
         VoteInformation Vote = this.getById(updateVoteDTO.getId());
         if (Vote == null) {
-            throw new RuntimeException("投票信息不存在，无法修改");
+
+            throw new BaseException("投票信息不存在，无法修改");
         }
 
-        // 2. 将 DTO 的字段更新到实体类中
-        if (StringUtils.isNotBlank(updateVoteDTO.getVoteInTitle())) {
-        Vote.setVoteTitle(updateVoteDTO.getVoteInTitle());
+        if(Vote.getIsDelete()==2){
+
+            // 2. 将 DTO 的字段更新到实体类中
+            if (StringUtils.isNotBlank(updateVoteDTO.getVoteInTitle())) {
+                Vote.setVoteTitle(updateVoteDTO.getVoteInTitle());
+            }
+
+            if (StringUtils.isNotBlank(updateVoteDTO.getVoteInContent())) {
+                Vote.setVoteContent(updateVoteDTO.getVoteInContent());
+            }
+
+            if (updateVoteDTO.getOptions()!=null) {
+                Vote.setOptions(updateVoteDTO.getOptions());
+            }
+
+            if (updateVoteDTO.getStartTime()!=null) {
+                Vote.setStartTime(updateVoteDTO.getStartTime());
+            }
+
+            if (updateVoteDTO.getEndTime()!=null) {
+                Vote.setEndTime(updateVoteDTO.getEndTime());
+            }
+
+            // 3. 设置更新信息
+            Vote.setUpdateBy(UserId); // 或者从登录用户获取
+            Vote.setUpdateTime(LocalDateTime.now());
+
+            // 4. 执行更新
+            boolean isUpdated = this.updateById(Vote);
+            if (!isUpdated) {
+                throw new BaseException("修改投票信息失败");
+            }
         }
 
-        if (StringUtils.isNotBlank(updateVoteDTO.getVoteInContent())) {
-            Vote.setVoteContent(updateVoteDTO.getVoteInContent());
-        }
 
-        if (updateVoteDTO.getOptions()!=null) {
-            Vote.setOptions(updateVoteDTO.getOptions());
-        }
-
-        if (updateVoteDTO.getStartTime()!=null) {
-            Vote.setStartTime(updateVoteDTO.getStartTime());
-        }
-
-        if (updateVoteDTO.getEndTime()!=null) {
-            Vote.setEndTime(updateVoteDTO.getEndTime());
-        }
-
-        // 3. 设置更新信息
-        Vote.setUpdateBy(UserId); // 或者从登录用户获取
-        Vote.setUpdateTime(LocalDateTime.now());
-
-        // 4. 执行更新
-        boolean isUpdated = this.updateById(Vote);
-        if (!isUpdated) {
-            throw new RuntimeException("修改投票信息失败");
-        }
     }
 
     //Option已转化为String类型

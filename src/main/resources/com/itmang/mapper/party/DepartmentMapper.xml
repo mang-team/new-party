@@ -12,7 +12,9 @@
         d.create_time as createTime,
         d.update_by as updateBy,
         d.update_time as updateTime,
-        d.is_delete as isDelete,
+
+        d.is_delete as isDelete
+
         FROM department d
         LEFT JOIN department fd ON d.father_department_id = fd.id AND fd.is_delete = 2
         <where>
@@ -69,5 +71,31 @@
             WHERE id = #{item.id}
         </foreach>
     </update>
+
+
+    <select id="selectByParentId" resultType="com.itmang.pojo.entity.Department">
+        SELECT
+            d.id,
+            d.department_name as departmentName,
+            d.father_department_id as fatherDepartmentId,
+            fd.department_name as fatherDepartmentName,
+            d.create_by as createBy,
+            d.create_time as createTime,
+            d.update_by as updateBy,
+            d.update_time as updateTime,
+            d.is_delete as isDelete
+        FROM department d
+        LEFT JOIN department fd ON d.father_department_id = fd.id AND fd.is_delete = 2
+        WHERE d.father_department_id = #{parentId}
+          AND d.is_delete = 2
+        ORDER BY d.create_time DESC
+    </select>
+    <select id="selectParentName" resultType="java.lang.String">
+        SELECT department_name
+        from department
+        WHERE id=#{parentId}
+    </select>
+
+
 
 </mapper>

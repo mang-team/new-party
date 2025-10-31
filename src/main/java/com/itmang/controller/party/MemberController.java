@@ -57,7 +57,9 @@ public class MemberController {
     }
 
     @PostMapping("/batch")
+
     @ApiOperation("新增成员(可批量)")
+
     public Result<String> batchAddMembers(@Valid @RequestBody List<MemberAddDTO> memberDTOList) {
         memberService.batchAddMembers(memberDTOList);
         return Result.success();
