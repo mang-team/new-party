@@ -34,12 +34,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         //log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
-                .addPathPatterns("/admin/user/login")
                 .addPathPatterns("/user/**")
                 .addPathPatterns("/action/**")
                 .addPathPatterns("/study/**")
                 .addPathPatterns("/party/**")
                 //放行swagger3文档路径
+                .excludePathPatterns("/admin/user/login")
                 .excludePathPatterns("/swagger**/**")
                 .excludePathPatterns("/webjars/**")
                 .excludePathPatterns("/v3/**")
