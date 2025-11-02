@@ -23,6 +23,7 @@ import com.itmang.utils.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -62,11 +63,10 @@ public class AdminController {
 
     @Operation(summary = "登录接口")
     @PostMapping("/login")
-    @GlobalInterceptor(checkPermission = true)
-    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO) {
+    public Result<LoginVO> login(@RequestBody LoginDTO loginDTO, HttpServletRequest request) {
         log.info("用户登录,登录的信息:{}", loginDTO);
         //先查询数据库是否有这个用户的信息
-        User user = userService.login(loginDTO);
+        User user = userService.adminLogin(loginDTO,request.getRequestURI());
         //查询到了，直接生成jwt令牌，用户之后验证
         //1、使用键值对的方式存储信息
         Map<String, Object> claims = new HashMap<>();

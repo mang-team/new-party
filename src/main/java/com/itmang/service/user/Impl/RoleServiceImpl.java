@@ -243,4 +243,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             rolePermissionMapper.insert(rolePermission);
         }
     }
+
+    @Override
+    public List<Role> getRoleByUserId(String id) {
+        return roleMapper.getRoleByUserId(id);
+    }
 }

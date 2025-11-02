@@ -2,6 +2,7 @@ package com.itmang.service.user.Impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -9,16 +10,21 @@ import com.github.pagehelper.PageInfo;
 import com.itmang.constant.AdminConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.constant.StatusConstant;
+import com.itmang.exception.BaseException;
 import com.itmang.exception.PasswordErrorException;
 import com.itmang.exception.UserNotLoginException;
 import com.itmang.mapper.user.PermissionMapper;
+import com.itmang.mapper.user.RolePermissionMapper;
 import com.itmang.mapper.user.UserMapper;
 import com.itmang.pojo.dto.LoginDTO;
 import com.itmang.pojo.dto.PageUserDto;
 import com.itmang.pojo.entity.PageResult;
+import com.itmang.pojo.entity.Role;
 import com.itmang.pojo.entity.User;
 import com.itmang.pojo.vo.UserQueryVo;
 import com.itmang.service.user.PermissionService;
+import com.itmang.service.user.RoleService;
+import com.itmang.service.user.UserRoleService;
 import com.itmang.service.user.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +37,7 @@ import com.itmang.exception.AccountNotFoundException;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -46,6 +53,12 @@ public class UserServicerImpl extends ServiceImpl<UserMapper, User> implements U
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private RoleService roleService;
+
+    @Resource
+    private RolePermissionMapper rolePermissionMapper;
 
 
     /**
@@ -96,6 +109,28 @@ public class UserServicerImpl extends ServiceImpl<UserMapper, User> implements U
     @Override
     public UserQueryVo getUserInfo(String userId) {
         return userMapper.getUserInfo(userId);
+    }
+
+    @Override
+    public User adminLogin(LoginDTO loginDTO,String uri) {
+        User loginUser = this.login(loginDTO);
+        List<Role> roleList = roleService.getRoleByUserId(loginUser.getId());
+
+        // 获取角色ID列表
+        List<String> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
+
+        // 根据角色ID列表获取权限URL列表
+        List<String> permissionUrls = rolePermissionMapper.getPermissionUrlsByRoleIds(roleIds);
+
+        //判断该用户有无管理员身份
+        if(permissionUrls.isEmpty() || !permissionUrls.contains(uri)){
+            throw new BaseException(MessageConstant.ACCOUNT_OR_PASSWORD_ERROR);
+        }
+
+        // 将权限列表存入Redis
+        redisTemplate.opsForValue().set(AdminConstant.USER_PERMISSION_KEY + loginUser.getId(), JSON.toJSONString(permissionUrls), 1, TimeUnit.HOURS);
+
+        return loginUser;
     }
 
 

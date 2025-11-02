@@ -33,5 +33,11 @@
             </if>
         </where>
     </select>
+    <select id="getRoleByUserId" resultType="com.itmang.pojo.entity.Role">
+        select role.*
+        from role
+                 left join user_role on role.id = user_role.user_id
+        where user_role.user_id = #{id}
+    </select>
 
 </mapper>

@@ -25,4 +25,6 @@ public interface RoleMapper extends BaseMapper<Role> {
      * @return
      */
     Long pageQueryCount(RolePageDTO rolePageDTO);
+
+    List<Role> getRoleByUserId(String id);
 }

@@ -9,6 +9,8 @@ import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Role;
 import com.itmang.pojo.vo.RoleVO;
 
+import java.util.List;
+
 public interface RoleService extends IService<Role> {
 
     /**
@@ -49,4 +51,6 @@ public interface RoleService extends IService<Role> {
      * @param permissionIds
      */
     void assignPermissions(String roleId, String[] permissionIds);
+
+    List<Role> getRoleByUserId(String id);
 }
