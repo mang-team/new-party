@@ -16,6 +16,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -62,7 +63,7 @@ public class GlobalAspect {
         List<String> permissionList =
                 (List<String>) JSON.parse((String) redisTemplate.opsForValue()
                         .get(AdminConstant.USER_PERMISSION_KEY + BaseContext.getCurrentId()));
-        if (permissionList.isEmpty() || !permissionList.contains(requestURI)) {
+        if (CollectionUtils.isEmpty(permissionList) || !permissionList.contains(requestURI)) {
             throw new BaseException("你没有此权限");
         }
     }
