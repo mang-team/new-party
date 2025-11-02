@@ -8,12 +8,16 @@
         SELECT DISTINCT p.url
         FROM party_building_system.permission p
         JOIN party_building_system.role_permission rp ON p.id = rp.permission_id
-        WHERE rp.role_id IN
-        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
-            #{roleId}
-        </foreach>
-        AND p.is_delete = 2
-        AND rp.is_delete = 2
+        <where>
+            AND p.is_delete = 2
+            AND rp.is_delete = 2
+            <if test="roleIds != null and roleIds.size() > 0">
+                AND rp.role_id IN
+                <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                    #{roleId}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 </mapper>
