@@ -100,6 +100,12 @@ public class UserServicerImpl extends ServiceImpl<UserMapper, User> implements U
 
     @Override
     public PageResult getUserPage(PageUserDto pageUserDto) {
+        if (pageUserDto.getCurrent() == null) {
+            pageUserDto.setCurrent(1);
+        }
+        if (pageUserDto.getSize() == null) {
+            pageUserDto.setSize(15);
+        }
         PageHelper.startPage(pageUserDto.getCurrent(), pageUserDto.getSize());
         List<User> userList = userMapper.getUserPage(pageUserDto);
         PageInfo<User> userPage = new PageInfo<>(userList);
