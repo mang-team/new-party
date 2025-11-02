@@ -167,10 +167,9 @@ public class AdminController {
     }
 
     @Operation(summary = "获取用户信息")
-    @PostMapping("/getUserInfo")
+    @GetMapping("/getUserInfo")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
-    public Result<Object> getUserInfo() {
-        String userId = BaseContext.getCurrentId();
+    public Result<Object> getUserInfo(@RequestParam String userId) {
         UserQueryVo userQueryVo = userService.getUserInfo(userId);
         BaseContext.removeCurrentId();
         return Result.success(userQueryVo);
