@@ -127,7 +127,7 @@ public class AdminController {
     }
 
     @Operation(summary = "分页获取用户列表")
-    @GetMapping("/getUserPage")
+    @PostMapping("/getUserPage")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
     public Result<Object> getUserPage(@RequestBody PageUserDto pageUserDto) {
         PageResult pageResult = userService.getUserPage(pageUserDto);
