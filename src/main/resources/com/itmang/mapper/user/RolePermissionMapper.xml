@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.user.RolePermissionMapper">
+
+    <!-- 根据角色ID列表查询权限URL -->
+    <select id="getPermissionUrlsByRoleIds" resultType="java.lang.String">
+        SELECT DISTINCT p.url
+        FROM party_building_system.permission p
+        JOIN party_building_system.role_permission rp ON p.id = rp.permission_id
+        WHERE rp.role_id IN
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+        AND p.is_delete = 2
+        AND rp.is_delete = 2
+    </select>
+
+</mapper>

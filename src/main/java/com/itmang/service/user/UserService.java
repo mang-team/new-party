@@ -23,4 +23,6 @@ public interface UserService extends IService<User> {
     PageResult getUserPage(PageUserDto pageUserDto);
 
     UserQueryVo getUserInfo(String userId);
+
+    User adminLogin(LoginDTO loginDTO,String uri);
 }
