@@ -20,14 +20,14 @@
         left join user u2 on u1.create_by = u2.id
         left join user u3 on u1.update_by = u3.id
         <where>
-            <if test="pageUserDto.getUserName != null and pageUserDto.getUserName != ''">
-                u1.user_name like concat('%',#{pageUserDto.getUserName},'%')
+            <if test="userName != null and userName != ''">
+                u1.user_name like concat('%',#{userName},'%')
             </if>
-            <if test="pageUserDto.createEndTime != null and pageUserDto.createStartTime != null">
-                date_format(u1.create_time,'%y-%m-%d') between #{pageUserDto.createStartTime} and #{pageUserDto.createEndTime}
+            <if test="createEndTime != null and createStartTime != null">
+                date_format(u1.create_time,'%y-%m-%d') between #{createStartTime} and #{createEndTime}
             </if>
-            <if test="pageUserDto.updateStartTime != null and pageUserDto.updateEndTime != null">
-                date_format(u1.update_time,'%y-%m-%d') between #{pageUserDto.updateStartTime} and #{pageUserDto.updateEndTime}
+            <if test="updateStartTime != null and updateEndTime != null">
+                date_format(u1.update_time,'%y-%m-%d') between #{updateStartTime} and #{updateEndTime}
             </if>
         </where>
     </select>
