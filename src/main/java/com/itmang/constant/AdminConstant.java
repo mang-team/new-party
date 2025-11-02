@@ -11,5 +11,5 @@ package com.itmang.constant;
  */
 public class AdminConstant {
 
-    public static final String USER_PERMISSION_KEY = "USER_PERMISSION";
+    public static final String USER_PERMISSION_KEY = "USER_PERMISSION:";
 }
