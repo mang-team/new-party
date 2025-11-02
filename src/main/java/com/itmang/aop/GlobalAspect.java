@@ -62,7 +62,7 @@ public class GlobalAspect {
         List<String> permissionList =
                 (List<String>) JSON.parse((String) redisTemplate.opsForValue()
                         .get(AdminConstant.USER_PERMISSION_KEY + BaseContext.getCurrentId()));
-        if (!permissionList.contains(requestURI)) {
+        if (permissionList.isEmpty() || !permissionList.contains(requestURI)) {
             throw new BaseException("你没有此权限");
         }
     }
