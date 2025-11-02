@@ -1,6 +1,7 @@
 package com.itmang.controller.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.itmang.annotation.ActionLog;
 import com.itmang.annotation.GlobalInterceptor;
 import com.itmang.constant.JwtClaimsConstant;
 import com.itmang.constant.MessageConstant;
@@ -91,6 +92,7 @@ public class AdminController {
     @Operation(summary = "编辑用户接口")
     @PostMapping("/editUser")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
+    @ActionLog(description = "编辑用户", operationType = 2)
     public Result<Object> editUser(@RequestBody UserDto userDto) {
         String userId = BaseContext.getCurrentId();
         User user = new User();
@@ -113,6 +115,7 @@ public class AdminController {
     @Operation(summary = "改变用户状态")
     @PostMapping("/changeUserStatus/{userId}")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
+    @ActionLog(description = "改变用户状态", operationType = 2)
     public Result<Object> changeUserStatus(@PathVariable String userId) {
         String updateUserId = BaseContext.getCurrentId();
         User user = userService.getById(userId);
@@ -129,6 +132,7 @@ public class AdminController {
     @Operation(summary = "分页获取用户列表")
     @PostMapping("/getUserPage")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
+    @ActionLog(description = "分页获取用户列表", operationType = 1)
     public Result<Object> getUserPage(@RequestBody PageUserDto pageUserDto) {
         PageResult pageResult = userService.getUserPage(pageUserDto);
         return Result.success(pageResult);
@@ -137,6 +141,7 @@ public class AdminController {
     @Operation(summary = "批量新增用户")
     @PostMapping("/addUserBatch")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
+    @ActionLog(description = "分页获取用户列表", operationType = 3)
     public Result<Object> addUser(@RequestBody List<AddUserDto> addUserDtoList) {
         List<User> userList = new ArrayList<>();
         for (AddUserDto addUserDto :
@@ -169,6 +174,7 @@ public class AdminController {
     @Operation(summary = "获取用户信息")
     @GetMapping("/getUserInfo")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
+    @ActionLog(description = "获取用户信息", operationType = 1)
     public Result<Object> getUserInfo(@RequestParam String userId) {
         UserQueryVo userQueryVo = userService.getUserInfo(userId);
         BaseContext.removeCurrentId();
@@ -185,6 +191,7 @@ public class AdminController {
     @Operation(summary = "给用户分配角色")
     @PostMapping("/assignRoles")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
+    @ActionLog(description = "给用户分配角色", operationType = 3)
     public Result assignRoles(@RequestParam String userId, @RequestParam String roleIds) {
         if (userId == null || userId.trim().isEmpty()) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
