@@ -189,5 +189,20 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
 
+    /**
+     * 批量查询题目
+     * @param ids
+     * @return
+     */
+    public List<BankVO> seriesQuestionBank(String[] ids) {
+        //判断ids是否为空
+        if (ids == null || ids.length == 0) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        //批量查询
+        List<BankVO> bankVOList = questionBankMapper.seriesQuestionBank(ids);
+        return bankVOList;
+    }
+
 
 }

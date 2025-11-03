@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @Data
 public class ExaminationPageDTO implements Serializable {
 
+    @Schema(name = "userId", description = "用户id")
+    private String userId;
     @Schema(name = "examinationName", description = "考试名称")
     private String examinationName;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

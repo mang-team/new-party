@@ -67,5 +67,13 @@ public class BankController {
         return Result.success(pageResult);
     }
 
+    @Operation(summary = "批量查询题目")
+    @GetMapping("/list/{ids}")
+    public Result<List<BankVO>> seriesQuestionBank(@PathVariable String[] ids){
+        log.info("批量查询题目:{}",ids);
+        List<BankVO> bankVOList = bankService.seriesQuestionBank(ids);
+        return Result.success(bankVOList);
+    }
+
 
 }

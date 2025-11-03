@@ -57,4 +57,11 @@ public interface QuestionBankMapper extends BaseMapper<QuestionBank> {
      * @return
      */
     List<BankPageVO> queryQuestionBankList(BankPageDTO bankPageDTO);
+
+    /**
+     * 批量查询题库列表
+     * @param ids
+     * @return
+     */
+    List<BankVO> seriesQuestionBank(String[] ids);
 }
