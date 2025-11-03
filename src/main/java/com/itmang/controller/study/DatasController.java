@@ -65,7 +65,7 @@ public class DatasController {
     @GetMapping("/{id}")
     public Result<DatasVO> updateData(@PathVariable String id){
         log.info("查询资料id:{}",id);
-        DatasVO datasVO =datasService.searchData(id);
+        DatasVO datasVO = datasService.searchData(id);
         return Result.success(datasVO);
     }
 

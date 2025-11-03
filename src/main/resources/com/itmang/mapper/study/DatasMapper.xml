@@ -3,9 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.itmang.mapper.study.DatasMapper">
     <insert id="insertDatas">
-        insert into datas (id, number, title, icon, content, points, release_by, release_time, status,
+        insert into datas (id, number, title, icon, content, pageview, points, release_by, release_time, status,
                            create_by, create_time, update_by, update_time, is_delete)
-        values (#{id}, #{number}, #{title}, #{icon}, #{content}, #{points}, #{releaseBy}, #{releaseTime}, #{status},
+        values (#{id}, #{number}, #{title}, #{icon}, #{content}, #{pageview}, #{points}, #{releaseBy}, #{releaseTime}, #{status},
                 #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{isDelete})
     </insert>
 
@@ -15,6 +15,7 @@
             <if test="title != null and title != '' ">title = #{title},</if>
             <if test="icon != null and icon != '' ">icon = #{icon},</if>
             <if test="content != null and content != '' ">content = #{content},</if>
+            <if test="pageview != null and pageview != '' ">pageview = #{pageview},</if>
             <if test="points != null and points != '' ">points = #{points},</if>
             <if test="releaseBy != null and releaseBy != '' ">release_by = #{releaseBy},</if>
             <if test="releaseTime != null ">release_time = #{releaseTime},</if>
@@ -38,7 +39,7 @@
 
 
     <select id="selectInformationById" resultType="com.itmang.pojo.vo.DatasVO">
-        select d.number, d.title, d.icon, d.content, d.points, u1.user_name as releaseName,
+        select d.number, d.title, d.icon, d.content, d.points,d.pageview,  u1.user_name as releaseName,
                d.release_time as releaseTime,
                d.status, d.update_time as updateTime, u2.user_name as updateName
         from datas d
@@ -49,7 +50,7 @@
 
 
     <select id="pageSearch" resultType="com.itmang.pojo.vo.DatasPageVO">
-        select d.id, d.number, d.title, d.icon, d.content, d.points,
+        select d.id, d.number, d.title, d.icon, d.content, d.points,d.pageview,
         d.release_time as releaseTime,
         d.status, d.update_time as updateTime
         from datas d

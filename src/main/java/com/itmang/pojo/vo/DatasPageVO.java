@@ -25,6 +25,8 @@ public class DatasPageVO implements Serializable {
     private String content;
     @Schema(name = "points", description = "学习积分")
     private Integer points;
+    @Schema(name = "pageview", description = "资料点击量")
+    private String pageview;
     @Schema(name = "releaseTime", description = "发布时间")
     private LocalDateTime releaseTime;
     @Schema(name = "status", description = "资料状态")
