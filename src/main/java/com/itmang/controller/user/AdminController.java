@@ -141,7 +141,7 @@ public class AdminController {
     @Operation(summary = "批量新增用户")
     @PostMapping("/addUserBatch")
     @GlobalInterceptor(checkLogin = true, checkPermission = true)
-    @ActionLog(description = "分页获取用户列表", operationType = 3)
+    @ActionLog(description = "批量新增用户列表", operationType = 3)
     public Result<Object> addUser(@RequestBody List<AddUserDto> addUserDtoList) {
         List<User> userList = new ArrayList<>();
         for (AddUserDto addUserDto :
