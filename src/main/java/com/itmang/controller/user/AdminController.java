@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -150,6 +151,9 @@ public class AdminController {
         List<User> userList = new ArrayList<>();
         for (AddUserDto addUserDto :
                 addUserDtoList) {
+            if(StringUtils.isEmpty(addUserDto.getUserName())||StringUtils.isEmpty(addUserDto.getNumber())){
+                throw new BaseException(MessageConstant.PARAMETER_ERROR);
+            }
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getNumber, addUserDto.getNumber());
             long count = userService.count(queryWrapper);
