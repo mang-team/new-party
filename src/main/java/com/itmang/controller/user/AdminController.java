@@ -7,10 +7,7 @@ import com.itmang.constant.JwtClaimsConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.context.BaseContext;
 import com.itmang.exception.BaseException;
-import com.itmang.pojo.dto.AddUserDto;
-import com.itmang.pojo.dto.LoginDTO;
-import com.itmang.pojo.dto.PageUserDto;
-import com.itmang.pojo.dto.UserDto;
+import com.itmang.pojo.dto.*;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.pojo.entity.User;
@@ -19,6 +16,7 @@ import com.itmang.pojo.vo.UserQueryVo;
 import com.itmang.properties.JwtProperties;
 import com.itmang.service.user.UserService;
 import com.itmang.service.user.UserRoleService;
+import com.itmang.service.user.UserLogService;
 import com.itmang.utils.IdGenerate;
 import com.itmang.utils.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +55,9 @@ public class AdminController {
 
     @Resource
     private UserRoleService userRoleService;
+
+    @Resource
+    private UserLogService userLogService;
 
     @Resource
     private IdGenerate idGenerate;
@@ -212,5 +213,14 @@ public class AdminController {
         String[] roleIdArray = roleIds.split(",");
         userRoleService.assignRoles(userId, roleIdArray);
         return Result.success();
+    }
+
+    @Operation(summary = "分页获取用户日志列表")
+    @PostMapping("/getUserLogPage")
+    @GlobalInterceptor(checkLogin = true, checkPermission = true)
+    public Result<Object> getUserLogPage(@RequestBody PageUserLogDto pageUserLogDto) {
+        log.info("分页获取用户日志列表: {}", pageUserLogDto);
+        PageResult pageResult = userLogService.getUserLogPage(pageUserLogDto);
+        return Result.success(pageResult);
     }
 }
