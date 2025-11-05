@@ -9,6 +9,7 @@ import com.github.pagehelper.PageInfo;
 import com.itmang.constant.DeleteConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.constant.PageConstant;
+
 import com.itmang.context.BaseContext;
 import com.itmang.exception.BaseException;
 
@@ -31,6 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+
 import java.util.regex.Pattern;
 
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ public class MemberServiceImpl implements MemberService {
      * @return
      */
     public PageResult queryMemberList(MemberQueryDTO memberQueryDTO) {
+
         //使用pageHelper工具进行分页查询
         //查看是否有页数据
         //配置默认页码1和分页大小5
@@ -66,6 +70,7 @@ public class MemberServiceImpl implements MemberService {
         if(memberQueryDTO.getPageSize() == null || memberQueryDTO.getPageSize() < 1){
             memberQueryDTO.setPageSize(PageConstant.PAGE_SIZE);
         }
+
         PageHelper.startPage(memberQueryDTO.getPage(), memberQueryDTO.getPageSize());
         List<MemberBriefVO> memberBriefVOList = memberMapper.selectMemberList(memberQueryDTO);
         PageInfo<MemberBriefVO> pageInfo = new PageInfo<>(memberBriefVOList);
@@ -130,7 +135,9 @@ public class MemberServiceImpl implements MemberService {
 
         // 所有ID都无效
         if (canDeleteIds.isEmpty()) {
+
             throw new BaseException(MessageConstant.MEMBER_INFORMATION_NOT_EXISTS);
+
         }
 
         // 执行删除逻辑
@@ -147,6 +154,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
     }
+
 
 
 
@@ -196,11 +204,13 @@ public class MemberServiceImpl implements MemberService {
 
             try {
                 validateMemberDTO(dto);
+
 //
 //                if (!phones.add(dto.getTelephone())) {
 //                    errorMessages.add("第" + recordNumber + "条记录：手机号重复: " + dto.getTelephone());
 //                    continue;
 //                }
+
                 if (!idCards.add(dto.getIdCard())) {
                     errorMessages.add("第" + recordNumber + "条记录：身份证号重复: " + dto.getIdCard());
                     continue;
@@ -265,9 +275,11 @@ public class MemberServiceImpl implements MemberService {
             throw new BaseException(MessageConstant.NAME_CANNOT_BE_NULL);
         }
 
+
 //        if (StringUtils.isBlank(dto.getUserId())) {
 //            throw new BaseException(MessageConstant.USER_ID_CANNOT_BE_NULL);
 //        }
+
 
 
         if (dto.getSex() == null) {

@@ -65,4 +65,18 @@
     </select>
 
 
+    <select id="seriesQuestionBank" resultType="com.itmang.pojo.vo.BankVO">
+        select q.type, q.question, q.question_option, q.answer_type, q.is_choose,
+               u.user_name as updateName, q.update_time
+        from question_bank q
+                 left join user u on q.update_by = u.id
+        where q.id in
+        <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and q.is_delete = 2
+    </select>
+
+
+
 </mapper>

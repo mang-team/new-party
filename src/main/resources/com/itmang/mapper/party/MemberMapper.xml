@@ -272,6 +272,7 @@
 
         </where>
 
+
         order by m.create_time desc
 
     </select>
@@ -311,7 +312,9 @@
 
         FROM member
         WHERE id = #{id}
+
         AND is_delete = 2
+
     </select>
 
 
