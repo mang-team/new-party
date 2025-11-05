@@ -1,6 +1,6 @@
 package com.itmang.utils;
 
-import com.feiwu.yikouai.config.CosClientConfig;
+import com.itmang.config.CosConfig;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
@@ -20,7 +20,7 @@ import java.io.File;
 public class CosUtil {
 
     @Resource
-    private CosClientConfig cosClientConfig;
+    private CosConfig cosClientConfig;
 
     @Resource
     private COSClient cosClient;
