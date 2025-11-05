@@ -201,6 +201,9 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
         }
         //批量查询
         List<BankVO> bankVOList = questionBankMapper.seriesQuestionBank(ids);
+        if(bankVOList == null || bankVOList.size() == 0){
+            throw new BaseException(MessageConstant.QUESTION_BANK_NOT_EXIST);
+        }
         return bankVOList;
     }
 
