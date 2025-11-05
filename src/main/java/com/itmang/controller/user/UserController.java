@@ -1,6 +1,7 @@
 package com.itmang.controller.user;
 
 
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itmang.annotation.GlobalInterceptor;
 import com.itmang.constant.JwtClaimsConstant;
@@ -16,13 +17,21 @@ import com.itmang.pojo.vo.LoginVO;
 import com.itmang.pojo.vo.UserQueryVo;
 import com.itmang.properties.JwtProperties;
 import com.itmang.service.user.UserService;
+import com.itmang.config.CosConfig;
+import com.itmang.utils.CosUtil;
 import com.itmang.utils.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -37,6 +46,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private JwtProperties jwtProperties;//导入jwt配置类
+
+    @Autowired
+    private CosUtil cosUtil;
 
     @Operation(summary = "登录接口")
     @PostMapping("/login")
@@ -158,5 +170,74 @@ public class UserController extends BaseController {
         UserQueryVo userQueryVo = userService.getUserInfo(userId);
         BaseContext.removeCurrentId();
         return Result.success(userQueryVo);
+    }
+
+    /**
+     * 上传头像接口
+     *
+     * @param avatarFile 头像文件
+     * @return 包含头像URL的结果
+     */
+    @Operation(summary = "上传头像接口")
+    @PostMapping("/uploadAvatar")
+    @GlobalInterceptor(checkLogin = true)
+    public Result<String> uploadAvatar(@RequestParam("avatarFile") MultipartFile avatarFile) {
+        // 检查文件是否为空
+        if (avatarFile.isEmpty()) {
+            throw new BaseException("上传的文件不能为空");
+        }
+
+        try {
+            // 获取用户ID
+            String userId = BaseContext.getCurrentId();
+
+            // 创建临时文件
+            String originalFilename = avatarFile.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            String fileName = UUID.randomUUID().toString().replace("-", "") + extension;
+            String tmpPath = System.getProperty("user.dir") + File.separator + "tmp" + File.separator;
+
+            // 将MultipartFile保存为临时文件
+            if(!new File(tmpPath).exists()) {
+                FileUtil.mkdir(tmpPath);
+            }
+            avatarFile.transferTo(new File(tmpPath + fileName));
+
+            // 构造COS对象键（路径）
+            String cosKey = "/avatar/" + userId + "/" + fileName;
+
+            // 上传到COS
+            String avatarUrl = cosUtil.uploadFile(cosKey, new File(tmpPath + fileName));
+
+            // 删除临时文件
+            FileUtil.del(new File(tmpPath + fileName));
+
+            // 检查上传是否成功
+            if (avatarUrl == null) {
+                throw new BaseException("头像上传失败");
+            }
+
+            // 更新用户头像URL
+            User user = new User();
+            user.setId(userId);
+            user.setImage(avatarUrl);
+            user.setUpdateTime(LocalDateTime.now());
+            user.setUpdateBy(userId);
+            boolean isSuccess = userService.updateById(user);
+            if (!isSuccess) {
+                throw new BaseException("用户信息更新失败");
+            }
+
+            return Result.success(avatarUrl);
+        } catch (IOException e) {
+            log.error("上传头像失败: {}", e.getMessage());
+            throw new BaseException("上传头像失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("上传头像异常: {}", e.getMessage());
+            throw new BaseException("上传头像异常: " + e.getMessage());
+        }
     }
 }
