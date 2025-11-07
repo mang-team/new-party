@@ -30,6 +30,11 @@ public class Datas {
     @Schema(name = "content", description = "文档url")
     private String content;
 
+
+    @Schema(name = "pageview", description = "资料点击量")
+    private String pageview;
+
+
     @Schema(name = "points", description = "学习积分（默认：0）")
     private Integer points;
 

@@ -107,6 +107,10 @@
         start_time as startTime,end_time as endTime,update_time as updateTime
         from examination_information
         <where>
+            <if test="userId != null and userId != ''">
+                and FIND_IN_SET(#{userId}, user_ids)
+            </if>
+
             <if test="examinationName != null and examinationName != ''">
                 and examination_name like concat('%', #{examinationName}, '%')
             </if>

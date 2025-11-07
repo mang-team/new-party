@@ -87,7 +87,9 @@ public class MessageConstant {
     public static final String POLITICAL_STATUS_VALUE_MUST_BE_1_TO_6 = "政治面貌值必须在1-6之间";
     public static final String IS_AT_SCHOOL_VALUE_MUST_BE_1_OR_2 = "是否在校值必须是1或2";
 
-    public static final String MEMBER_INFORMATION_ALREADY_DELETED = "成员信息先前已被删除";
+
+    public static final String MEMBER_INFORMATION_NOT_EXISTS = "成员ID不存在或该成员信息先前已被删除";
+
     public static final String MEMBER_INFORMATION_FAIL_DELETED = "删除成员信息失败";
     public static final String MEMBER_INFORMATION_PART_DELETED = "未被删除的成员信息删除成功";
 

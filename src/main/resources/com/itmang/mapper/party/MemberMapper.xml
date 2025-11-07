@@ -38,7 +38,6 @@
 
 
     <!-- 批量逻辑删除成员信息（更新is_delete字段） -->
-
     <update id="removeBatchByIds" >
 
         UPDATE member
@@ -135,7 +134,6 @@
         UPDATE member
         <set>
 
-            <if test="userId != null">user_id = #{userId},</if>
             <if test="departmentId != null">department_id = #{departmentId},</if>
             <if test="name != null">name = #{name},</if>
             <if test="sex != null">sex = #{sex},</if>
@@ -269,12 +267,11 @@
             <if test="isAtSchool != null">
                 and m.is_at_school = #{isAtSchool}
             </if>
-            <if test="isDelete != null">
-                and m.is_delete = #{isDelete}
-            </if>
+
+                and m.is_delete = 2
+
         </where>
 
-    AND is_delete = 2  <!--只查询未删除的记录 -->
 
         order by m.create_time desc
 
@@ -315,6 +312,8 @@
 
         FROM member
         WHERE id = #{id}
+
+        AND is_delete = 2
 
     </select>
 

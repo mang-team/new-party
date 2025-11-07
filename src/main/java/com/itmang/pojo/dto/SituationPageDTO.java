@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @Data
 public class SituationPageDTO implements Serializable {
 
+    @Schema(name = "userId", description = "学习用户id")
+    private String userId;
+
     @Schema(name = "userName", description = "学习用户名字")
     private String userName;
     @Schema(name = "datasCode", description = "学习资料编码")

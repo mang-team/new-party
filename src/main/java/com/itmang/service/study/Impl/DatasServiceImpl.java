@@ -110,6 +110,7 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
             Datas newData = Datas.builder()
                     .title(addDatasDTO.getTitle())
                     .content(addDatasDTO.getContent())
+                    .pageview("0")
                     .points(points)
                     .icon(addDatasDTO.getIcon())
                     .status(StatusConstant.DISABLE)
@@ -207,6 +208,14 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
         if (dataVO == null) {
             throw new BaseException(MessageConstant.DATA_NOT_EXISTS);
         }
+
+        //增加浏览次数
+        Datas data = Datas.builder()
+                .id(id)
+                .pageview(String.valueOf(Integer.parseInt(dataVO.getPageview()) + 1))
+                .build();
+        datasMapper.updateDatasById(data);
+
         return dataVO;
     }
 

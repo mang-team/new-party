@@ -19,6 +19,7 @@ public class MemberUpdateDTO {
     private String id;
 
 
+
     @NotBlank(message = "用户id不能为空")
     @Schema(name = "用户id", description = "user_id")
     private String userId;
@@ -100,8 +101,10 @@ public class MemberUpdateDTO {
     private Integer isAtSchool;
 
 
+
 //    @Schema(description = "是否删除标记")
 //    private Integer isDelete;
+
 
 
 

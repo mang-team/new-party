@@ -10,6 +10,10 @@ import com.itmang.pojo.entity.QuestionBank;
 import com.itmang.pojo.vo.BankVO;
 import org.springframework.stereotype.Service;
 
+
+import java.util.List;
+
+
 @Service
 public interface BankService extends IService<QuestionBank>{
 
@@ -43,4 +47,13 @@ public interface BankService extends IService<QuestionBank>{
      * @return
      */
     PageResult queryQuestionBankList(BankPageDTO bankPageDTO);
+
+
+    /**
+     * 批量查询题目
+     * @param ids
+     * @return
+     */
+    List<BankVO> seriesQuestionBank(String[] ids);
+
 }

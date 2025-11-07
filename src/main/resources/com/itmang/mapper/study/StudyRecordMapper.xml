@@ -64,6 +64,10 @@
             left join user u on s.user_id = u.id
             left join datas d on s.datas_id = d.id
         <where>
+
+            <if test="userId != null and userId != ''">
+                and s.user_id = #{userId}
+            </if>
             <if test="userName != null and userName != ''">
                 and u.user_name like concat('%',#{userName},'%')
             </if>

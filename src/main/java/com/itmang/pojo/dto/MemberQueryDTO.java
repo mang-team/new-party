@@ -25,8 +25,6 @@ public class MemberQueryDTO {
     @Schema(description = "是否在校 (1在校, 2不在校)")
     private Integer isAtSchool;
 
-    @Schema(description = "是否删除标记")
-    private Integer isDelete = 2;
 
     @Schema(name = "page", description = "当前页")
     private Integer page;
