@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+# .gitignore中添加
+src/main/resources/application.yml
+src/main/resources/application-dev.yml

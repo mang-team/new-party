@@ -12,6 +12,10 @@ import java.io.Serializable;
 @Data
 public class PaperPageDTO implements Serializable {
 
+    @Schema(name = "userId", description = "用户id")
+    private String userId;
+    @Schema(name = "examinationId", description = "考试信息id")
+    private String examinationId;
     @Schema(name = "number", description = "考卷编号")
     private String number;
     @Schema(name = "examinationName", description = "考试名称")

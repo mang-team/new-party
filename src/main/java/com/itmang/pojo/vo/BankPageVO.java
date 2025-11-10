@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Schema(name = "BankPageVO", description = "题目分页VO")
 public class BankPageVO {
 
+    @Schema(name = "id", description = "id")
+    private String id;
     @Schema(name = "type", description = "题目类型")
     private String type;
     @Schema(name = "question", description = "问题")

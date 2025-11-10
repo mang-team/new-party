@@ -58,7 +58,8 @@
 
     <select id="pageSearch" resultType="com.itmang.pojo.vo.SituationPageVO">
         select s.id,u.user_name as userName,d.title as datasName,d.number as datasCode,
-               s.learning_time as learningTime,s.learning_progress as learningProgress,
+                d.title, s.learning_time as learningTime,
+                s.learning_progress as learningProgress,
                s.start_time as startTime,s.is_points as isPoints,s.update_time as updateTime
         from study_record s
             left join user u on s.user_id = u.id

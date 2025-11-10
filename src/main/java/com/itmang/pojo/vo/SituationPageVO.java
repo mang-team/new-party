@@ -17,6 +17,8 @@ public class SituationPageVO implements Serializable {
     private String id;
     @Schema(name = "userName", description = "学习用户名字")
     private String userName;
+    @Schema(name = "title", description = "学习资料题目")
+    private String title;
     @Schema(name = "datasCode", description = "学习资料编码")
     private String datasCode;
     @Schema(name = "learningTime", description = "学习累计时间")
