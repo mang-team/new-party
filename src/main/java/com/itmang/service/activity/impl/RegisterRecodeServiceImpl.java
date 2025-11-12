@@ -14,8 +14,13 @@ import com.itmang.pojo.dto.DeleteRegisterRecodeDTO;
 import com.itmang.pojo.dto.FindRegisterSignDTO;
 import com.itmang.pojo.dto.UpdateRegisterRecordDTO;
 import com.itmang.pojo.entity.PageResult;
+import com.itmang.pojo.entity.SignInInformation;
 import com.itmang.pojo.entity.SignInRecord;
+import com.itmang.pojo.vo.SignInInformationVO;
 import com.itmang.service.activity.RegisterRecodeService;
+import com.itmang.service.activity.RegisterService;
+import com.itmang.websocket.WebSocketMessageService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +33,12 @@ import java.util.stream.Collectors;
 @Service
 public class RegisterRecodeServiceImpl extends ServiceImpl<SignInRecordMapper, SignInRecord>
         implements RegisterRecodeService {
+
+    @Resource
+    private WebSocketMessageService webSocketMessageService;
+
+    @Resource
+    private RegisterService  registerService;
 
     @Override
     public void addRegisterRecodeInformation(List<AddRegisterRecordDTO> addRegisterRecordDTOList, String userId) {
@@ -79,6 +90,20 @@ public class RegisterRecodeServiceImpl extends ServiceImpl<SignInRecordMapper, S
             throw new BaseException("新增签到记录失败");
 
 
+        }
+
+        SignInInformation signInInformation = registerService.getById(addRegisterRecordDTOList.get(0).getSignInInformationId());
+        // 创建签到VO对象
+        SignInInformationVO signInVO = SignInInformationVO.builder()
+                .id(signInInformation.getId())
+                .signInTitle(signInInformation.getSignInTitle())
+                .signInContent(signInInformation.getSignInContent())
+                .startTime(signInInformation.getStartTime())
+                .endTime(signInInformation.getEndTime())
+                .build();
+        for (SignInRecord record : list) {
+            // 发送签到VO对象给用户
+            webSocketMessageService.sendSignInNotificationToUser(record.getUserId(), signInVO);
         }
 
         log.info("批量新增签到记录成功，userId={}, count={}", userId, list.size());
