@@ -10,33 +10,42 @@ import com.itmang.exception.BaseException;
 
 
 import com.itmang.mapper.activity.SignInInformationMapper;
+import com.itmang.mapper.activity.SignInRecordMapper;
 import com.itmang.pojo.dto.AddRegisterDTO;
 import com.itmang.pojo.dto.DeleteRegisterDTO;
 import com.itmang.pojo.dto.FindRegisterDTO;
 import com.itmang.pojo.dto.UpdateRegisterDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.SignInInformation;
+import com.itmang.pojo.entity.SignInRecord;
+import com.itmang.pojo.vo.SignInInformationVO;
 import com.itmang.service.activity.RegisterService;
+import com.itmang.websocket.WebSocketMessageService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, SignInInformation>
         implements RegisterService {
 
+    @Autowired
+    private WebSocketMessageService webSocketMessageService;
+
     @Resource
-    private SignInInformationMapper signInInformationMapper;
+    private SignInRecordMapper signInRecordMapper;
 
     @Override
-    public void addRegisterInformation(List<AddRegisterDTO> addRegisterDTOList,String UserId) {
-        String createBy=UserId;
+    public void addRegisterInformation(List<AddRegisterDTO> addRegisterDTOList, String UserId) {
+        String createBy = UserId;
         if (addRegisterDTOList == null || addRegisterDTOList.isEmpty()) {
             log.warn("新增签到信息列表为空");
             return;
@@ -76,11 +85,34 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
 
         }
 
-        log.info("新增签到信息成功，数量：{}", signInInformationList.size());
+        for (SignInInformation signInInfo : signInInformationList) {
+            // 获取参与签到的用户并发送个性化消息
+            LambdaQueryWrapper<SignInRecord> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SignInRecord::getSignInInformationId, signInInfo.getId());
+            List<SignInRecord> signInRecordList = signInRecordMapper.selectList(queryWrapper);
+            List<String> userIds = signInRecordList
+                    .stream()
+                    .map(SignInRecord::getUserId).collect(Collectors.toList());
+            if (!userIds.isEmpty()) {
+                // 创建签到VO对象
+                SignInInformationVO signInVO = SignInInformationVO.builder()
+                        .id(signInInfo.getId())
+                        .signInTitle(signInInfo.getSignInTitle())
+                        .signInContent(signInInfo.getSignInContent())
+                        .startTime(signInInfo.getStartTime())
+                        .endTime(signInInfo.getEndTime())
+                        .build();
+
+                // 发送签到VO对象给用户
+                webSocketMessageService.sendSignInNotificationToUsers(userIds, signInVO);
+            }
+        }
+
+        log.info("新增签到信息成功，数量：{}，已发送WebSocket通知", signInInformationList.size());
     }
 
     @Override
-    public void deleteRegisterInformation(DeleteRegisterDTO deleteRegisterDTO,String UserId) {
+    public void deleteRegisterInformation(DeleteRegisterDTO deleteRegisterDTO, String UserId) {
         if (deleteRegisterDTO.getId() == null) {
             throw new IllegalArgumentException("删除的 id 不能为空");
         }
@@ -104,7 +136,7 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
     }
 
     @Override
-    public void updateRegisterInformation(UpdateRegisterDTO updateRegisterDTO,String UserId) {
+    public void updateRegisterInformation(UpdateRegisterDTO updateRegisterDTO, String UserId) {
         // 1. 根据传入的 ID 查询是否存在
         SignInInformation signIn = this.getById(updateRegisterDTO.getId());
         if (signIn == null) {
@@ -112,7 +144,7 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
             throw new BaseException("签到信息不存在，无法修改");
         }
 
-        if(signIn.getIsDelete()==2){
+        if (signIn.getIsDelete() == 2) {
 
             // 2. 将 DTO 的字段更新到实体类中
             if (StringUtils.isNotBlank(updateRegisterDTO.getSignInTitle())) {
@@ -123,11 +155,11 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
                 signIn.setSignInContent(updateRegisterDTO.getSignInContent());
             }
 
-            if (updateRegisterDTO.getStartTime()!=null) {
+            if (updateRegisterDTO.getStartTime() != null) {
                 signIn.setStartTime(updateRegisterDTO.getStartTime());
             }
 
-            if (updateRegisterDTO.getEndTime()!=null) {
+            if (updateRegisterDTO.getEndTime() != null) {
                 signIn.setEndTime(updateRegisterDTO.getEndTime());
             }
 
@@ -176,19 +208,19 @@ public class RegisterServiceImpl extends ServiceImpl<SignInInformationMapper, Si
         queryWrapper.eq(SignInInformation::getIsDelete,
                 dto.getIsDelete() != null ? dto.getIsDelete() : 2);
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-                // 范围查询开始时间
-                if (StringUtils.isNotBlank(dto.getStartTime())) {
-                    LocalDateTime start = LocalDateTime.parse(dto.getStartTime(), formatter);
-                    queryWrapper.ge(SignInInformation::getStartTime, start);
-                }
-        
-                // 范围查询结束时间
-                if (StringUtils.isNotBlank(dto.getEndTime())) {
-                    LocalDateTime end = LocalDateTime.parse(dto.getEndTime(), formatter);
-                    queryWrapper.le(SignInInformation::getEndTime, end);
-                }
+        // 范围查询开始时间
+        if (StringUtils.isNotBlank(dto.getStartTime())) {
+            LocalDateTime start = LocalDateTime.parse(dto.getStartTime(), formatter);
+            queryWrapper.ge(SignInInformation::getStartTime, start);
+        }
+
+        // 范围查询结束时间
+        if (StringUtils.isNotBlank(dto.getEndTime())) {
+            LocalDateTime end = LocalDateTime.parse(dto.getEndTime(), formatter);
+            queryWrapper.le(SignInInformation::getEndTime, end);
+        }
         // 可选分页
         List<SignInInformation> records;
         long total;

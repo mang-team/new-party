@@ -160,6 +160,13 @@
             <artifactId>cos_api</artifactId>
             <version>5.6.227</version>
         </dependency>
+        
+        <!-- Netty WebSocket 依赖 -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.94.Final</version>
+        </dependency>
     </dependencies>
 
     <build>
