@@ -1,5 +1,6 @@
 package com.itmang.websocket;
 
+import com.itmang.config.WebSocketConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -14,6 +15,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,8 +28,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class NettyWebSocketServer implements Runnable{
 
-    @Value("${netty.websocket.port:8086}")
-    private int port;
+    @Resource
+    private WebSocketConfig webSocketConfig;
+
+    @Resource
+    private WebSocketServerHandler webSocketServerHandler;
 
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -59,12 +64,12 @@ public class NettyWebSocketServer implements Runnable{
                                     true,
                                     true,
                                     10000L));
-                            pipeline.addLast(new WebSocketServerHandler());
+                            pipeline.addLast(webSocketServerHandler);
                         }
                     });
 
-            channelFuture = bootstrap.bind(port).sync();
-            log.info("Netty WebSocket服务器启动成功，端口：{}", port);
+            channelFuture = bootstrap.bind(webSocketConfig.getPort()).sync();
+            log.info("Netty WebSocket服务器启动成功，端口：{}", webSocketConfig.getPort());
             
             // 等待服务器通道关闭
             channelFuture.channel().closeFuture().sync();
