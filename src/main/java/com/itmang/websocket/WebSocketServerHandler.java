@@ -5,6 +5,7 @@ import com.itmang.properties.JwtProperties;
 import com.itmang.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
@@ -14,6 +15,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * WebSocket消息处理器
  */
 @Slf4j
+@Component
+@ChannelHandler.Sharable
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     @Resource
@@ -68,7 +72,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
             if(redisTemplate.hasKey("blacklist:" + message)){
                return;
             }
-            Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), message);
+            Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), message.substring("token:".length()));
             String userId = String.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
             userChannels.put(userId, ctx.channel());
             log.info("用户 {} 认证成功", userId);
