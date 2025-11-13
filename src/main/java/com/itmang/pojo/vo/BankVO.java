@@ -25,6 +25,10 @@ public class BankVO {
     private String answerType;
     @Schema(name = "isChoose", description = "是否选用（1为被选用，2为未被选用）")
     private Integer isChoose;
+    @Schema(name = "times", description = "次数")
+    private Integer times;
+    @Schema(name = "note", description = "解析")
+    private String note;
     @Schema(name = "updateName", description = "修改人名称")
     private String updateName;
     @Schema(name = "updateTime", description = "修改时间")

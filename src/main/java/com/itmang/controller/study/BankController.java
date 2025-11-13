@@ -68,7 +68,7 @@ public class BankController {
     }
 
 
-    @Operation(summary = "批量查询题目")
+    @Operation(summary = "批量查询题目(有答案)")
     @GetMapping("/list/{ids}")
     public Result<List<BankVO>> seriesQuestionBank(@PathVariable String[] ids){
         log.info("批量查询题目:{}",ids);

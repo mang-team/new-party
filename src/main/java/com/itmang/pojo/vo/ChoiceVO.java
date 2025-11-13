@@ -22,5 +22,9 @@ public class ChoiceVO {
     private String question;
     @Schema(name = "questionOption", description = "选择题选项")
     private List<String> questionOption;
+    @Schema(name = "answer", description = "答案")
+    private String answer;
+    @Schema(name = "note", description = "解析")
+    private String note;
 
 }

@@ -20,4 +20,6 @@ public class AddBankDTO implements Serializable {
     private String questionOption;
     @Schema(name = "answerType", description = "答案类型")
     private String answerType;
+    @Schema(name = "note", description = "解析")
+    private String note;
 }

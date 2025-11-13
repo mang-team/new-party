@@ -89,5 +89,15 @@
         order by s.create_time desc
     </select>
 
+    <select id="queryLearnSituation" resultType="com.itmang.pojo.vo.LearnSituationVO">
+        select s.id,d.title,d.number as datasCode,d.type,d.pageview,
+               u.user_name as releaseName ,s.learning_progress as learningProgress,
+               s.start_time as startTime,s.is_points as isPoints,s.content
+        from study_record s
+                 left join user u on s.user_id = u.id
+                 left join datas d on s.datas_id = d.id
+        where s.id = #{id} and s.is_delete = 2
+    </select>
+
 
 </mapper>

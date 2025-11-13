@@ -18,6 +18,8 @@ public class DatasDTO implements Serializable {
     private String title;
     @Schema(name = "icon",description = "图标url")
     private String icon;
+    @Schema(name = "type",description = "类型")
+    private Integer type;
     @Schema(name = "content",description = "文档url")
     private String content;
     @Schema(name = "points",description = "学习积分")

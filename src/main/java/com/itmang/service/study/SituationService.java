@@ -3,11 +3,13 @@ package com.itmang.service.study;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.itmang.mapper.study.StudyRecordMapper;
 import com.itmang.pojo.dto.AddSituationDTO;
+import com.itmang.pojo.dto.LearnSituationDTO;
 import com.itmang.pojo.dto.SituationPageDTO;
 import com.itmang.pojo.dto.SituationUpdateDTO;
 import com.itmang.pojo.entity.Datas;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.StudyRecord;
+import com.itmang.pojo.vo.LearnSituationVO;
 import com.itmang.pojo.vo.SituationVO;
 import org.springframework.stereotype.Service;
 
@@ -46,4 +48,24 @@ public interface SituationService extends IService<StudyRecord> {
      * @return
      */
     PageResult pageSituation(SituationPageDTO situationPageDTO);
+
+    /**
+     * 结束学习资料
+     * @param learnSituationDTO
+     * @return
+     */
+    void learnEndSituation(LearnSituationDTO learnSituationDTO);
+
+    /**
+     * 开始学习资料
+     * @param id
+     * @return
+     */
+    LearnSituationVO learnStartSituation(String id);
+
+    /**
+     * 批量新增学习情况
+     * @param addSituationDTO
+     */
+    void addsSituation(AddSituationDTO addSituationDTO);
 }

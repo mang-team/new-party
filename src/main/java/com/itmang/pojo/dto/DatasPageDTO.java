@@ -19,6 +19,8 @@ public class DatasPageDTO implements Serializable {
     private String number;
     @Schema(name = "title", description = "标题名")
     private String title;
+    @Schema(name = "type", description = "资料类型")
+    private Integer type;
     @Schema(name = "points", description = "学习积分")
     private Integer points;
     @Schema(name = "status", description = "资料状态")

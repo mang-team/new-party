@@ -84,8 +84,19 @@ public class PaperController {
         return Result.success();
     }
 
-
-
+//    @Operation(summary = "开始接口")
+//    @GetMapping("/paper/start")
+//    public Result PaperStart(){
+//
+//        return Result.success();
+//    }
+//
+//    @Operation(summary = "结束接口")
+//    @GetMapping("/paper/end")
+//    public Result PaperEnd(){
+//
+//        return Result.success();
+//    }
 
 
 

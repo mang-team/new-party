@@ -95,6 +95,9 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
             if(addDatasDTO.getIcon() == null || addDatasDTO.getIcon().equals("")){
                 addDatasDTO.setIcon(IconConstant.DatasIcon);
             }
+            if(addDatasDTO.getType() == null || addDatasDTO.getType().equals("")){
+                addDatasDTO.setType(1);
+            }
             //判断分数的字段是否是Integer类型，如果是其他类型，则直接设置为0，如果是数字则直接转换为int，并且保证是正数
             //1.判断分数字段是否为Integer类型
             Integer points = null;
@@ -110,6 +113,7 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
             Datas newData = Datas.builder()
                     .title(addDatasDTO.getTitle())
                     .content(addDatasDTO.getContent())
+                    .type(addDatasDTO.getType())
                     .pageview("0")
                     .points(points)
                     .icon(addDatasDTO.getIcon())
@@ -208,7 +212,6 @@ public class DatasServiceImpl extends ServiceImpl<DatasMapper, Datas> implements
         if (dataVO == null) {
             throw new BaseException(MessageConstant.DATA_NOT_EXISTS);
         }
-
         //增加浏览次数
         Datas data = Datas.builder()
                 .id(id)

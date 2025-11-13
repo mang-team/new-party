@@ -102,6 +102,15 @@ public class MessageConstant {
     public static final String EXAMINATION_INFORMATION_START_TIME_ERROR = "考试已经开始或结束";
     public static final String SCORE_NOT_NUMBER = "分数不是数字";
     public static final String PAPER_IS_NULL = "考卷为空";
-
-
+    public static final String LEARNING_TIME_ERROR = "学习时间异常";
+    public static final String TIMER_NOT_EXIST = "异常操作";
+    public static final String TIME_DIFFERENCE_TOO_LARGE = "请勿异常操作";
+    public static final String EXAMINATION_TEMPLATE_NOT_EXIST = "考试模板不存在";
+    public static final String DELETE_EXAMINATION_TEMPLATE_FAIL = "删除模板失败";
+    public static final String EXAMINATION_PAPER_NOT_EXIST = "试题不存在";
+    public static final String DELETE_EXAMINATION_PAPER_FAIL = "删除试题失败";
+    public static final String EXAMINATION_PAPER_FAIL_DELETED = "试题删除失败";
+    public static final String EXAMINATION_PAPER_PART_DELETED = "试题部分删除失败";
+    public static final String ANSWER_NOT_EXIST = "答案不存在";
+    public static final String ANSWER_COUNT_NOT_EQUAL = "未作答完毕";
 }

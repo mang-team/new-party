@@ -22,7 +22,7 @@ public interface QuestionBankMapper extends BaseMapper<QuestionBank> {
      * 修改题库信息
      * @param array
      */
-    void updateQuestionBankSelected(String[] array);
+    void updateQuestionBankSelected(String[] array,Integer status);
 
     /**
      * 新增题库信息
@@ -66,4 +66,10 @@ public interface QuestionBankMapper extends BaseMapper<QuestionBank> {
      */
     List<BankVO> seriesQuestionBank(String[] ids);
 
+    /**
+     * 处理题目次数
+     * @param addQuestionId
+     * @param i
+     */
+    void updateQuestionBankTimes(String addQuestionId, Integer times);
 }

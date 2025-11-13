@@ -8,6 +8,7 @@
         insert into examination_information
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
+            <if test="type != null">type,</if>
             <if test="examinationName != null and examinationName != ''">examination_name,</if>
             <if test="userIds != null and userIds != ''">user_ids,</if>
             <if test="scoreValue != null and scoreValue != ''">score_value,</if>
@@ -23,10 +24,12 @@
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="note != null and note != ''">note,</if>
             <if test="isDelete != null">is_delete,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
+            <if test="type != null">#{type},</if>
             <if test="examinationName != null and examinationName != ''">#{examinationName},</if>
             <if test="userIds != null and userIds != ''">#{userIds},</if>
             <if test="scoreValue != null and scoreValue != ''">#{scoreValue},</if>
@@ -42,24 +45,21 @@
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="note != null and note != ''">#{note},</if>
             <if test="isDelete != null">#{isDelete},</if>
         </trim>
     </insert>
 
-    <update id="removeBatchByIds">
-        update examination_information
-        set is_delete = 1
-        where id in
-        <foreach item="item" collection="array" separator="," open="(" close=")">
-            #{item}
-        </foreach>
-    </update>
+
 
     <update id="updateExaminationInformation">
         update examination_information
         <set>
             <if test="examinationName != null and examinationName != ''">
                 examination_name = #{examinationName},
+            </if>
+            <if test="type != null ">
+                type = #{type},
             </if>
             <if test="userIds != null and userIds != ''">
                 user_ids = #{userIds},
@@ -97,8 +97,22 @@
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
+            <if test="note != null and note != ''">
+                note = #{note},
+            </if>
+
         </set>
         where id = #{id}
+    </update>
+
+    <update id="removeBatchByIds">
+        update examination_information
+        set is_delete = 1
+        where id in
+        <foreach item="item" collection="array" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and type = #{type}
     </update>
 
     <select id="selectExaminationInformationList" resultType="com.itmang.pojo.vo.ExaminationPageVO">
@@ -126,8 +140,55 @@
             <if test="endTimeEnd != null">
                 and end_time &lt;= #{endTimeEnd}
             </if>
-            and is_delete = 2
+            and is_delete = 2 and type = 1
         </where>
+        order by update_time desc
+    </select>
+
+    <select id="selectExaminationTemplateList" resultType="com.itmang.pojo.vo.ExaminationTemplatePageVO">
+        select e.id,e.note,e.update_time as updateTime,u.user_name as updateName
+        from examination_information e
+            left join user u on e.update_by = u.id
+        <where>
+            <if test="userId != null and userId != ''">
+                and e.user_ids = #{userId}
+            </if>
+            <if test="note != null and note != ''">
+                and e.note like concat('%', #{note}, '%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and u.user_name like concat('%', #{userName}, '%')
+            </if>
+            and e.is_delete = 2 and e.type = 3
+        </where>
+        order by e.update_time desc
+
+    </select>
+
+    <select id="selectExaminationTemplate" resultType="com.itmang.pojo.vo.ExaminationTemplateVO">
+        select e.id,e.user_ids as userIds,e.examination_name as examinationName,
+               u1.user_name as userName,e.score_value as scoreValue,e.note,
+               e.examination_instruction as examinationInstruction,
+               e.update_time as updateTime,u2.user_name as updateName
+        from examination_information e
+            left join user u2 on e.update_by = u2.id
+            left join user u1 on e.user_ids = u1.id
+        where e.id = #{id} and e.is_delete = 2 and e.type = 3
+    </select>
+
+    <select id="selectExaminationPaperList" resultType="com.itmang.pojo.vo.ExaminationPaperPageVO">
+        select id, examination_name as PaperName,question_quantity as questionQuantity
+        from examination_information
+        <where>
+            <if test="paperName != null and paperName != ''">
+                and examination_name like concat('%', #{paperName}, '%')
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_ids = #{userId}
+            </if>
+            and is_delete = 2 and type = 2
+        </where>
+
     </select>
 
 

@@ -18,8 +18,6 @@ public class BankPageDTO implements Serializable {
     private String type;
     @Schema(name = "question", description = "问题")
     private String question;
-    @Schema(name = "answerType", description = "答案类型")
-    private String answerType;
     @Schema(name = "isChoose", description = "是否选用")
     private Integer isChoose;
     @Schema(name = "page", description = "当前页")

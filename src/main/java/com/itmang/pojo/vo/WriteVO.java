@@ -19,4 +19,8 @@ public class WriteVO {
     private String id;
     @Schema(name = "question", description = "问题")
     private String question;
+    @Schema(name = "answer", description = "答案")
+    private String answer;
+    @Schema(name = "note", description = "解析")
+    private String note;
 }
