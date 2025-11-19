@@ -79,7 +79,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
             ctx.channel().writeAndFlush(new TextWebSocketFrame("认证成功"));
         } else {
             // 其他消息
-            ctx.channel().writeAndFlush(new TextWebSocketFrame("服务器收到消息: " + message));
+            ctx.channel().writeAndFlush(new TextWebSocketFrame("pong"));
         }
     }
 
