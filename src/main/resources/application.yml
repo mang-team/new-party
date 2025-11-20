@@ -58,3 +58,11 @@ springdoc:
   #包扫描的路径,可定义多个扫描路径，如果是多个则用逗号隔开
   packages-to-scan: com.itmang.controller
 
+cos:
+  client:
+    host: <你的腾讯云对象存储地址>
+    secretId: <你的secretId>
+    secretKey: <你的secretIKey>
+    region: <存储桶所在地域>
+    bucket: <存储桶名>
+
