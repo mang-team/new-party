@@ -2,11 +2,13 @@ package com.itmang.controller.study;
 
 
 import com.itmang.pojo.dto.AddSituationDTO;
+import com.itmang.pojo.dto.LearnSituationDTO;
 import com.itmang.pojo.dto.SituationPageDTO;
 import com.itmang.pojo.dto.SituationUpdateDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
 import com.itmang.pojo.entity.StudyRecord;
+import com.itmang.pojo.vo.LearnSituationVO;
 import com.itmang.pojo.vo.SituationVO;
 import com.itmang.service.study.SituationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +34,13 @@ public class SituationController {
         return Result.success();
     }
 
+    @Operation(summary = "批量新增学习情况")
+    @PostMapping("/adds")
+    public Result addsSituation(@RequestBody AddSituationDTO addSituationDTO){
+        log.info("新增学习情况:{}",addSituationDTO);
+        situationService.addsSituation(addSituationDTO);
+        return Result.success();
+    }
 
     @Operation(summary = "编辑学习情况")
     @PostMapping("/update")
@@ -65,6 +74,21 @@ public class SituationController {
         return Result.success(pageResult);
     }
 
+    @Operation(summary = "开始学习接口")
+    @GetMapping("/learn/{id}")
+    public Result<LearnSituationVO> learnStartSituation(@PathVariable String id){
+        log.info("开始学习资料:{}",id);
+        LearnSituationVO learnSituationVO = situationService.learnStartSituation(id);
+        return Result.success(learnSituationVO);
+    }
+
+    @Operation(summary = "结束学习接口")
+    @GetMapping("/learn/end")
+    public Result learnEndSituation(LearnSituationDTO learnSituationDTO){
+        log.info("学习资料:{}",learnSituationDTO);
+        situationService.learnEndSituation(learnSituationDTO);
+        return Result.success();
+    }
 
 
 }

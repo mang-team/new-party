@@ -17,16 +17,16 @@ public class DatasVO implements Serializable {
     private String number;
     @Schema(name = "title", description = "标题名")
     private String title;
+    @Schema(name = "type", description = "类型")
+    private Integer type;
     @Schema(name = "icon", description = "图标url")
     private String icon;
     @Schema(name = "content", description = "文档url")
     private String content;
     @Schema(name = "points", description = "学习积分")
     private Integer points;
-
     @Schema(name = "pageview", description = "资料浏览量")
     private String pageview;
-
     @Schema(name = "releaseName", description = "发布者名称")
     private String releaseName;
     @Schema(name = "releaseTime", description = "发布时间")

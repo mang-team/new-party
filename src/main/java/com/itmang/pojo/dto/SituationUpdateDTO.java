@@ -15,8 +15,6 @@ public class SituationUpdateDTO implements Serializable {
 
     @Schema(name = "id", description = "id")
     private String id;
-    @Schema(name = "learningTime", description = "学习累计时间")
-    private Integer learningTime;
     @Schema(name = "content", description = "学习分享")
     private String content;
 }

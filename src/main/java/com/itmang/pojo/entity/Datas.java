@@ -21,6 +21,9 @@ public class Datas {
     @Schema(name = "number", description = "资料编码，唯一键")
     private String number;
 
+    @Schema(name = "type", description = "类型")
+    private Integer type;
+
     @Schema(name = "title", description = "标题名")
     private String title;
 
@@ -30,10 +33,8 @@ public class Datas {
     @Schema(name = "content", description = "文档url")
     private String content;
 
-
     @Schema(name = "pageview", description = "资料点击量")
     private String pageview;
-
 
     @Schema(name = "points", description = "学习积分（默认：0）")
     private Integer points;

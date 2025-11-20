@@ -6,16 +6,16 @@
 
     <insert id="insertQuestionBank">
         insert into question_bank
-            (id, type, question,question_option, answer_type, is_choose,
-             create_by, create_time, update_by, update_time, is_delete)
+            (id, type, question,question_option, answer_type, is_choose,times
+             create_by, create_time, update_by, update_time, note, is_delete)
         values
-            (#{id}, #{type}, #{question}, #{questionOption}, #{answerType}, #{isChoose},
-             #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{isDelete})
+            (#{id}, #{type}, #{question}, #{questionOption}, #{answerType}, #{isChoose}, #{times}
+             #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{note}, #{isDelete})
     </insert>
 
     <update id="updateQuestionBankSelected">
         update question_bank
-            set is_choose = 1
+            set is_choose = #{status}
         where id =
             <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
                 #{item}
@@ -34,26 +34,35 @@
     <update id="updateQuestionBank">
         update question_bank
         <set>
-            <if test="type != null">type = #{type},</if>
-            <if test="question != null">question = #{question},</if>
-            <if test="questionOption != null">question_option = #{questionOption},</if>
-            <if test="answerType != null">answer_type = #{answerType},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="question != null and question != ''">question = #{question},</if>
+            <if test="questionOption != null and questionOption != ''">
+                question_option = #{questionOption},
+            </if>
+            <if test="answerType != null and answerType != ''">answer_type = #{answerType},</if>
+            <if test="note != null and note != ''">note = #{note},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </set>
         where id = #{id}
     </update>
 
+    <update id="updateQuestionBankTimes">
+        update question_bank
+        set times = times + #{times}
+        where id = #{addQuestionId}
+    </update>
+
     <select id="queryQuestionBankById" resultType="com.itmang.pojo.vo.BankVO">
         select q.type, q.question, q.question_option, q.answer_type, q.is_choose,
-            u.user_name as updateName, q.update_time
+            q.times, u.user_name as updateName, q.update_time ,q.note
         from question_bank q
             left join user u on q.update_by = u.id
         where q.id = #{id} and q.is_delete = 2
     </select>
 
     <select id="queryQuestionBankList" resultType="com.itmang.pojo.vo.BankPageVO">
-        select id, type, question,is_choose,update_time
+        select id, type, question,is_choose,times, update_time
         from question_bank
             <where>
                 <if test="type != null and type != ''">and type = #{type}</if>
@@ -67,7 +76,7 @@
 
     <select id="seriesQuestionBank" resultType="com.itmang.pojo.vo.BankVO">
         select q.type, q.question, q.question_option, q.answer_type, q.is_choose,
-               u.user_name as updateName, q.update_time
+               u.user_name as updateName, q.update_time ,q.note
         from question_bank q
                  left join user u on q.update_by = u.id
         where q.id in

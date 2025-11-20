@@ -52,6 +52,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/admin/user/login")//新增放行管理端登录接口
 
                 .excludePathPatterns("/user/user/register")
+                .excludePathPatterns("/user/user/logout")//新增登出接口
                 .excludePathPatterns("/**/OPTIONS");
 
     }

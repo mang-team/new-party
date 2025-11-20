@@ -210,6 +210,11 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
         }
         //TODO 后续需要对答案与题目数量进行校验
         //对传入的数据进行判断，对各类题型的答案进行拆解，并将其处理成需要的存贮格式
+        //创建一个变量存储答案数量
+        int answerCount = 0;
+        //查询考试信息
+        ExaminationInformation examinationInformation =
+                examinationInformationMapper.selectById(examinationPaper.getExaminationInformationId());
         if(paperUpdateDTO.getSingleChoiceAnswers() != null && !paperUpdateDTO.getSingleChoiceAnswers().isEmpty()){
             //答案不为空，对答案进行截取处理，传进来的答案格式为：1,2,3,4,3,2,3,2
             //需要将其处理成：[1,2,3,4,3,2,3,2]
@@ -219,14 +224,23 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
             singleChoiceBuilder.append("[");
             for(int i = 0; i < singleChoiceArray.length; i++){
                 singleChoiceBuilder.append(singleChoiceArray[i]);
+                answerCount++;
                 if(i != singleChoiceArray.length - 1){
                     singleChoiceBuilder.append(",");
                 }
             }
             singleChoiceBuilder.append("]");
+            //判断答案数量是否与题目数量一致
+            //1.先查询考卷信息中单选题的数目
+            int singleChoiceCount = examinationInformation.getSingleChoiceIds().split(",").length;
+            if(singleChoiceCount != answerCount){
+                throw new BaseException(MessageConstant.ANSWER_COUNT_NOT_EQUAL);
+            }
             paperUpdateDTO.setSingleChoiceAnswers(singleChoiceBuilder.toString());
         }
+
         if(paperUpdateDTO.getMultipleChoiceAnswers() != null && !paperUpdateDTO.getMultipleChoiceAnswers().isEmpty()){
+            answerCount = 0;
             //答案不为空，对答案进行截取处理传进来的答案格式为：1,2,3,4;2,3;1,2,3;1,2
             //需要将其处理成：[[1,2,3,4],[2,3],[1,2,3],[1,2]]
             String multipleChoiceAnswers = paperUpdateDTO.getMultipleChoiceAnswers();
@@ -243,14 +257,20 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                     }
                 }
                 multipleChoiceBuilder.append("]");
+                answerCount++;
                 if(i != multipleChoiceArray.length - 1){
                     multipleChoiceBuilder.append(",");
                 }
             }
             multipleChoiceBuilder.append("]");
+            int multipleChoiceCount = examinationInformation.getMultipleChoiceIds().split(",").length;
+            if(multipleChoiceCount != answerCount){
+                throw new BaseException(MessageConstant.ANSWER_COUNT_NOT_EQUAL);
+            }
             paperUpdateDTO.setMultipleChoiceAnswers(multipleChoiceBuilder.toString());
         }
         if(paperUpdateDTO.getJudgeAnswers() != null && !paperUpdateDTO.getJudgeAnswers().isEmpty()){
+            answerCount = 0;
             //答案不为空，对答案进行截取处理，传进来的答案格式为：1,2,2,1,1,2,1
             //需要将其处理成：[1,2,2,1,1,2,1]
             String judgeAnswers = paperUpdateDTO.getJudgeAnswers();
@@ -259,14 +279,20 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
             judgeBuilder.append("[");
             for(int i = 0; i < judgeArray.length; i++){
                 judgeBuilder.append(judgeArray[i]);
+                answerCount++;
                 if(i != judgeArray.length - 1){
                     judgeBuilder.append(",");
                 }
             }
             judgeBuilder.append("]");
+            int judgeCount = examinationInformation.getJudgeIds().split(",").length;
+            if(judgeCount != answerCount){
+                throw new BaseException(MessageConstant.ANSWER_COUNT_NOT_EQUAL);
+            }
             paperUpdateDTO.setJudgeAnswers(judgeBuilder.toString());
         }
         if(paperUpdateDTO.getFillBlankAnswers() != null && !paperUpdateDTO.getFillBlankAnswers().isEmpty()){
+            answerCount = 0;
             //答案不为空，对答案进行截取处理传进来的答案格式为：....;...;...;...
             //需要将其处理成：[[....],[...],[...],[...]]
             String fillBlankAnswers = paperUpdateDTO.getFillBlankAnswers();
@@ -277,11 +303,16 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                 fillBlankBuilder.append("[");
                 fillBlankBuilder.append(fillBlankArray[i]);
                 fillBlankBuilder.append("]");
+                answerCount++;
                 if(i != fillBlankArray.length - 1){
                     fillBlankBuilder.append(",");
                 }
             }
             fillBlankBuilder.append("]");
+            int fillBlankCount = examinationInformation.getFillBlankIds().split(",").length;
+            if(fillBlankCount != answerCount){
+                throw new BaseException(MessageConstant.ANSWER_COUNT_NOT_EQUAL);
+            }
             paperUpdateDTO.setFillBlankAnswers(fillBlankBuilder.toString());
         }
 
@@ -439,7 +470,6 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
     public void correctPapers(String[] ids) {
         // 缓存：考试信息ID -> 正确答案容器（避免重复查询）
         Map<String, List<Map<String, String>>> correctPaperIds = new HashMap<>();
-
         for (String id : ids) {
             // 先验证考卷是否存在
             ExaminationPaper examinationPaper = examinationPaperMapper.selectById(id);
@@ -450,7 +480,6 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
             if (examinationPaper.getIsSubmit().equals(StatusConstant.DISABLE)) {
                 throw new BaseException(MessageConstant.PAPER_NOT_SUBMIT);
             }
-
             // 查找correctPaperIds集合中是否有该配套的考试题目id
             String examInfoId = examinationPaper.getExaminationInformationId();
             if (!correctPaperIds.containsKey(examInfoId)) {
@@ -567,8 +596,6 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                 String questionId = singleChoiceIds[i];
                 String correctAnswer = singleChoiceAnswers.get(questionId);
                 String studentAnswer = singleChoiceAnswersList.get(i);
-
-                //TODO 这里控制题目的分值不正确
                 if (correctAnswer != null && correctAnswer.equals(studentAnswer)) {
                     // 单选题答对，加分（需根据题目分值计算，此处假设每题1分）
                     score += singleChoiceScore;
@@ -602,7 +629,6 @@ public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, Examin
                 String questionId = judgeIds[i];
                 String correctAnswer = judgeAnswers.get(questionId);
                 String studentAnswer = judgeAnswersList.get(i);
-
                 if (correctAnswer != null && correctAnswer.equals(studentAnswer)) {
                     // 判断题答对，加分（需根据题目分值计算，此处假设每题1分）
                     score += judgeScore;

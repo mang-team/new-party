@@ -33,6 +33,9 @@ public class QuestionBank {
     @Schema(name = "isChoose", description = "是否选用（1为被选用，2为未被选用）")
     private Integer isChoose;
 
+    @Schema(name = "times", description = "次数")
+    private Integer times;
+
     @Schema(name = "createBy", description = "创建人")
     private String createBy;
 
@@ -45,6 +48,10 @@ public class QuestionBank {
     @Schema(name = "updateTime", description = "修改时间")
     private LocalDateTime updateTime;
 
+    @Schema(name = "note", description = "解析")
+    private String note;
+
     @Schema(name = "isDelete", description = "是否删除（1为删除，2为未删除）（默认为2）")
     private Integer isDelete;
+
 }

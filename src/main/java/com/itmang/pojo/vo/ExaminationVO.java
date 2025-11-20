@@ -23,6 +23,8 @@ public class ExaminationVO {
     private String userNames;
     @Schema(name = "scoreValue", description = "各类题型分值集合")
     private String scoreValue;
+    @Schema(name = "questionQuantity", description = "题目数量")
+    private Integer questionQuantity;
     @Schema(name = "singleChoiceIds", description = "单选题题目集合")
     private List<ChoiceVO> singleChoice;
     @Schema(name = "multipleChoiceIds", description = "多选题题目集合")

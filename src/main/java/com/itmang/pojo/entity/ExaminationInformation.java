@@ -18,6 +18,9 @@ public class ExaminationInformation {
     @Schema(name = "id", description = "id，主键自增")
     private String id;
 
+    @Schema(name = "type", description = "类型")
+    private Integer type;
+
     @Schema(name = "examinationName", description = "考试名称")
     private String examinationName;
 
@@ -62,6 +65,9 @@ public class ExaminationInformation {
 
     @Schema(name = "updateTime", description = "修改时间")
     private LocalDateTime updateTime;
+
+    @Schema(name = "note", description = "备注")
+    private String note;
 
     @Schema(name = "isDelete", description = "是否删除（1为删除，2为未删除）（默认为2）")
     private Integer isDelete;

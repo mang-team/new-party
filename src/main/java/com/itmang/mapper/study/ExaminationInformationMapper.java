@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.itmang.annotation.AutoFill;
 import com.itmang.enumeration.OperationType;
 import com.itmang.pojo.dto.ExaminationPageDTO;
+import com.itmang.pojo.dto.ExaminationPaperPageDTO;
+import com.itmang.pojo.dto.ExaminationTemplatePageDTO;
 import com.itmang.pojo.entity.ExaminationInformation;
-import com.itmang.pojo.vo.ExaminationPageVO;
-import com.itmang.pojo.vo.ExaminationVO;
+import com.itmang.pojo.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public interface ExaminationInformationMapper extends BaseMapper<ExaminationInfo
      * 批量删除考试信息
      * @param array
      */
-    void removeBatchByIds(String[] array);
+    Integer removeBatchByIds(String[] array,Integer type);
 
     /**
      * 修改考试信息
@@ -42,4 +43,25 @@ public interface ExaminationInformationMapper extends BaseMapper<ExaminationInfo
      * @return
      */
     List<ExaminationPageVO> selectExaminationInformationList(ExaminationPageDTO examinationPageDTO);
+
+    /**
+     * 查询考试模版列表
+     * @param examinationTemplatePageDTO
+     * @return
+     */
+    List<ExaminationTemplatePageVO> selectExaminationTemplateList(ExaminationTemplatePageDTO examinationTemplatePageDTO);
+
+    /**
+     * 查询考试模版详情
+     * @param id
+     * @return
+     */
+    ExaminationTemplateVO selectExaminationTemplate(String id);
+
+    /**
+     * 查询考试试卷列表
+     * @param examinationPaperPageDTO
+     * @return
+     */
+    List<ExaminationPaperPageVO> selectExaminationPaperList(ExaminationPaperPageDTO examinationPaperPageDTO);
 }

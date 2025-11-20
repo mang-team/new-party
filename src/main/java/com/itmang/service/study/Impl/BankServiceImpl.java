@@ -58,22 +58,28 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
         }
         //题库中没有这个题目，可以添加
         //需要判断选择题中的提供的答案是否有提供到选项中
-        //TODO 后续可增加判断功能
-//        if (addBankDTO.getAnswerType().equals(QuestionOptionConstant.SINGLE_CHOICE)  ||
-//            addBankDTO.getAnswerType().equals(QuestionOptionConstant.MULTI_CHOICE)) {
-//            String[] answerArray = addBankDTO.getQuestionOption().split(",");
-//            for (String answer : answerArray) {
-//                //进行判断选项中是否有给的答案的选项
-//                if (!addBankDTO.getAnswerType().contains(answer)) {
-//                    throw new BaseException(MessageConstant.ANSWER_NOT_EXIST);
-//                }
-//            }
-//        }
+        if (addBankDTO.getType().equals(QuestionOptionConstant.SINGLE_CHOICE)  ||
+            addBankDTO.getType().equals(QuestionOptionConstant.MULTI_CHOICE)) {
+            //进行判断选项中是否有给的答案的选项
+            if (!addBankDTO.getQuestionOption().contains(addBankDTO.getAnswerType())) {
+                throw new BaseException(MessageConstant.ANSWER_NOT_EXIST);
+            }
+        }
+        //判断填空题是否填写了答案
+        if (addBankDTO.getType().equals(QuestionOptionConstant.FILL_BLANKS)
+                && addBankDTO.getAnswerType() == null) {
+            throw new BaseException(MessageConstant.ANSWER_NOT_EXIST);
+        }
+        //判断判断题是否填写了答案，并且是否是1或者2
+        if(addBankDTO.getType().equals(QuestionOptionConstant.JUDGEMENT)
+            && (!addBankDTO.getAnswerType().equals("1") || !addBankDTO.getAnswerType().equals("2"))) {
+            throw new BaseException(MessageConstant.ANSWER_NOT_EXIST);
+        }
         //判断传入的题目类型是否是指定的四种题目类型
         if (!addBankDTO.getType().equals(QuestionOptionConstant.SINGLE_CHOICE) &&
-            !addBankDTO.getType().equals(QuestionOptionConstant.MULTI_CHOICE) &&
-            !addBankDTO.getType().equals(QuestionOptionConstant.JUDGEMENT) &&
-            !addBankDTO.getType().equals(QuestionOptionConstant.FILL_BLANKS)) {
+                !addBankDTO.getType().equals(QuestionOptionConstant.MULTI_CHOICE) &&
+                !addBankDTO.getType().equals(QuestionOptionConstant.JUDGEMENT) &&
+                !addBankDTO.getType().equals(QuestionOptionConstant.FILL_BLANKS)) {
             throw new BaseException(MessageConstant.PARAMETER_ERROR);
         }
         //添加题目
@@ -82,6 +88,7 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
         addQuestionBank.setIsDelete(DeleteConstant.NO);
         addQuestionBank.setIsChoose(StatusConstant.DISABLE);
         addQuestionBank.setId(idGenerate.nextUUID(QuestionBank.class));
+        addQuestionBank.setTimes(0);
         questionBankMapper.insertQuestionBank(addQuestionBank);
     }
 
@@ -148,6 +155,10 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
      * @param id
      */
     public BankVO queryQuestionBankById(String id) {
+        //判断id是否为空
+        if (id == null || id.isEmpty()) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
         BankVO bankVO = questionBankMapper.queryQuestionBankById(id);
         if(bankVO == null){
             throw new BaseException(MessageConstant.QUESTION_BANK_NOT_EXIST);

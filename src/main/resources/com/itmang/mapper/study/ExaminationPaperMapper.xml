@@ -74,6 +74,12 @@
             <if test="number != null and number != ''">
                 and ep.number like concat('%', #{number}, '%')
             </if>
+            <if test="examinationId != null and examinationId != ''">
+                and ep.examination_information_id = #{examinationId}
+            </if>
+            <if test="userId != null and userId != ''">
+                and ep.user_id = #{userId}
+            </if>
             <if test="examinationName != null and examinationName != ''">
                 and ei.examination_name like concat('%', #{examinationName}, '%')
             </if>
