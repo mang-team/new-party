@@ -12,6 +12,7 @@ import com.itmang.mapper.study.QuestionBankMapper;
 import com.itmang.pojo.dto.AddBankDTO;
 import com.itmang.pojo.dto.BankPageDTO;
 import com.itmang.pojo.dto.BankUpdateDTO;
+import com.itmang.pojo.dto.ChooseBankDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.QuestionBank;
 import com.itmang.pojo.vo.BankPageVO;
@@ -219,6 +220,47 @@ public class BankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBan
         return bankVOList;
     }
 
+    /**
+     * 随机查询题目
+     * @param chooseBankDTO
+     * @return
+     */
+    public String chooseBank(ChooseBankDTO chooseBankDTO) {
+        //验证输入的参数
+        if (chooseBankDTO == null || chooseBankDTO.getType() == null || chooseBankDTO.getType().isEmpty()
+                || chooseBankDTO.getNum() == null || chooseBankDTO.getNum() < 1) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        //获取需要自动选题的数量
+        Integer num = chooseBankDTO.getNum();
+        //获取题目类型
+        String type = chooseBankDTO.getType();
+        //自动选题
+        List<QuestionBank> questionBanks = questionBankMapper.selectList(new QueryWrapper<QuestionBank>()
+                .eq("type", type)
+                .eq("is_delete", DeleteConstant.NO)
+                .last("ORDER BY RAND() LIMIT " + num));
+        
+        //提取选中的题目ID
+        List<String> selectedIds = new ArrayList<>();
+        for (QuestionBank bank : questionBanks) {
+            selectedIds.add(bank.getId());
+            //增加使用次数
+//            bank.setTimes(bank.getTimes() + 1);
+        }
+        //判断输入的数量是否与选中的题目数量一致
+        if (num != selectedIds.size()) {
+            throw new BaseException(MessageConstant.QUESTION_BANK_NOT_ENOUGH);
+        }
+//        //更新题目的使用次数
+//        if (!selectedIds.isEmpty()) {
+//            for (QuestionBank bank : questionBanks) {
+//                questionBankMapper.updateQuestionBankTimes(bank.getId(), bank.getTimes());
+//            }
+//        }
+        //将选中的题目ID集合转换为字符串返回
+        return String.join(",", selectedIds);
+    }
 
 
 }

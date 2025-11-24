@@ -69,7 +69,8 @@ public interface QuestionBankMapper extends BaseMapper<QuestionBank> {
     /**
      * 处理题目次数
      * @param addQuestionId
-     * @param i
+     * @param times
      */
     void updateQuestionBankTimes(String addQuestionId, Integer times);
+
 }

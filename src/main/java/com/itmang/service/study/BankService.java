@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.itmang.pojo.dto.AddBankDTO;
 import com.itmang.pojo.dto.BankPageDTO;
 import com.itmang.pojo.dto.BankUpdateDTO;
+import com.itmang.pojo.dto.ChooseBankDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.QuestionBank;
 import com.itmang.pojo.vo.BankVO;
@@ -56,4 +57,10 @@ public interface BankService extends IService<QuestionBank>{
      */
     List<BankVO> seriesQuestionBank(String[] ids);
 
+    /**
+     * 随机查询题目
+     * @param chooseBankDTO
+     * @return
+     */
+    String chooseBank(ChooseBankDTO chooseBankDTO);
 }

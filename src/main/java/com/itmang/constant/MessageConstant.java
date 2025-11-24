@@ -113,4 +113,7 @@ public class MessageConstant {
     public static final String EXAMINATION_PAPER_PART_DELETED = "试题部分删除失败";
     public static final String ANSWER_NOT_EXIST = "答案不存在";
     public static final String ANSWER_COUNT_NOT_EQUAL = "未作答完毕";
+    public static final String QUESTION_BANK_NOT_ENOUGH = "题库不足";
+
+
 }

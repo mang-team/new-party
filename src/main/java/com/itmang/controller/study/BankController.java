@@ -4,6 +4,7 @@ package com.itmang.controller.study;
 import com.itmang.pojo.dto.AddBankDTO;
 import com.itmang.pojo.dto.BankPageDTO;
 import com.itmang.pojo.dto.BankUpdateDTO;
+import com.itmang.pojo.dto.ChooseBankDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.QuestionBank;
 import com.itmang.pojo.entity.Result;
@@ -76,6 +77,12 @@ public class BankController {
         return Result.success(bankVOList);
     }
 
-
+    @Operation(summary = "自动选题")
+    @PostMapping("/choice")
+    public Result<String> chooseBank(ChooseBankDTO chooseBankDTO){
+        log.info("自动选题:{}",chooseBankDTO);
+        String ids = bankService.chooseBank(chooseBankDTO);
+        return Result.success(ids);
+    }
 
 }
