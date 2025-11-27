@@ -24,6 +24,7 @@ import com.itmang.service.study.PaperService;
 import com.itmang.utils.AnswerParserUtil;
 import com.itmang.utils.CodeUtil;
 import com.itmang.utils.IdGenerate;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,13 @@ import java.util.*;
 @Slf4j
 public class PaperServiceImpl extends ServiceImpl<ExaminationPaperMapper, ExaminationPaper> implements PaperService {
 
-    @Autowired
+    @Resource
     private ExaminationPaperMapper examinationPaperMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private ExaminationInformationMapper examinationInformationMapper;
-    @Autowired
+    @Resource
     private QuestionBankMapper questionBankMapper;
 
 

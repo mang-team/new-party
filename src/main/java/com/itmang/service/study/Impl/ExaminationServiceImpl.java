@@ -14,7 +14,11 @@ import com.itmang.pojo.dto.*;
 import com.itmang.pojo.entity.*;
 import com.itmang.pojo.vo.*;
 import com.itmang.service.study.ExaminationService;
+import com.itmang.service.user.Impl.UserServicerImpl;
+import com.itmang.service.user.UserService;
 import com.itmang.utils.IdGenerate;
+import com.itmang.utils.UserUtil;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +34,11 @@ import java.util.stream.Stream;
 @Slf4j
 public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMapper, ExaminationInformation> implements ExaminationService {
 
-    @Autowired
+    @Resource
     private ExaminationInformationMapper examinationInformationMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private QuestionBankMapper questionBankMapper;
 
 
@@ -100,18 +104,11 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
             throw new BaseException(MessageConstant.EXAMINATION_SCORE_ERROR);
         }
         //先查询用户都是否存在
-        //用户的id集合是用逗号分隔的字符串，先将数据进行分割
-        List<String> participateUserIds = new ArrayList<>();
-        String[] userIds = addExaminationDTO.getUserIds().split(",");
-        for (String userId : userIds) {
-            //判断用户是否存在
-            User user = userMapper.selectById(userId);
-            if ( user != null && user.getIsDelete().equals(DeleteConstant.NO)
-                && user.getStatus().equals(StatusConstant.ENABLE) ) {
-                //加入集合
-                participateUserIds.add(userId);
-            }
-        }
+
+        // 调用通用函数处理用户ID（替换原有重复代码）
+        List<String> participateUserIds = UserUtil.processValidUserIds(
+                addExaminationDTO::getUserIds,userMapper);
+
         //进行业务判断
         if (!participateUserIds.isEmpty()) {
             // 调用通用函数处理四类题目（核心重构点）
@@ -149,7 +146,6 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
                 questionBankMapper.updateQuestionBankTimes(addQuestionId, TimesConstant.ADD);
             }
 
-
             // 转换ID列表为字符串
             String userIdsStr = String.join(",", participateUserIds);
             String singleIdsStr = String.join(",", singleValidIds);
@@ -186,7 +182,7 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
             examinationInformationMapper.insertExaminationInformation(examinationInfo);
 
             // 校验用户和题目添加结果
-            if (participateUserIds.size() != userIds.length) {
+            if (participateUserIds.size() != addExaminationDTO.getUserIds().split(",").length) {
                 throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);
             }
             int inputQuestionTotal = (singleResult.getValidQuestionIds().isEmpty() ? 0 : addExaminationDTO.getSingleChoiceIds().split(",").length)
@@ -324,18 +320,20 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
         }
 
         // 处理用户ID
-        List<String> participateUserIds = new ArrayList<>();
-        String[] userIds = null;
-        if (examinationUpdateDTO.getUserIds() != null && !examinationUpdateDTO.getUserIds().isEmpty()) {
-            userIds = examinationUpdateDTO.getUserIds().split(",");
-            for (String userId : userIds) {
-                User user = userMapper.selectById(userId);
-                if (user != null && user.getIsDelete().equals(DeleteConstant.NO)
-                        && user.getStatus().equals(StatusConstant.ENABLE)) {
-                    participateUserIds.add(userId);
-                }
-            }
-        }
+//        List<String> participateUserIds = new ArrayList<>();
+//        String[] userIds = null;
+//        if (examinationUpdateDTO.getUserIds() != null && !examinationUpdateDTO.getUserIds().isEmpty()) {
+//            userIds = examinationUpdateDTO.getUserIds().split(",");
+//            for (String userId : userIds) {
+//                User user = userMapper.selectById(userId);
+//                if (user != null && user.getIsDelete().equals(DeleteConstant.NO)
+//                        && user.getStatus().equals(StatusConstant.ENABLE)) {
+//                    participateUserIds.add(userId);
+//                }
+//            }
+//        }
+        List<String> participateUserIds = UserUtil.processValidUserIds(
+                examinationUpdateDTO::getUserIds, userMapper);
         ExaminationInformation updateInfo =
                 BeanUtil.copyProperties(examinationUpdateDTO, ExaminationInformation.class);
         //用集合存储被删除的题目
@@ -449,6 +447,7 @@ public class ExaminationServiceImpl extends ServiceImpl<ExaminationInformationMa
         updateInfo.setQuestionQuantity(oldTotalCount + totalQuestionCount);
         examinationInformationMapper.updateExaminationInformation(updateInfo);
 
+        String[] userIds = examinationUpdateDTO.getUserIds().split(",");
         // 校验用户和题目添加结果
         if (userIds != null && participateUserIds.size() != userIds.length) {
             throw new BaseException(MessageConstant.USER_PART_ADD_FAILED);

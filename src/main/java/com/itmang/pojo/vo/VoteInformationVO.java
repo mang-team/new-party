@@ -1,4 +1,4 @@
-package com.itmang.pojo.entity;
+package com.itmang.pojo.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -16,15 +16,12 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
-@Schema(name = "VoteInformation", description = "投票信息表实体类")
-@TableName(autoResultMap = true)
-public class VoteInformation {
+@Schema(name = "VoteInformationVO", description = "投票信息VO")
+public class VoteInformationVO {
 
-    @Schema(name = "id", description = "id，主键自增")
-    private String id;
 
-    @Schema(name = "userIds", description = "用户id集合")
-    private String userIds;
+    @Schema(name = "userNames", description = "用户名字集合")
+    private String userNames;
 
     @Schema(name = "voteTitle", description = "投票标题")
     private String voteTitle;
@@ -32,6 +29,7 @@ public class VoteInformation {
     @Schema(name = "voteContent", description = "投票说明")
     private String voteContent;
 
+    @Schema(name = "options", description = "投票选项")
     @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> options;
 
@@ -41,18 +39,10 @@ public class VoteInformation {
     @Schema(name = "endTime", description = "投票结束时间（默认值：null）")
     private LocalDateTime endTime;
 
-    @Schema(name = "createBy", description = "发布人")
-    private String createBy;
+    @Schema(name = "createName", description = "发布人名字")
+    private String createName;
 
     @Schema(name = "createTime", description = "发布时间")
     private LocalDateTime createTime;
 
-    @Schema(name = "updateBy", description = "修改人")
-    private String updateBy;
-
-    @Schema(name = "updateTime", description = "修改时间")
-    private LocalDateTime updateTime;
-
-    @Schema(name = "isDelete", description = "是否删除（1为删除，2为未删除）（默认为2）")
-    private Integer isDelete;
 }

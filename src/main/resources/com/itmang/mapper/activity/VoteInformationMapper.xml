@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.activity.VoteInformationMapper">
+
+
+    <select id="selectVoteById" resultType="com.itmang.pojo.vo.VoteInformationVO">
+        select userNames
+        from vote_information where id = #{id}
+    </select>
+
+    <select id="queryVoteInformationList" resultType="com.itmang.pojo.vo.VoteInformationPageVO">
+        select v.id,u.user_name as createName, v.vote_title, v.vote_content, v.start_time, v.end_time
+        from vote_information as v
+        left join user as u on v.create_by = u.id
+        <where>
+            <if test="userId != null and userId != ''">
+                and v.create_by = #{userId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and u.user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="voteTitle != null and voteTitle != ''">
+                and v.vote_title like concat('%', #{voteTitle}, '%')
+            </if>
+            <if test="startTimeStart != null">
+                and v.start_time &gt;= #{startTimeStart}
+            </if>
+            <if test="startTimeEnd != null"> <!-- 原条件字段错误，修正为 v.start_time -->
+                and v.start_time &lt;= #{startTimeEnd}
+            </if>
+            <if test="endTimeStart != null">
+                and v.end_time &gt;= #{endTimeStart}
+            </if>
+            <if test="endTimeEnd != null">
+                and v.end_time &lt;= #{endTimeEnd}
+            </if>
+            <!-- 核心修改：用 FIND_IN_SET 匹配单个用户ID是否在逗号分隔列表中 -->
+            <if test="voterId != null and voterId != ''">
+                and FIND_IN_SET(#{voterId}, v.user_ids) &gt; 0
+            </if>
+            and v.is_delete = 2
+        </where>
+        order by v.update_time desc
+    </select>
+
+
+</mapper>

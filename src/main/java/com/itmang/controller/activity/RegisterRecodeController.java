@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @Tag(name= "签到记录相关接口")
-@RequestMapping("/user/action/register")
+@RequestMapping("/activity/registerRecord")
 public class RegisterRecodeController extends BaseController {
 
     @Autowired

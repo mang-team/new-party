@@ -1,6 +1,7 @@
 package com.itmang.pojo.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,28 +11,19 @@ import java.time.LocalDateTime;
  */
 @Data
 public class FindVoteSignDTO {
-    private String id;
 
+    @Schema(description = "投票人id")
+    private String voterId;
+    @Schema(description = "投票人名字")
+    private String voterName;
+    @Schema(description = "投票信息id")
     private String voteInformationId;
-
-    private String userId;
-
+    @Schema(description = "投票信息名称")
+    private String voteInformationName;
+    @Schema(description = "投票选项")
     private String choose;
-
-    private String createBy;
-
-    private String updateBy;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
-
-    private Integer isDelete;
-
-    // 分页参数
+    @Schema(description = "当前页")
     private Integer pageNum;
-
+    @Schema(description = "每页条数")
     private Integer pageSize;
 }

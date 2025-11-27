@@ -114,6 +114,14 @@ public class MessageConstant {
     public static final String ANSWER_NOT_EXIST = "答案不存在";
     public static final String ANSWER_COUNT_NOT_EQUAL = "未作答完毕";
     public static final String QUESTION_BANK_NOT_ENOUGH = "题库不足";
-
+    public static final String VOTER_NOT_EXIST = "投票人员不存在";
+    public static final String USER_PROCESS_FAILED = "用户处理失败";
+    public static final String PART_VOTER_INVALID = "部分投票人员不存在";
+    public static final String VOTE_NOT_EXIST = "投票信息不存在";
+    public static final String VOTE_TIME_ERROR = "投票时间未到";
+    public static final String USER_NOT_EXIST = "用户不存在";
+    public static final String ADD_FAIL = "添加失败";
+    public static final String VOTE_RECORD_NOT_EXIST = "投票记录不存在";
+    public static final String DELETE_VOTE_RECORD_FAILED = "删除投票记录失败";
 
 }

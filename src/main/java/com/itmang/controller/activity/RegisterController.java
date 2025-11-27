@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @Tag(name= "签到相关接口")
-@RequestMapping("/user/action/register")
+@RequestMapping("/activity/register")
 public class RegisterController extends BaseController {
 
     @Autowired
@@ -60,14 +60,7 @@ public class RegisterController extends BaseController {
         return Result.success();
     }
 
-//    @Operation(summary = "查询考试信息")
-//    @GetMapping("/{id}")
-//    public Result<ExaminationVO> queryRegisterInformation(@PathVariable String id){
-//        log.info("查询考试信息:{}",id);
-//        ExaminationVO examinationVO =
-//                examinationService.queryExaminationInformation(id);
-//        return Result.success(examinationVO);
-//    }
+
 
     @Operation(summary = "分页查询签到信息")
     @PostMapping("/findRegister")

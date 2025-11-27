@@ -18,6 +18,9 @@ public class SignInInformation {
     @Schema(name = "id", description = "id，主键自增")
     private String id;
 
+    @Schema(name = "userIds", description = "用户id集合")
+    private String userIds;
+
     @Schema(name = "signInTitle", description = "签到标题")
     private String signInTitle;
 

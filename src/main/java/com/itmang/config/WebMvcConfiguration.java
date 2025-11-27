@@ -37,7 +37,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .addPathPatterns("/user/**")
 
                 .addPathPatterns("/admin/**")//新增管理接口
-
+                .addPathPatterns("/activity/**")
                 .addPathPatterns("/action/**")
                 .addPathPatterns("/study/**")
                 .addPathPatterns("/party/**")

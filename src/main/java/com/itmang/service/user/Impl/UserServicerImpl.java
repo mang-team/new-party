@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.itmang.constant.AdminConstant;
+import com.itmang.constant.DeleteConstant;
 import com.itmang.constant.MessageConstant;
 import com.itmang.constant.StatusConstant;
 import com.itmang.exception.BaseException;
@@ -30,13 +31,16 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import com.itmang.exception.AccountNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -138,6 +142,7 @@ public class UserServicerImpl extends ServiceImpl<UserMapper, User> implements U
 
         return loginUser;
     }
+
 
 
 }
