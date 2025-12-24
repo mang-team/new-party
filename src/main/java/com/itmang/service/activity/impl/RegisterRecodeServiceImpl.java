@@ -64,7 +64,7 @@ public class RegisterRecodeServiceImpl extends ServiceImpl<SignInRecordMapper, S
     /**
      * 新增签到信息
      * @param addRegisterRecordDTO
-     * @param UserId
+     * @param userId
      */
     public void addRegisterRecodeInformation(AddRegisterRecordDTO addRegisterRecordDTO, String userId) {
         if (addRegisterRecordDTO == null || addRegisterRecordDTO.getUserIds() == null
@@ -189,7 +189,7 @@ public class RegisterRecodeServiceImpl extends ServiceImpl<SignInRecordMapper, S
     /**
      * 编辑签到记录
      * @param updateRegisterRecordDTO
-     * @param UserId
+     * @param userId
      */
     public void updateRegisterRecodeInformation(UpdateRegisterRecordDTO updateRegisterRecordDTO, String userId) {
         // 1. 根据传入的 ID 查询是否存在
