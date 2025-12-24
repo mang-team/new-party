@@ -123,5 +123,14 @@ public class MessageConstant {
     public static final String ADD_FAIL = "添加失败";
     public static final String VOTE_RECORD_NOT_EXIST = "投票记录不存在";
     public static final String DELETE_VOTE_RECORD_FAILED = "删除投票记录失败";
+    public static final String NOT_FOUND_VOTE_RECORD = "未找到投票记录";
+    public static final String SIGN_IN_NOT_FOUND = "未找到签到信息";
+    public static final String SIGN_IN_RECORD_NOT_EXIST = "签到记录不存在";
+    public static final String SIGN_IN_RECORD_ALREADY_SIGN_IN = "已签到";
+    public static final String SIGN_IN_FAILED = "签到失败，请重新签到";
+    public static final String UPDATE_FAILED = "更改失败";
+    public static final String DELETE_FAIL = "删除失败";
+    public static final String SIGN_IN_RECORD_HAVE_EXIST = "已存在签到记录";
+
 
 }

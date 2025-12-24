@@ -8,19 +8,15 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Schema(name = "SignInInformationVO", description = "签到信息VO")
-public class SignInInformationVO {
+@Schema(name = "SignInInformationPageVO", description = "签到信息分页VO")
+public class SignInInformationPageVO {
 
     @Schema(name = "id", description = "id")
     private String id;
-    @Schema(name = "signInUserNames", description = "已经签到人名字集合")
-    private String signInUserNames;
-    @Schema(name = "signInUserNames", description = "未签到人名字集合")
-    private String unSignInUserNames;
     @Schema(name = "signInTitle", description = "签到标题")
     private String signInTitle;
     @Schema(name = "signInContent", description = "签到说明")
@@ -29,8 +25,4 @@ public class SignInInformationVO {
     private LocalDateTime startTime;
     @Schema(name = "endTime", description = "签到结束时间")
     private LocalDateTime endTime;
-    @Schema(name = "createBy", description = "发布人名字")
-    private String createBy;
-    @Schema(name = "updateTime", description = "修改时间")
-    private LocalDateTime updateTime;
 }

@@ -1,6 +1,8 @@
 package com.itmang.service.activity.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,14 +16,18 @@ import com.itmang.exception.BaseException;
 
 import com.itmang.mapper.activity.VoteInformationMapper;
 import com.itmang.mapper.activity.VoteRecordMapper;
+import com.itmang.mapper.user.UserMapper;
 import com.itmang.pojo.dto.AddVoteRecordDTO;
 import com.itmang.pojo.dto.FindVoteSignDTO;
 import com.itmang.pojo.dto.UpdateVoteRecordDTO;
 import com.itmang.pojo.entity.PageResult;
+import com.itmang.pojo.entity.User;
 import com.itmang.pojo.entity.VoteInformation;
 import com.itmang.pojo.entity.VoteRecord;
+import com.itmang.pojo.vo.ChoiceVO;
 import com.itmang.pojo.vo.VoteInformationPageVO;
 import com.itmang.pojo.vo.VoteRecordPageVO;
+import com.itmang.pojo.vo.VoteRecordVO;
 import com.itmang.service.activity.VoteRecodeService;
 import com.itmang.utils.IdGenerate;
 import jakarta.annotation.Resource;
@@ -43,6 +49,9 @@ public class VoteRecodeServiceImpl extends ServiceImpl<VoteRecordMapper, VoteRec
     private VoteInformationMapper voteInformationMapper;
     @Resource
     private IdGenerate idGenerate;
+    @Resource
+    private UserMapper userMapper;
+
 
     /**
      * 新增投票记录信息
@@ -189,10 +198,20 @@ public class VoteRecodeServiceImpl extends ServiceImpl<VoteRecordMapper, VoteRec
      * @param userId
      */
     public void updateVoteRecodeInformation(UpdateVoteRecordDTO updateVoteRecordDTO, String userId) {
-        // 1. 根据传入的 ID 查询是否存在
-        VoteRecord Vote = this.getById(updateVoteRecordDTO.getId());
-        if (Vote == null || Vote.getIsDelete().equals(DeleteConstant.YES)) {
-            throw new BaseException("投票信息不存在，无法修改");
+        // 1. 对传进来的数据进行验证
+        if (updateVoteRecordDTO == null || updateVoteRecordDTO.getVoteId() == null
+            || updateVoteRecordDTO.getVoteId() == "" || updateVoteRecordDTO.getChoose() == null
+            || updateVoteRecordDTO.getChoose() == ""    ) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+        // 2. 根据ID查询投票记录信息
+        VoteRecord Vote = this.baseMapper.selectOne(new QueryWrapper<VoteRecord>()
+                        .eq("vote_information_id", updateVoteRecordDTO.getVoteId())
+                        .eq("is_delete", DeleteConstant.NO)
+                        .eq("user_id", userId)
+        );
+        if (Vote == null) {
+            throw new BaseException(MessageConstant.VOTE_RECORD_NOT_EXIST);
         }
         // 2. 将 DTO 的字段更新到实体类中
         if (updateVoteRecordDTO.getChoose() != null && updateVoteRecordDTO.getChoose() != "") {
@@ -229,6 +248,113 @@ public class VoteRecodeServiceImpl extends ServiceImpl<VoteRecordMapper, VoteRec
         List<VoteRecordPageVO> votePageVOList = voteRecordMapper.queryVoteRecordList(findVoteSignDTO);
         PageInfo<VoteRecordPageVO> pageInfo = new PageInfo<>(votePageVOList);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+
+
+
+    /**
+     * 查看投票记录信息详情
+     * @param id 投票记录ID
+     * @return 投票记录详情VO
+     */
+    public VoteRecordVO searchVoteRecordInformation(String id) {
+        // 1. 校验入参：ID不能为空
+        if (StringUtils.isBlank(id)) {
+            throw new BaseException(MessageConstant.PARAMETER_ERROR);
+        }
+
+        // 2. 查询投票记录（过滤已删除的记录）
+        VoteRecord voteRecord = this.getById(id);
+        if (voteRecord == null || DeleteConstant.YES.equals(voteRecord.getIsDelete())) {
+            throw new BaseException(MessageConstant.NOT_FOUND_VOTE_RECORD);
+        }
+
+        // 3. 查询对应的投票信息
+        String voteInfoId = voteRecord.getVoteInformationId();
+        VoteInformation voteInformation = voteInformationMapper.selectById(voteInfoId);
+        if (voteInformation == null) {
+            throw new BaseException(MessageConstant.VOTE_NOT_EXIST);
+        }
+
+        // 4. 处理投票选项：先判断options是否为null，避免空指针异常
+        List<?> options = voteInformation.getOptions();
+        int voteCount = options == null ? 0 : options.size();
+        List<VoteRecordVO.ChoiceVO> voteList = new ArrayList<>();
+
+        if (voteCount > 0) {
+            // 5. 批量查询该投票下所有选项的投票记录（过滤已删除的）
+            QueryWrapper<VoteRecord> wrapper = new QueryWrapper<VoteRecord>()
+                    .eq("vote_information_id", voteInfoId)
+                    .eq("is_delete", DeleteConstant.NO) // 排除已删除的投票记录
+                    .inSql("choose", buildChooseSql(voteCount)); // 只查询1到voteCount的选项
+            List<VoteRecord> allVoteRecords = voteRecordMapper.selectList(wrapper);
+
+            // 6. 提取所有用户ID，批量查询用户信息（优化性能：一次查询所有用户，避免循环查库）
+            Set<String> userIds = allVoteRecords.stream()
+                    .map(VoteRecord::getUserId)
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.toSet());
+            Map<String, String> userMap = new HashMap<>();
+            if (!CollectionUtils.isEmpty(userIds)) {
+                List<User> userList = userMapper.selectBatchIds(userIds);
+                userMap = userList.stream()
+                        .collect(Collectors.toMap(User::getId, User::getUserName, (k1, k2) -> k1)); // 处理重复ID，保留第一个
+            }
+
+            // 7. 按选项分组，构建ChoiceVO列表（适配新的VO结构）
+            Map<String, List<VoteRecord>> chooseGroup = allVoteRecords.stream()
+                    .collect(Collectors.groupingBy(VoteRecord::getChoose));
+
+            for (int i = 1; i <= voteCount; i++) {
+                String choose = String.valueOf(i);
+                List<VoteRecord> records = chooseGroup.getOrDefault(choose, new ArrayList<>());
+                if (CollectionUtils.isEmpty(records)) {
+                    continue;
+                }
+
+                // 构建用户ID->姓名的映射（对应ChoiceVO的names字段）
+                Map<String, String> names = new HashMap<>();
+                for (VoteRecord record : records) {
+                    String userId = record.getUserId();
+                    // 处理用户不存在的情况，默认显示“未知用户”
+                    names.put(userId, userMap.getOrDefault(userId, "未知用户"));
+                }
+
+                // 构建单个ChoiceVO（使用新的VO结构）
+                VoteRecordVO.ChoiceVO choiceVO = VoteRecordVO.ChoiceVO.builder()
+                        .names(names) // 对应Map<String, String> names
+                        .count(records.size()) // 选项的投票人数
+                        .build();
+                voteList.add(choiceVO);
+            }
+        }
+
+        // 8. 构建并返回最终的VoteRecordVO
+        String userName = userMapper.selectById(voteRecord.getUserId()).getUserName();
+        return VoteRecordVO.builder()
+                .id(voteRecord.getId())
+                .voteInformationId(voteInfoId)
+                .userId(voteRecord.getUserId())
+                .userName(userName)
+                .voteChoose(voteRecord.getChoose())
+                .voteTime(voteRecord.getUpdateTime()) // 注意：如果有createTime，建议用createTime作为投票时间
+                .voteList(voteList)
+                .build();
+    }
+
+    /**
+     * 构建选项编号的SQL片段（用于inSql查询）
+     * @param voteCount 选项数量
+     * @return 如：SELECT 1 num UNION ALL SELECT 2 UNION ALL SELECT 3
+     */
+    private String buildChooseSql(int voteCount) {
+        StringBuilder sql = new StringBuilder("SELECT 1 num");
+        for (int i = 2; i <= voteCount; i++) {
+            sql.append(" UNION ALL SELECT ").append(String.valueOf(i));
+        }
+//        sql.append(")");
+        return sql.toString();
     }
 
 

@@ -11,7 +11,8 @@
     </update>
 
     <select id="queryVoteRecordList" resultType="com.itmang.pojo.vo.VoteRecordPageVO">
-        select v.id,v.user_id,u.user_name as userName
+        select v.id,vi.id as voteInformationId, vi.vote_title,
+               v.user_id,u.user_name as userName,v.choose as voteChoose,v.update_time as voteTime
         from vote_record v
         left join user u on v.user_id = u.id
         right join vote_information vi on v.vote_information_id = vi.id

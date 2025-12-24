@@ -10,6 +10,7 @@ import com.itmang.pojo.dto.FindVoteSignDTO;
 import com.itmang.pojo.dto.UpdateVoteRecordDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.VoteRecord;
+import com.itmang.pojo.vo.VoteRecordVO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,4 +47,10 @@ public interface VoteRecodeService extends IService<VoteRecord> {
      */
     PageResult queryVoteRecodeList(FindVoteSignDTO findVoteSignDTO);
 
+    /**
+     * 查看投票记录信息详情
+     * @param id
+     * @return
+     */
+    VoteRecordVO searchVoteRecordInformation(String id);
 }

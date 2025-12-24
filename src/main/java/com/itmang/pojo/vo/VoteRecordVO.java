@@ -7,20 +7,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-@Schema(name = "VoteRecordPageVO", description = "投票记录表分页VO")
-public class VoteRecordPageVO {
+@Schema(name = "VoteRecordVO", description = "投票记录VO")
+public class VoteRecordVO {
 
     @Schema(name = "id", description = "id")
     private String id;
     @Schema(name = "voteInformationId", description = "投票信息id")
     private String voteInformationId;
-    @Schema(name = "voteTitle", description = "投票信息标题")
-    private String voteTitle;
     @Schema(name = "userId", description = "用户id")
     private String userId;
     @Schema(name = "userName", description = "用户名字")
@@ -29,4 +29,16 @@ public class VoteRecordPageVO {
     private LocalDateTime voteTime;
     @Schema(name = "voteChoose", description = "投票选项")
     private String voteChoose;
+    @Schema(name = "voteList", description = "投票各个选项信息")
+    private List<ChoiceVO> voteList;
+
+    @Data
+    @Builder
+    @Schema(name = "ChoiceVO", description = "单个选项VO")
+    public static class ChoiceVO {
+        @Schema(name = "names", description = "选项名字集合")
+        private Map<String, String> names;
+        @Schema(name = "count", description = "选项数量")
+        private Integer count;
+    }
 }

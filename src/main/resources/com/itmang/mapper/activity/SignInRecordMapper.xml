@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itmang.mapper.activity.SignInRecordMapper">
+    <update id="deleteByIds">
+        update sign_in_record
+        set is_delete = 1
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+
+    <select id="querySignInRecordList" resultType="com.itmang.pojo.vo.SignInRecordPageVO">
+        select s.id, s.sign_in_information_id, v.sign_in_title, s.user_id, u2.user_name as userName,
+               s.state, s.notes, s.update_time as signInTime
+        from sign_in_record s
+        left join user u1 on s.create_by = u1.id
+        left join user u2 on s.user_id = u2.id
+        left join sign_in_information v on s.sign_in_information_id = v.id
+        <where>
+            <if test="id != null and id != ''">
+                and s.id = #{id}
+            </if>
+            <if test="signInInformationId != null and signInInformationId != ''">
+                and s.sign_in_information_id = #{signInInformationId}
+            </if>
+            <if test="userId != null and userId != ''">
+                and s.user_id = #{userId}
+            </if>
+            <if test="state != null and state != ''">
+                and s.state = #{state}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and s.create_by = #{createBy}
+            </if>
+            <if test="createName != null and createName != ''">
+                and u1.user_name like concat('%', #{createName}, '%')
+            </if>
+            <if test="createTimeStart != null">
+                and s.create_time &gt;= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null"> <!-- 原条件字段错误，修正为 v.start_time -->
+                and s.create_time &lt;= #{createTimeEnd}
+            </if>
+            and s.is_delete = 2
+        </where>
+        order by s.update_time desc
+    </select>
+
+    <select id="queryRegisterRecodeInformation" resultType="com.itmang.pojo.vo.SignInRecordVO">
+        select s.id, s.sign_in_information_id, v.sign_in_title, s.user_id, u2.user_name as userName,
+               s.state, s.notes, s.update_time as signInTime,u1.user_name as createName,
+               v.create_time as releaseTime
+        from sign_in_record s
+        left join user u1 on s.create_by = u1.id
+        left join sign_in_information v on s.sign_in_information_id = v.id
+        left join user u2 on v.create_by = u2.id
+        where s.id = #{id}
+    </select>
+
+
+</mapper>

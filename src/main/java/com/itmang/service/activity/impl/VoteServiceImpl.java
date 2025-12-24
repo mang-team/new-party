@@ -79,7 +79,8 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
 
             VoteInformation info = new VoteInformation();
             info.setId(UUID.randomUUID().toString()); // 主键
-            info.setUserIds(voterIdsStr);
+
+            info.setUserIds(String.join(",", validVoterIds));
             info.setOptions(dto.getOptions());
             info.setVoteTitle(dto.getVoteInTitle());
             info.setVoteContent(dto.getVoteInContent());
@@ -106,7 +107,11 @@ public class VoteServiceImpl extends ServiceImpl<VoteInformationMapper, VoteInfo
         log.info("新增投票信息成功，数量：{}", VoteInformationList.size());
     }
 
-    @Override
+    /**
+     * 删除投票信息
+     * @param deleteVoteDTO
+     * @param UserId
+     */
     public void deleteVoteInformation(DeleteVoteDTO deleteVoteDTO,String UserId) {
         if (deleteVoteDTO.getId() == null) {
             throw new IllegalArgumentException("删除的 id 不能为空");

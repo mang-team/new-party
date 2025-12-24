@@ -7,6 +7,7 @@ import com.itmang.pojo.dto.FindVoteSignDTO;
 import com.itmang.pojo.dto.UpdateVoteRecordDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
+import com.itmang.pojo.vo.VoteRecordVO;
 import com.itmang.service.activity.VoteRecodeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,7 +46,7 @@ public class VoteRecodeController extends BaseController {
         return Result.success();
     }
 
-    @Operation(summary = "编辑投票记录信息")
+    @Operation(summary = "用户投票")
     @PostMapping("/modifyVoteRecord")
     public Result updateVoteInformation(
             @RequestBody UpdateVoteRecordDTO updateVoteRecordDTO){
@@ -64,16 +65,13 @@ public class VoteRecodeController extends BaseController {
         return Result.success(pageResult);
     }
 
-//    @Operation(summary = "查看投票记录信息")
-//    @GetMapping("/modifyVoteRecord")
-//    public Result updateVoteInformation(
-//            @RequestBody UpdateVoteRecordDTO updateVoteRecordDTO){
-//        log.info("编辑投票记录信息:{}",updateVoteRecordDTO);
-//        String userId = getUserIdFromToken();
-//        //String userId="1";
-//        voteRecodeService.updateVoteRecodeInformation(updateVoteRecordDTO,userId);
-//        return Result.success();
-//    }
+    @Operation(summary = "查看投票记录信息详情")
+    @GetMapping("/searchVoteRecord/{id}")
+    public Result<VoteRecordVO> searchVoteInformation(@PathVariable String id){
+        log.info("查看投票记录信息:{}",id);
+        VoteRecordVO voteRecordVO = voteRecodeService.searchVoteRecordInformation(id);
+        return Result.success(voteRecordVO);
+    }
 
 
 }

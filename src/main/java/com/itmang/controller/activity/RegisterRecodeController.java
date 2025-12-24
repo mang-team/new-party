@@ -8,15 +8,16 @@ import com.itmang.pojo.dto.FindRegisterSignDTO;
 import com.itmang.pojo.dto.UpdateRegisterRecordDTO;
 import com.itmang.pojo.entity.PageResult;
 import com.itmang.pojo.entity.Result;
+import com.itmang.pojo.entity.SignInRecord;
+import com.itmang.pojo.vo.ExaminationVO;
+import com.itmang.pojo.vo.SignInRecordPageVO;
+import com.itmang.pojo.vo.SignInRecordVO;
 import com.itmang.service.activity.RegisterRecodeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,20 +33,19 @@ public class RegisterRecodeController extends BaseController {
 
     @Operation(summary = "新增签到信息")
     @PostMapping("/addRegisterRecord")
-    public Result addRegisterInformation(@RequestBody List<AddRegisterRecordDTO> addRegisterRecordDTOList){
-        log.info("新增签到信息:{}",addRegisterRecordDTOList);
+    public Result addRegisterInformation(@RequestBody AddRegisterRecordDTO addRegisterRecordDTO){
+        log.info("新增签到信息:{}",addRegisterRecordDTO);
         String userId = getUserIdFromToken();
-        registerRecodeService.addRegisterRecodeInformation(addRegisterRecordDTOList,userId);
+        registerRecodeService.addRegisterRecodeInformation(addRegisterRecordDTO,userId);
         return Result.success();
     }
 
 
-    @Operation(summary = "删除签到信息")
+    @Operation(summary = "删除签到信息（可批量）")
     @PostMapping("/deleteRegisterRecord")
     public Result deleteRegisterInformation(@RequestBody DeleteRegisterRecodeDTO deleteRegisterRecodeDTO){
         log.info("删除签到信息:{}",deleteRegisterRecodeDTO);
         String userId = getUserIdFromToken();
-        //String userId = "1";
         registerRecodeService.deleteRegisterRecodeInformation(deleteRegisterRecodeDTO,userId);
         return Result.success();
     }
@@ -56,27 +56,42 @@ public class RegisterRecodeController extends BaseController {
             @RequestBody UpdateRegisterRecordDTO updateRegisterRecordDTO){
         log.info("编辑签到信息:{}",updateRegisterRecordDTO);
         String userId = getUserIdFromToken();
-        //String userId="1";
         registerRecodeService.updateRegisterRecodeInformation(updateRegisterRecordDTO,userId);
         return Result.success();
     }
 
-//    @Operation(summary = "查询考试信息")
-//    @GetMapping("/{id}")
-//    public Result<ExaminationVO> queryRegisterInformation(@PathVariable String id){
-//        log.info("查询考试信息:{}",id);
-//        ExaminationVO examinationVO =
-//                examinationService.queryExaminationInformation(id);
-//        return Result.success(examinationVO);
-//    }
+    @Operation(summary = "查询签到记录")
+    @GetMapping("/{id}")
+    public Result<SignInRecordVO> queryRegisterInformation(@PathVariable String id){
+        log.info("查询签到记录:{}",id);
+        SignInRecordVO signInRecord = registerRecodeService.queryRegisterRecodeInformation(id);
+        return Result.success(signInRecord);
+    }
 
     @Operation(summary = "分页查询签到信息")
-    @PostMapping("/findRegisterRecord")
-    public Result<PageResult> queryRegisterInformationList(@RequestBody FindRegisterSignDTO findRegisterSignDTO){
+    @GetMapping("/findRegisterRecord")
+    public Result<PageResult> queryRegisterInformationList(FindRegisterSignDTO findRegisterSignDTO){
         log.info("分页查询签到信息:{}", findRegisterSignDTO);
         PageResult pageResult = registerRecodeService.queryRegisterRecodeInformationList(findRegisterSignDTO);
         return Result.success(pageResult);
     }
+
+    @Operation(summary = "用户签到")
+    @PostMapping("/userSign/{id}")
+    public Result userSign(@PathVariable String id){
+        log.info("用户签到{}",id);
+        registerRecodeService.userSign(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "修改用户签到状态")
+    @PostMapping("/updateStatus/{status}")
+    public Result updateUserStatus(@PathVariable Integer status,String id){
+        log.info("用户{}签到{}",id,status);
+        registerRecodeService.updateUserStatus(status,id);
+        return Result.success();
+    }
+
 
 
 }

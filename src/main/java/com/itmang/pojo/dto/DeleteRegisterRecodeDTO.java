@@ -10,5 +10,5 @@ import java.io.Serializable;
 
 @Data
 public class DeleteRegisterRecodeDTO implements Serializable {
-    private String id;
+    private String ids;
 }
