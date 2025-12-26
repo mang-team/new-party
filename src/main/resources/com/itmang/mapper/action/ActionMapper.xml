@@ -2,22 +2,77 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.itmang.mapper.action.ActionMapper">
-    <!--  分页查询详细活动信息  -->
-    <select id="pageGetDetailActionMessage" resultType="com.itmang.pojo.vo.action.PageDetailActionMessageVO">
-        select * from action_information
-        where is_delete = 2
-        <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
-        <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
-        order by create_time
-    </select>
 
     <!--  分页查询简略活动信息  -->
     <select id="pageGetShortActionMessage" resultType="com.itmang.pojo.vo.action.pageShortActionMessageVO">
-        select action_name,organizer_phone,create_by from action_information
-        where is_delete = 2
-        <if test="actionName != null and actionName != ''">and action_name like concat('%',#{actionName},'%')</if>
-        <if test="createBy != null and createBy != ''">and create_by like concat('%',#{createBy},'%')</if>
-        order by create_time
+        select a.id,a.action_name,a.recruitment_quantity,a.participant_quantity,
+            a.sign_up_start_time, a.sign_up_end_time,
+            a.action_start_time, a.action_end_time, a.event_address
+        from action_information a
+            left join user u1 on a.user_id = u1.id
+            left join user u2 on a.create_by = u2.id
+        <where>
+            <if test="actionName != null and actionName != ''">
+                and a.action_name like concat('%',#{actionName},'%')
+            </if>
+            <if test="releaseId != null and releaseId != ''">
+                and a.create_by = #{releaseId}
+            </if>
+            <if test="releaseName != null and releaseName != ''">
+                and u1.user_name like concat('%',#{releaseName},'%')
+            </if>
+            <if test="organizerId != null and organizerId != ''">
+                and a.user_id = #{organizerId}
+            </if>
+            <if test="organizerName != null and organizerName != ''">
+                and u2.user_name like concat('%',#{organizerName},'%')
+            </if>
+            <if test="signUpStartTimeStart != null">
+                and a.sign_up_start_time &gt;= #{signUpStartTimeStart}
+            </if>
+            <if test="signUpStartTimeEnd != null">
+                and a.sign_up_start_time &lt;= #{signUpStartTimeEnd}
+            </if>
+
+            <if test="signUpEndTimeStart != null">
+                and a.sign_up_end_time &gt;= #{signUpEndTimeStart}
+            </if>
+            <if test="signUpEndTimeEnd != null">
+                and a.sign_up_end_time &lt;= #{signUpEndTimeEnd}
+            </if>
+
+            <if test="actionStartTimeStart != null">
+                and a.action_start_time &gt;= #{actionStartTimeStart}
+            </if>
+            <if test="actionStartTimeEnd != null">
+                and a.action_start_time &lt;= #{actionStartTimeEnd}
+            </if>
+
+            <if test="actionEndTimeStart != null">
+                and a.action_end_time &gt;= #{actionEndTimeStart}
+            </if>
+            <if test="actionEndTimeEnd != null">
+                and a.action_end_time &lt;= #{actionEndTimeEnd}
+            </if>
+            <if test="eventAddress != null and eventAddress != ''">
+                and a.event_address like concat('%',#{eventAddress},'%')
+            </if>
+            and a.is_delete = 2
+        </where>
+        order by a.create_time
+    </select>
+
+
+    <select id="GetDetailActionMessage" resultType="com.itmang.pojo.vo.action.DetailActionMessageVO">
+        select a.id, a.action_name, a.activity_content, a.user_id as organizerId, u1.user_name as organizerName,
+               a.organizer_phone,a.recruitment_quantity, a.participant_quantity,
+               a.sign_up_start_time, a.sign_up_end_time, a.action_start_time, a.action_end_time,
+               a.event_address, a.create_by as createId, u2.user_name as createName,
+               a.create_time
+        from action_information a
+                 left join user u1 on a.user_id = u1.id
+                 left join user u2 on a.create_by = u2.id
+        where a.id = #{id}
     </select>
 
     <!--根据活动id修改活动信息-->
@@ -27,7 +82,9 @@
         <set>
             <if test="actionName != null and actionName != ''">action_name = #{actionName},</if>
             <if test="activityContent != null and activityContent != ''">activity_content = #{activityContent},</if>
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
             <if test="organizerPhone != null and organizerPhone != ''">organizer_phone = #{organizerPhone},</if>
+            <if test="recruitmentQuantity != null">recruitment_quantity = #{recruitmentQuantity},</if>
             <if test="signUpStartTime != null">sign_up_start_time = #{signUpStartTime},</if>
             <if test="signUpEndTime != null">sign_up_end_time = #{signUpEndTime},</if>
             <if test="actionStartTime != null">action_start_time = #{actionStartTime},</if>
@@ -40,7 +97,8 @@
 
     <update id="deleteActionMessage">
         update action_information
-        set is_delete = 1,update_by = #{currentId},update_time = #{now} where id in
+        set is_delete = 1
+        where id in
         <foreach collection="idList" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>

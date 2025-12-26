@@ -1,5 +1,6 @@
 package com.itmang.pojo.vo.action;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +13,18 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class PageActionRecordMessageVO {
-    private int state;    // 状态
-    private String notes; // 备注
-    private String createBy;   // 创建人
-    private LocalDateTime createTime; // 创建时间
-    private String updateBy;   // 修改人
-    private LocalDateTime updateTime; // 修改时间
+
+    @Schema(description = "活动记录表id")
+    private String id;
+    @Schema(description = "活动信息id")
+    private String actionInformationId;
+    @Schema(description = "活动名称")
+    private String actionName;
+    @Schema(description = "活动状态")
+    private Integer state;
+    @Schema(description = "备注")
+    private String notes;
+    @Schema(description = "参与时间")
+    private LocalDateTime participationTime;
+
 }

@@ -27,6 +27,12 @@ public class ActionInformation {
     @Schema(name = "userId",description = "组织者")
     private String userId;
 
+    @Schema(name = "recruitmentQuantity",description = "活动人数")
+    private Integer recruitmentQuantity;
+
+    @Schema(name = "participantQuantity",description = "活动参与人数")
+    private Integer participantQuantity;
+
     @Schema(name = "organizerPhone",description = "组织者电话")
     private String organizerPhone;
 

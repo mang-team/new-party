@@ -16,7 +16,9 @@ public class ModifyActionMessageDTO {
     private String id;
     private String actionName;        // 活动名称
     private String activityContent;   // 活动内容详情
+    private String userId;
     private String organizerPhone;    // 组织者电话
+    private Integer recruitmentQuantity;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime signUpStartTime;        // 活动报名开始时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -25,7 +27,4 @@ public class ModifyActionMessageDTO {
     private LocalDateTime actionStartTime;        // 活动开始时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime actionEndTime;          // 活动结束时间
-    private String updateBy;              // 修改人
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;     // 修改时间
 }

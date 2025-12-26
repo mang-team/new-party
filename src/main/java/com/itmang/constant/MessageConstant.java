@@ -132,5 +132,10 @@ public class MessageConstant {
     public static final String DELETE_FAIL = "删除失败";
     public static final String SIGN_IN_RECORD_HAVE_EXIST = "已存在签到记录";
 
+    public static final String ACTION_NOT_FOUND = "未找到活动信息";
+    public static final String ACTION_RECORD_EXIST = "已存在活动记录";
+    public static final String ACTION_INFORMATION_NOT_EXIST = "活动信息不存在";
+    public static final String ACTION_RECORD_NOT_EXIST = "活动记录不存在";
+
 
 }
